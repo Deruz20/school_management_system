@@ -537,6 +537,33 @@ async function main() {
     });
   }
 
+  // 16. Invoicing & Billing Seed (Phase 3.1B)
+  const student1 = await prisma.student.findUnique({ where: { admissionNo: 'P1-001' } });
+  if (student1 && tuitionType1) {
+    const existingDiscount = await prisma.studentFeeDiscount.findFirst({
+      where: {
+        branchId: branch1.id,
+        studentId: student1.id,
+        feeTypeId: tuitionType1.id,
+        reason: 'Staff Child 50% Tuition Bursary'
+      }
+    });
+
+    if (!existingDiscount) {
+      await prisma.studentFeeDiscount.create({
+        data: {
+          branchId: branch1.id,
+          studentId: student1.id,
+          feeTypeId: tuitionType1.id,
+          discountType: 'PERCENTAGE',
+          value: 50,
+          reason: 'Staff Child 50% Tuition Bursary',
+          isActive: true
+        }
+      });
+    }
+  }
+
   console.log("Seeding complete!");
 }
 

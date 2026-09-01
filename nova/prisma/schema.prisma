@@ -55,6 +55,9 @@ model Branch {
   employees          Employee[]
   feeTypes           FeeType[]
   feeStructures      FeeStructure[]
+  discounts          StudentFeeDiscount[]
+  invoices           Invoice[]
+  invoiceSequences   InvoiceSequence[]
 }
 
 model BranchSettings {
@@ -163,6 +166,8 @@ model AcademicYear {
   classSubjects ClassSubject[]
   branchSettings BranchSettings[]
   feeStructures  FeeStructure[]
+  feeDiscounts   StudentFeeDiscount[]
+  invoices       Invoice[]
 }
 
 model Term {
@@ -177,6 +182,8 @@ model Term {
   termResults  TermResult[]
   branchSettings BranchSettings[]
   feeStructures  FeeStructure[]
+  feeDiscounts   StudentFeeDiscount[]
+  invoices       Invoice[]
 }
 
 model Class {
@@ -231,6 +238,8 @@ model Student {
   attendance DailyAttendanceRecord[]
   enrollments Enrollment[]
   marks       Mark[]
+  feeDiscounts StudentFeeDiscount[]
+  invoices    Invoice[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -305,6 +314,7 @@ model Enrollment {
 
   enrollmentSubjects EnrollmentSubject[]
   termResults        TermResult[]
+  invoices           Invoice[]
 
   @@unique([studentId, academicYearId])
 }
@@ -592,6 +602,8 @@ model FeeType {
 
   branch         Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
   structureItems FeeStructureItem[]
+  discounts      StudentFeeDiscount[]
+  invoiceItems   InvoiceItem[]
 
   @@unique([branchId, name])
   @@unique([branchId, code])
@@ -615,6 +627,7 @@ model FeeStructure {
   academicYear AcademicYear       @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
   term         Term?              @relation(fields: [termId], references: [id], onDelete: SetNull)
   items        FeeStructureItem[]
+  invoices     Invoice[]
 
   @@unique([branchId, classId, academicYearId, termId, name])
 }
@@ -634,6 +647,114 @@ model FeeStructureItem {
   feeType      FeeType      @relation(fields: [feeTypeId], references: [id], onDelete: Restrict)
 
   @@unique([feeStructureId, feeTypeId])
+}
+
+// ==========================================
+// FINANCE: INVOICING & BILLING (PHASE 3.1B)
+// ==========================================
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum InvoiceStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+  VOID
+}
+
+model StudentFeeDiscount {
+  id             String        @id @default(cuid())
+  branchId       String
+  studentId      String
+  feeTypeId      String?
+  academicYearId String?
+  termId         String?
+  discountType   DiscountType
+  value          Decimal       @db.Decimal(12, 2)
+  reason         String
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student        Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeType        FeeType?      @relation(fields: [feeTypeId], references: [id], onDelete: SetNull)
+  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  term           Term?         @relation(fields: [termId], references: [id], onDelete: SetNull)
+
+  @@index([branchId, studentId])
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  branchId       String
+  studentId      String
+  enrollmentId   String
+  academicYearId String
+  termId         String?
+  feeStructureId String?
+  invoiceNumber  String
+  billingKey     String
+  issueDate      DateTime      @default(now())
+  dueDate        DateTime
+  grossAmount    Decimal       @db.Decimal(12, 2)
+  discountAmount Decimal       @db.Decimal(12, 2) @default(0)
+  netAmount      Decimal       @db.Decimal(12, 2)
+  status         InvoiceStatus @default(PENDING)
+  notes          String?
+  voidReason     String?
+  voidedAt       DateTime?
+  voidedById     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student        Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  enrollment     Enrollment    @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
+  academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term           Term?         @relation(fields: [termId], references: [id], onDelete: SetNull)
+  feeStructure   FeeStructure? @relation(fields: [feeStructureId], references: [id], onDelete: SetNull)
+  items          InvoiceItem[]
+
+  @@unique([branchId, invoiceNumber])
+  @@unique([branchId, billingKey])
+  @@index([branchId, status])
+  @@index([branchId, studentId])
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  feeTypeId   String?
+  feeTypeName String
+  description String?
+  unitAmount  Decimal  @db.Decimal(12, 2)
+  quantity    Int      @default(1)
+  discount    Decimal  @db.Decimal(12, 2) @default(0)
+  lineTotal   Decimal  @db.Decimal(12, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  feeType     FeeType? @relation(fields: [feeTypeId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+}
+
+model InvoiceSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, year])
 }
 
 

@@ -40,11 +40,19 @@ export function Sidebar() {
             <span>Class Subjects</span>
           </Link>
           <div className="pt-4 pb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Operations
+            Operations &amp; Finance
           </div>
           <Link href="/staff" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <Users size={20} />
             <span>Staff / HR</span>
+          </Link>
+          <Link href="/finance/invoices" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <CreditCard size={20} />
+            <span>Invoices</span>
+          </Link>
+          <Link href="/finance/discounts" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <CreditCard size={20} />
+            <span>Bursaries / Discounts</span>
           </Link>
           <Link href="/finance/fee-structures" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <CreditCard size={20} />
