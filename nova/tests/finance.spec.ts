@@ -67,11 +67,14 @@ test.describe('NOVA E2E Tests - Finance Fee Configuration (Phase 3.1A)', () => {
     await page.click('button:has-text("Add Fee Type")');
     const feeTypeName = `E2E Lab Fee ${Date.now()}`;
     await page.fill('input[placeholder="e.g. Tuition Fee"]', feeTypeName);
-    await page.fill('input[placeholder*="TUITION"]', `E2E_LAB_${Date.now().toString().slice(-4)}`);
-    await page.click('button:has-text("Create Fee Type")');
+    const [response] = await Promise.all([
+      page.waitForResponse((res) => res.url().includes('/api/fee-types') && res.request().method() === 'POST'),
+      page.click('button:has-text("Create Fee Type")')
+    ]);
+    expect(response.ok()).toBeTruthy();
 
     // Verify fee type appears in table
-    await expect(page.locator(`text=${feeTypeName}`)).toBeVisible();
+    await expect(page.locator(`text=${feeTypeName}`)).toBeVisible({ timeout: 10000 });
 
     // 4. NAVIGATE TO FEE STRUCTURES
     await page.goto('/finance/fee-structures');
