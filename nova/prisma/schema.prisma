@@ -58,6 +58,12 @@ model Branch {
   discounts          StudentFeeDiscount[]
   invoices           Invoice[]
   invoiceSequences   InvoiceSequence[]
+  ledgerEntries      StudentLedgerEntry[]
+  payments           Payment[]
+  paymentAllocations PaymentAllocation[]
+  receipts           Receipt[]
+  paymentSequences   PaymentSequence[]
+  receiptSequences   ReceiptSequence[]
 }
 
 model BranchSettings {
@@ -168,6 +174,7 @@ model AcademicYear {
   feeStructures  FeeStructure[]
   feeDiscounts   StudentFeeDiscount[]
   invoices       Invoice[]
+  ledgerEntries  StudentLedgerEntry[]
 }
 
 model Term {
@@ -184,6 +191,7 @@ model Term {
   feeStructures  FeeStructure[]
   feeDiscounts   StudentFeeDiscount[]
   invoices       Invoice[]
+  ledgerEntries  StudentLedgerEntry[]
 }
 
 model Class {
@@ -240,6 +248,9 @@ model Student {
   marks       Mark[]
   feeDiscounts StudentFeeDiscount[]
   invoices    Invoice[]
+  ledgerEntries StudentLedgerEntry[]
+  payments    Payment[]
+  receipts    Receipt[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -719,6 +730,8 @@ model Invoice {
   term           Term?         @relation(fields: [termId], references: [id], onDelete: SetNull)
   feeStructure   FeeStructure? @relation(fields: [feeStructureId], references: [id], onDelete: SetNull)
   items          InvoiceItem[]
+  allocations    PaymentAllocation[]
+  ledgerEntries  StudentLedgerEntry[]
 
   @@unique([branchId, invoiceNumber])
   @@unique([branchId, billingKey])
@@ -756,5 +769,184 @@ model InvoiceSequence {
 
   @@unique([branchId, year])
 }
+
+// ==========================================
+// FINANCE: SUBLEDGER & PAYMENTS (PHASE 3.1C)
+// ==========================================
+
+enum LedgerEntryType {
+  INVOICE_GROSS_CHARGE
+  BURSARY_CREDIT
+  PAYMENT
+  PAYMENT_REVERSAL
+  OPENING_BALANCE
+  INVOICE_VOID_REVERSAL
+  BURSARY_VOID_REVERSAL
+  CREDIT_ADJUSTMENT
+  DEBIT_ADJUSTMENT
+}
+
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  MTN_MOMO
+  AIRTEL_MONEY
+  CHEQUE
+  CARD
+  SCHOOLPAY
+}
+
+enum PaymentStatus {
+  COMPLETED
+  REVERSED
+}
+
+enum AllocationStatus {
+  ACTIVE
+  REVERSED
+}
+
+enum ReceiptStatus {
+  ISSUED
+  VOID
+}
+
+model StudentLedgerEntry {
+  id             String            @id @default(cuid())
+  branchId       String
+  studentId      String
+  academicYearId String?
+  termId         String?
+  invoiceId      String?
+  entryType      LedgerEntryType
+  direction      LedgerDirection
+  amount         Decimal           @db.Decimal(12, 2)
+  referenceType  String            // "INVOICE", "BURSARY", "PAYMENT", "SYSTEM_OPENING", "ADJUSTMENT"
+  referenceId    String?
+  description    String
+  balanceAfter   Decimal           @db.Decimal(12, 2)
+  postedAt       DateTime          @default(now())
+  createdById    String?
+
+  branch         Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student        Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear   AcademicYear?     @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  term           Term?             @relation(fields: [termId], references: [id], onDelete: SetNull)
+  invoice        Invoice?          @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([branchId, studentId])
+  @@index([branchId, postedAt])
+  @@unique([branchId, referenceType, referenceId, direction])
+}
+
+model Payment {
+  id                String              @id @default(cuid())
+  branchId          String
+  studentId         String
+  idempotencyKey    String
+  paymentNumber     String
+  amount            Decimal             @db.Decimal(12, 2)
+  paymentDate       DateTime            @default(now())
+  paymentMethod     PaymentMethod
+  externalReference String?
+  payerName         String?
+  payerPhone        String?
+  status            PaymentStatus       @default(COMPLETED)
+  notes             String?
+  collectedById     String
+  reversalReason    String?
+  reversedAt        DateTime?
+  reversedById      String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  branch            Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student           Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  allocations       PaymentAllocation[]
+  receipt           Receipt?
+
+  @@unique([branchId, idempotencyKey])
+  @@unique([branchId, paymentNumber])
+  @@index([branchId, studentId])
+  @@index([branchId, paymentDate])
+  @@index([branchId, status])
+}
+
+model PaymentAllocation {
+  id         String           @id @default(cuid())
+  branchId   String
+  paymentId  String
+  invoiceId  String
+  amount     Decimal          @db.Decimal(12, 2)
+  status     AllocationStatus @default(ACTIVE)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  branch     Branch           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  payment    Payment          @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice    Invoice          @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@index([paymentId])
+  @@index([invoiceId])
+  @@unique([paymentId, invoiceId])
+}
+
+model Receipt {
+  id            String        @id @default(cuid())
+  branchId      String
+  studentId     String
+  paymentId     String        @unique
+  receiptNumber String
+  issuedAt      DateTime      @default(now())
+  cashierName   String
+  studentName   String
+  admissionNo   String
+  className     String
+  amountFigures Decimal       @db.Decimal(12, 2)
+  amountWords   String
+  paymentMethod PaymentMethod
+  externalRef   String?
+  status        ReceiptStatus @default(ISSUED)
+  voidedAt      DateTime?
+  voidReason    String?
+
+  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student       Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  payment       Payment       @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, receiptNumber])
+  @@index([branchId, studentId])
+  @@index([branchId, issuedAt])
+}
+
+model PaymentSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, year])
+}
+
+model ReceiptSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, year])
+}
+
 
 

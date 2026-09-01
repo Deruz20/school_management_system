@@ -2,6 +2,7 @@ import { db } from "../db";
 import { Prisma, DiscountType, InvoiceStatus, Invoice } from "@prisma/client";
 import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
+import { LedgerDAO } from "./ledger.dao";
 import crypto from "crypto";
 
 export interface EvaluatedLineItem {
@@ -406,7 +407,7 @@ export class InvoiceDAO {
     const invoice = await db.$transaction(async (tx) => {
       const invoiceNumber = await this.generateNextInvoiceNumber(tx, ctx.branchId, new Date());
 
-      return tx.invoice.create({
+      const createdInvoice = await tx.invoice.create({
         data: {
           branchId: ctx.branchId,
           studentId: data.studentId,
@@ -446,6 +447,10 @@ export class InvoiceDAO {
           items: true
         }
       });
+
+      await LedgerDAO.syncInvoiceIssued(tx, ctx.branchId, createdInvoice, ctx.userId);
+
+      return createdInvoice;
     });
 
     await AuditService.log(
@@ -634,6 +639,8 @@ export class InvoiceDAO {
         billedInvoices.push(created);
         totalBilledDecimal = totalBilledDecimal.add(created.netAmount);
         totalDiscountDecimal = totalDiscountDecimal.add(created.discountAmount);
+
+        await LedgerDAO.syncInvoiceIssued(tx, ctx.branchId, created, ctx.userId);
       }
     });
 
@@ -685,18 +692,31 @@ export class InvoiceDAO {
       throw new Error("Invoice is already voided.");
     }
 
-    const updated = await db.invoice.update({
-      where: { id },
-      data: {
-        status: InvoiceStatus.VOID,
-        voidReason,
-        voidedAt: new Date(),
-        voidedById: ctx.userId
-      },
-      include: {
-        student: { select: { id: true, firstName: true, lastName: true, admissionNo: true } },
-        items: true
-      }
+    const activeAllocations = await db.paymentAllocation.findMany({
+      where: { invoiceId: id, status: 'ACTIVE' }
+    });
+    if (activeAllocations.length > 0) {
+      throw new Error("Cannot void invoice with active payment allocations. Reverse associated payments or re-allocate first.");
+    }
+
+    const updated = await db.$transaction(async (tx) => {
+      const updatedInvoice = await tx.invoice.update({
+        where: { id },
+        data: {
+          status: InvoiceStatus.VOID,
+          voidReason,
+          voidedAt: new Date(),
+          voidedById: ctx.userId
+        },
+        include: {
+          student: { select: { id: true, firstName: true, lastName: true, admissionNo: true } },
+          items: true
+        }
+      });
+
+      await LedgerDAO.syncInvoiceVoided(tx, ctx.branchId, invoice, voidReason, ctx.userId);
+
+      return updatedInvoice;
     });
 
     await AuditService.log(

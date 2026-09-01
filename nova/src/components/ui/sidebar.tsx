@@ -46,6 +46,14 @@ export function Sidebar() {
             <Users size={20} />
             <span>Staff / HR</span>
           </Link>
+          <Link href="/finance/payments" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <CreditCard size={20} />
+            <span>Fee Payments</span>
+          </Link>
+          <Link href="/finance/ledger" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <CreditCard size={20} />
+            <span>Student Subledger</span>
+          </Link>
           <Link href="/finance/invoices" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <CreditCard size={20} />
             <span>Invoices</span>

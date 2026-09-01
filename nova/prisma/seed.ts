@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -559,6 +559,35 @@ async function main() {
           value: 50,
           reason: 'Staff Child 50% Tuition Bursary',
           isActive: true
+        }
+      });
+    }
+  }
+
+  // 17. Subledger & Payment Seed (Phase 3.1C)
+  if (student1) {
+    const existingOpening = await prisma.studentLedgerEntry.findFirst({
+      where: {
+        branchId: branch1.id,
+        studentId: student1.id,
+        referenceType: 'SYSTEM_OPENING'
+      }
+    });
+
+    if (!existingOpening) {
+      await prisma.studentLedgerEntry.create({
+        data: {
+          branchId: branch1.id,
+          studentId: student1.id,
+          academicYearId: ay1.id,
+          termId: term1_1.id,
+          entryType: 'OPENING_BALANCE',
+          direction: 'DEBIT',
+          amount: new Prisma.Decimal('150000.00'),
+          referenceType: 'SYSTEM_OPENING',
+          referenceId: `OPENING:${student1.id}`,
+          description: 'Historical Arrears brought forward from 2025 Term 3',
+          balanceAfter: new Prisma.Decimal('150000.00')
         }
       });
     }
