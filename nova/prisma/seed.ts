@@ -593,6 +593,68 @@ async function main() {
     }
   }
 
+  // 18. Expense Categories & Sample Expenses (Phase 3.1D)
+  const defaultCategories = [
+    { name: 'Utilities', code: 'UTIL', description: 'Electricity, Water, Gas, Internet' },
+    { name: 'Academic Supplies', code: 'SUPPLIES', description: 'Exam papers, textbooks, science lab consumables' },
+    { name: 'Repairs & Maintenance', code: 'REPAIRS', description: 'Classroom repairs, plumbing, painting, generator' },
+    { name: 'Boarding & Catering', code: 'CATERING', description: 'Student meals, posho, beans, kitchen supplies' },
+    { name: 'Staff Allowances', code: 'ALLOWANCES', description: 'Teacher duty allowances, workshop transport' }
+  ];
+
+  for (const cat of defaultCategories) {
+    const existingCat = await prisma.expenseCategory.findFirst({
+      where: { branchId: branch1.id, name: cat.name }
+    });
+    if (!existingCat) {
+      await prisma.expenseCategory.create({
+        data: {
+          branchId: branch1.id,
+          name: cat.name,
+          code: cat.code,
+          description: cat.description,
+          isActive: true
+        }
+      });
+    }
+  }
+
+  const utilCat = await prisma.expenseCategory.findFirst({
+    where: { branchId: branch1.id, code: 'UTIL' }
+  });
+
+  if (utilCat) {
+    const existingExpense = await prisma.expense.findFirst({
+      where: { branchId: branch1.id, idempotencyKey: 'SEED_EXPENSE_001' }
+    });
+
+    if (!existingExpense) {
+      await prisma.expense.create({
+        data: {
+          branchId: branch1.id,
+          categoryId: utilCat.id,
+          idempotencyKey: 'SEED_EXPENSE_001',
+          voucherNumber: 'VOUCH-2026-00001',
+          title: 'Umeme Electricity Bill (Main Campus)',
+          amount: new Prisma.Decimal('450000.00'),
+          expenseDate: new Date('2026-02-15'),
+          paymentMethod: 'BANK_TRANSFER',
+          vendorName: 'Umeme Uganda Ltd',
+          receiptRef: 'EFRIS-UMEME-9921',
+          notes: 'Standard monthly power bill for campus and ICT lab',
+          status: 'COMPLETED',
+          recordedById: user1.id
+        }
+      });
+
+      await prisma.expenseSequence.upsert({
+        where: { branchId_year: { branchId: branch1.id, year: 2026 } },
+        create: { branchId: branch1.id, year: 2026, lastValue: 1 },
+        update: { lastValue: { increment: 0 } }
+      });
+    }
+  }
+
   console.log("Seeding complete!");
 }
 

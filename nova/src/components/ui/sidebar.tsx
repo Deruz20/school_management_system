@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, BookOpen, CreditCard, Settings, LayoutDashboard } from "lucide-react";
+import { Users, BookOpen, CreditCard, Settings, LayoutDashboard, Receipt, BarChart3, TrendingDown } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -47,7 +47,7 @@ export function Sidebar() {
             <span>Staff / HR</span>
           </Link>
           <Link href="/finance/payments" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
-            <CreditCard size={20} />
+            <Receipt size={20} />
             <span>Fee Payments</span>
           </Link>
           <Link href="/finance/ledger" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
@@ -57,6 +57,14 @@ export function Sidebar() {
           <Link href="/finance/invoices" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <CreditCard size={20} />
             <span>Invoices</span>
+          </Link>
+          <Link href="/finance/expenses" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <TrendingDown size={20} />
+            <span>Expenses</span>
+          </Link>
+          <Link href="/finance/reports" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <BarChart3 size={20} />
+            <span>Financial Reports</span>
           </Link>
           <Link href="/finance/discounts" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <CreditCard size={20} />

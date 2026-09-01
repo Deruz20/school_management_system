@@ -4,19 +4,21 @@ import { FeeTypeDAO } from "@/lib/dao/fee-type.dao";
 import { InvoiceDAO } from "@/lib/dao/invoice.dao";
 import { DiscountDAO } from "@/lib/dao/discount.dao";
 import { PaymentDAO } from "@/lib/dao/payment.dao";
+import { ExpenseDAO } from "@/lib/dao/expense.dao";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard } from "lucide-react";
+import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown } from "lucide-react";
 
 export default async function FinancePage() {
   const ctx = await requireAuth();
 
-  const [feeTypes, feeStructures, invoices, discounts, paymentsData] = await Promise.all([
+  const [feeTypes, feeStructures, invoices, discounts, paymentsData, expenseSummary] = await Promise.all([
     FeeTypeDAO.list(ctx),
     FeeStructureDAO.list(ctx),
     InvoiceDAO.list(ctx),
     DiscountDAO.list(ctx),
-    PaymentDAO.listPayments(ctx, { limit: 100 })
+    PaymentDAO.listPayments(ctx, { limit: 100 }),
+    ExpenseDAO.getSummary(ctx)
   ]);
 
   return (
@@ -198,6 +200,62 @@ export default async function FinancePage() {
             </Link>
             <Link href="/finance/fee-types" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
               <span>View Catalog</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Expenses & Outflows Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+              <TrendingDown size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">School Expenses</h2>
+            <p className="text-sm text-slate-500">
+              Track operational disbursements, vouchers, utilities, and branch expenditure categories.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-rose-600 font-mono">
+              {expenseSummary.thisMonthCount}{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">vouchers this month</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/expenses">
+              <Button size="sm" variant="outline" className="bg-rose-50 text-rose-700 hover:bg-rose-100">
+                Manage Expenses
+              </Button>
+            </Link>
+            <Link href="/finance/expenses" className="inline-flex items-center gap-1 text-sm font-medium text-rose-600 hover:text-rose-700">
+              <span>View All</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Financial Reports & Analytics Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <BarChart3 size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Financial Reports &amp; Analytics</h2>
+            <p className="text-sm text-slate-500">
+              Executive collection rates, class summaries, 12-month net cash flow, and top debtor defaulters.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-emerald-700 font-mono">
+              Executive Analytics{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">real-time reporting</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/reports">
+              <Button size="sm" variant="outline" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+                Open Analytics
+              </Button>
+            </Link>
+            <Link href="/finance/reports" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+              <span>View Reports</span>
               <ArrowRight size={16} />
             </Link>
           </div>

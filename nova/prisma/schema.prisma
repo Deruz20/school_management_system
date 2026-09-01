@@ -64,6 +64,9 @@ model Branch {
   receipts           Receipt[]
   paymentSequences   PaymentSequence[]
   receiptSequences   ReceiptSequence[]
+  expenseCategories  ExpenseCategory[]
+  expenses           Expense[]
+  expenseSequences   ExpenseSequence[]
 }
 
 model BranchSettings {
@@ -948,5 +951,72 @@ model ReceiptSequence {
   @@unique([branchId, year])
 }
 
+// ==========================================
+// FINANCE: EXPENSES & CASH OUTFLOWS (PHASE 3.1D)
+// ==========================================
 
+enum ExpenseStatus {
+  COMPLETED
+  VOID
+}
 
+model ExpenseCategory {
+  id          String    @id @default(cuid())
+  branchId    String
+  name        String
+  code        String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  branch      Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  expenses    Expense[]
+
+  @@unique([branchId, name])
+  @@unique([branchId, code])
+  @@index([branchId, isActive])
+}
+
+model Expense {
+  id                String         @id @default(cuid())
+  branchId          String
+  categoryId        String
+  idempotencyKey    String
+  voucherNumber     String
+  title             String
+  amount            Decimal        @db.Decimal(12, 2)
+  expenseDate       DateTime       @default(now())
+  paymentMethod     PaymentMethod
+  vendorName        String?
+  receiptRef        String?
+  notes             String?
+  status            ExpenseStatus  @default(COMPLETED)
+  voidedAt          DateTime?
+  voidReason        String?
+  voidedById        String?
+  recordedById      String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  branch            Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  category          ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, idempotencyKey])
+  @@unique([branchId, voucherNumber])
+  @@index([branchId, expenseDate])
+  @@index([branchId, categoryId])
+  @@index([branchId, status])
+}
+
+model ExpenseSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, year])
+}
