@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pixel-Perfect A4 Report - Jiddah Islamic</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-green: #0f5b48;
+            --accent-gold: #c5a059;
+            --deep-maroon: #7d140c;
+            --bg-cream: #fdfaf2;
+            --text-dark: #1a1a1a;
+            --border-light: #d8c68a;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            body { background: none !important; padding: 0 !important; }
+            .report-page { 
+                margin: 0 !important; 
+                box-shadow: none !important; 
+                border: 2px solid var(--primary-green) !important;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #525659;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            color: var(--text-dark);
+        }
+
+        /* PIXEL-PERFECT A4 LANDSCAPE */
+        .report-page {
+            width: 1123px;
+            height: 794px;
+            background: var(--bg-cream);
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+            position: relative;
+            border: 4px double var(--primary-green);
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+            margin-bottom: 8px;
+        }
+
+        .school-left { width: 32%; }
+        .school-left h1 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--deep-maroon);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+        .school-left p { margin: 1px 0; font-size: 10px; font-weight: 500; color: #444; }
+
+        .header-center { width: 36%; text-align: center; }
+        .bismillah { font-family: 'Amiri', serif; font-size: 24px; color: var(--primary-green); margin-bottom: 2px; }
+        .report-badge {
+            background: var(--primary-green);
+            color: white;
+            padding: 4px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-right { width: 32%; text-align: right; direction: rtl; }
+        .header-right h2 { margin: 0; font-family: 'Amiri', serif; font-size: 22px; color: var(--deep-maroon); line-height: 1.1; }
+
+        /* INFO BOXES */
+        .info-container {
+            display: flex;
+            gap: 15px;
+            height: 85px;
+            margin-bottom: 10px;
+        }
+        .info-box {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .info-row { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 3px; }
+        .label { font-weight: 700; color: #1a1a1a; white-space: nowrap; }
+        .line { flex: 1; border-bottom: 1px dotted #999; height: 14px; }
+
+        /* MAIN PERFORMANCE TABLES */
+        .main-performance {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        .col-academic, .col-theology { width: 50%; display: flex; flex-direction: column; }
+
+        table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; }
+        th { background: var(--primary-green); color: white; font-size: 10px; padding: 4px 2px; border: 1px solid rgba(255,255,255,0.2); }
+        .table-banner { background: var(--accent-gold); font-size: 12px; font-weight: 700; padding: 4px; text-align: center; color: white; }
+        td { border: 1px solid #ddd; height: 24px; text-align: center; font-size: 11px; font-weight: 500; }
+
+        .grading-key { margin-top: 6px; }
+        .grading-key th { background: #555; font-size: 9px; padding: 2px; }
+        .grading-key td { font-size: 9px; height: 16px; font-weight: 700; }
+
+        /* THEOLOGY SPECIFICS (RTL) */
+        .col-theology { direction: rtl; }
+        .col-theology th, .col-theology td { font-family: 'Amiri', serif; font-size: 14px; }
+        .th-sub { background: #f4f4f4; color: var(--primary-green); height: 20px; font-size: 11px; font-weight: 700; }
+        
+        .theology-footer { display: flex; gap: 10px; margin-top: 8px; }
+        .t-box { 
+            flex: 1; border: 1px solid var(--border-light); border-radius: 4px; padding: 5px; 
+            background: white; font-family: 'Amiri', serif; min-height: 38px; font-size: 13px;
+        }
+
+        /* FOOTER AREA */
+        .footer {
+            height: 165px;
+            margin-top: 10px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .footer-left { flex: 1; }
+
+        .comment-section {
+            border: 1.5px dashed var(--primary-green);
+            border-radius: 10px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.5);
+        }
+        .comment-row { display: flex; gap: 15px; margin-bottom: 5px; align-items: center; }
+        .c-field { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .c-field span { font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+        .dates-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            gap: 12px;
+        }
+        .date-chip {
+            flex: 1;
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid #ddd;
+        }
+        .ends { background: #fff0f0; color: var(--deep-maroon); border-color: #ffdada; }
+        .begins { background: #eef3ff; color: #1d4ed8; border-color: #dbe4ff; }
+
+        .stamp-box {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed #9aa8bd;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: #7584a0;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .validity-strip {
+            margin-top: 8px;
+            background: var(--deep-maroon);
+            color: white;
+            text-align: center;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="report-page">
+
+    <header class="header">
+        <div class="school-left">
+            <h1>JIDDAH ISLAMIC NURSERY<br>AND PRIMARY SCHOOL - Nsaggu</h1>
+            <p>P.O.Box 34008 Kampala (U)</p>
+            <p>Tel: +256 744950042 / 0705316961</p>
+        </div>
+
+        <div class="header-center">
+            <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+            <div class="report-badge">UPPER REPORT FORM</div>
+        </div>
+
+        <div class="header-right">
+            <h2>مدرسة جدة الإسلامية للروضة والابتدائية بنساغو</h2>
+        </div>
+    </header>
+
+    <section class="info-container">
+        <div class="info-box">
+            <div class="info-row"><span class="label">Pupil's Name:</span><div class="line"></div></div>
+            <div class="info-row">
+                <span class="label">Class:</span><div class="line"></div>
+                <span class="label">Term:</span><div class="line"></div>
+                <span class="label">Year:</span><div class="line" style="flex:0.4"></div>
+            </div>
+            <div class="info-row">
+                <span class="label">Position:</span><div class="line"></div>
+                <span class="label">Out Of:</span><div class="line"></div>
+                <span class="label">Division:</span><div class="line" style="flex:0.4"></div>
+            </div>
+        </div>
+
+        <div class="info-box" dir="rtl">
+            <div class="info-row"><span class="label">اسم التلميذ/ة :</span><div class="line"></div></div>
+            <div class="info-row">
+                <span class="label">الفصل :</span><div class="line"></div>
+                <span class="label">الفترة :</span><div class="line"></div>
+                <span class="label">عام :</span>
+                <div class="line" style="flex:0.5"></div><span class="label">هـ</span>
+                <div class="line" style="flex:0.5"></div><span class="label">م</span>
+            </div>
+            <div class="info-row">
+                <span class="label">الترتيب :</span><div class="line"></div>
+                <span class="label">عدد الطلبة :</span><div class="line"></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-performance">
+        <div class="col-academic">
+            <table>
+                <tr><th colspan="6" class="table-banner">COMPARATIVE PERFORMANCE</th></tr>
+                <tr>
+                    <th rowspan="2" style="width: 28%;">SUBJECTS</th>
+                    <th colspan="2">MIDTERM</th>
+                    <th colspan="2">END OF TERM</th>
+                    <th rowspan="2">COMMENT</th>
+                </tr>
+                <tr>
+                    <th style="width: 12%;">MK</th><th style="width: 10%;">AGG</th>
+                    <th style="width: 12%;">MK</th><th style="width: 10%;">AGG</th>
+                </tr>
+                <tr><td>ENGLISH</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>MATHEMATICS</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>SCIENCE</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>SOCIAL STUDIES</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>COMPUTER</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr style="background:#f9f9f9; font-weight:800;">
+                    <td>TOTAL</td><td></td><td></td><td></td><td></td><td></td>
+                </tr>
+            </table>
+
+            <table class="grading-key">
+                <tr><th>Grade</th><td>D1</td><td>D2</td><td>C3</td><td>C4</td><td>C5</td><td>C6</td><td>P7</td><td>P8</td><td>F9</td></tr>
+                <tr><td><b>Marks</b></td><td>85-100</td><td>75-84</td><td>70-74</td><td>60-69</td><td>55-59</td><td>50-54</td><td>40-49</td><td>35-39</td><td>0-34</td></tr>
+            </table>
+        </div>
+
+        <div class="col-theology">
+            <table>
+                <tr><th colspan="6" class="table-banner">نتائج المواد الشرعية</th></tr>
+                <tr>
+                    <th rowspan="2" style="width: 28%;">المواد</th>
+                    <th colspan="2">منتصف الفترة</th>
+                    <th colspan="2">نهاية الفترة</th>
+                    <th rowspan="2">الملاحظات</th>
+                </tr>
+                <tr>
+                    <th class="th-sub">الدرجة الكبرى</th><th class="th-sub">الدرجة الصغرى</th>
+                    <th class="th-sub">الدرجة الكبرى</th><th class="th-sub">الدرجة الصغرى</th>
+                </tr>
+                <tr><td>القرآن الكريم</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>اللغة العربية</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>الفقه الإسلامي</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>التربية الإسلامية</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr style="background:#f9f9f9; font-weight:800;">
+                    <td>المجموع</td><td></td><td></td><td></td><td></td><td></td>
+                </tr>
+            </table>
+            <div class="theology-footer">
+                <div class="t-box">ملاحظة مشرف الفصل: </div>
+                <div class="t-box" style="flex:0.8">التوقيع والختم: </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-left">
+            <div class="comment-section">
+                <div class="comment-row">
+                    <div class="c-field"><span>Conduct:</span><div class="line"></div></div>
+                </div>
+                <div class="comment-row">
+                    <div class="c-field"><span>Class Teacher's Comment:</span><div class="line"></div></div>
+                    <div class="c-field" style="flex:0.4"><span>Signature:</span><div class="line"></div></div>
+                </div>
+                <div class="comment-row">
+                    <div class="c-field"><span>Head Teacher's Comment:</span><div class="line"></div></div>
+                    <div class="c-field" style="flex:0.4"><span>Signature:</span><div class="line"></div></div>
+                </div>
+            </div>
+
+            <div class="dates-bar">
+                <div class="date-chip ends">Term Ends On: ________________</div>
+                <div class="date-chip begins">Next Term Begins: ________________</div>
+            </div>
+
+            <div class="validity-strip">
+                THIS REPORT FORM IS NOT VALID WITHOUT THE OFFICIAL SCHOOL STAMP
+            </div>
+        </div>
+
+        <div class="stamp-box">OFFICIAL<br>SCHOOL<br>STAMP</div>
+    </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Official Nursery MOT Report - JINPS</title>
+<style>
+/* --- PRECISION PRINT CONFIG --- */
+@page { size: A4 portrait; margin: 0; }
+* { box-sizing: border-box; }
+
+:root {
+    --school-green: #2e7d32; 
+    --theme-blue: #1e40af;    /* Nursery Blue */
+    --surprise-gold: #b45309;  /* Royal Gold Mix */
+    --light-gold: #fef3c7;
+    --ink-color: #c2410c;    
+}
+
+body {
+    margin: 0;
+    padding: 8mm 0;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #475569;
+    display: flex;
+    justify-content: center;
+}
+
+/* --- THE CANVAS --- */
+.page {
+    width: 210mm;
+    height: 297mm;
+    padding: 10mm 12mm;
+    background: white;
+    border: 8px double var(--theme-blue);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 25%);
+}
+
+/* --- ISLAMIC GEOMETRIC BACKGROUND --- */
+.page::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0.08;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0l3.82 10.38L45 15l-10.38 3.82L30 30l-3.82-10.38L15 15l10.38-3.82z' fill='%231e40af'/%3E%3C/svg%3E");
+    background-size: 50px 50px;
+}
+
+@media print {
+    body { background: none; padding: 0; }
+    .page { box-shadow: none; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
+
+/* --- HEADER --- */
+.header {
+    position: relative;
+    text-align: center;
+    padding: 0 95px;
+    margin-bottom: 5px;
+    z-index: 2;
+}
+
+.logo-box {
+    position: absolute;
+    top: 0;
+    width: 72px;
+    height: 88px;
+    border: 3px solid var(--school-green);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--school-green);
+    background: white;
+    box-shadow: 3px 3px 0px var(--surprise-gold);
+}
+.logo-left { left: 0; }
+.logo-right { right: 0; }
+
+.school-name {
+    font-family: 'Times New Roman', serif;
+    font-size: 26px;
+    font-weight: 950;
+    color: var(--school-green);
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.contact-info {
+    font-size: 11px;
+    color: #334155;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* --- TITLE --- */
+.title-area {
+    text-align: center;
+    margin: 10px 0;
+    z-index: 2;
+}
+
+.nursery-label {
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--theme-blue);
+    letter-spacing: 10px;
+    text-shadow: 2px 2px 0px #dbeafe;
+    margin-bottom: -4px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 45px;
+    background: var(--surprise-gold);
+    color: white;
+    font-weight: 900;
+    border-radius: 50px;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(180, 83, 9, 0.3);
+}
+
+.term-year {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--theme-blue);
+}
+
+/* --- TABLES --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid var(--theme-blue);
+}
+
+th, td {
+    border: 1px solid var(--theme-blue);
+    padding: 7px 10px;
+    color: var(--theme-blue);
+}
+
+.info-label {
+    background: #f0f9ff;
+    font-weight: 800;
+    width: 18%;
+}
+
+.data-cell {
+    color: var(--ink-color);
+    font-weight: 900;
+    text-align: center;
+}
+
+.main-th {
+    background: var(--theme-blue);
+    color: white;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.zebra:nth-child(even) { background: rgba(241, 245, 249, 0.4); }
+
+/* --- SECTION PILLS --- */
+.section-pill {
+    text-align: center;
+    margin-top: 12px;
+    z-index: 2;
+}
+
+.section-pill h2 {
+    margin: 0;
+    background: var(--school-green);
+    color: white;
+    display: inline-block;
+    padding: 3px 25px;
+    border-radius: 20px;
+    font-size: 15px;
+    text-transform: uppercase;
+}
+
+/* --- COMMENT BOXES --- */
+.comments-container {
+    margin-top: 12px;
+    padding: 10px;
+    border: 2px dashed var(--surprise-gold);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: 2;
+}
+
+.comment-row {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.line-dots {
+    flex-grow: 1;
+    border-bottom: 2px dotted var(--theme-blue);
+    margin-left: 8px;
+    height: 14px;
+}
+
+/* --- FOOTER --- */
+.footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 2px solid var(--surprise-gold);
+    padding-top: 10px;
+    z-index: 2;
+}
+
+.stamp-box {
+    width: 135px;
+    height: 90px;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: 900;
+    background: white;
+}
+
+.valid-warning {
+    text-align: center;
+    color: #b91c1c;
+    font-weight: 900;
+    font-size: 12px;
+    margin-top: 8px;
+    padding: 4px;
+    background: #fee2e2;
+    border-radius: 6px;
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+    <div class="header">
+        <div class="logo-box logo-left">LOGO</div>
+        <div class="logo-box logo-right">LOGO</div>
+        <h1 class="school-name">JIDDAH ISLAMIC NURSERY AND PRIMARY SCHOOL</h1>
+        <div class="contact-info">
+            P.O. BOX 34008 Kampala (U) | Tel: +256 744950042 / 787779909<br>
+            Email: jiddahislamicnurseryandpri@gmail.com
+        </div>
+    </div>
+
+    <div class="title-area">
+        <div class="nursery-label">NURSERY</div>
+        <div class="badge">MID TERM REPORT FORM</div>
+        <div class="term-year">TERM: ____________________ &nbsp;&nbsp;&nbsp;&nbsp; YEAR: ____________________</div>
+    </div>
+
+    <table>
+        <tr>
+            <td class="info-label">Pupil's Name:</td>
+            <td style="width: 32%;"></td>
+            <td class="info-label">Class:</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="info-label">Student ID:</td>
+            <td></td>
+            <td class="info-label">Date:</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="info-label">School Pay Code:</td>
+            <td colspan="3"></td>
+        </tr>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="main-th" style="text-align: left;">Learning Area</th>
+                <th class="main-th" width="75">Mark</th>
+                <th class="main-th">Remark</th>
+                <th class="main-th" width="75">Initial</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="zebra"><td>LA1 Social Development</td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td></tr>
+            <tr class="zebra"><td>LA2 English</td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td></tr>
+            <tr class="zebra"><td>LA3 Health Habits</td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td></tr>
+            <tr class="zebra"><td>LA4 Numbers</td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td></tr>
+            <tr class="zebra"><td>LA5 Reading</td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td></tr>
+            <tr class="zebra"><td>Writing</td><td class="data-cell"></td><td class="data-cell"></td><td class="data-cell"></td></tr>
+        </tbody>
+    </table>
+
+    <div class="section-pill"><h2>Official Grading Scale</h2></div>
+    <table style="text-align: center;">
+        <tr style="font-weight: 800; background: var(--light-gold);">
+            <td style="width: 20%; color: var(--surprise-gold);">Score Range</td>
+            <td class="data-cell">0 - 49</td><td class="data-cell">50 - 69</td><td class="data-cell">70 - 79</td><td class="data-cell">80 - 89</td><td class="data-cell">90 - 100</td>
+        </tr>
+        <tr style="font-weight: 900; font-size: 15px;">
+            <td style="color: var(--surprise-gold);">Grade</td>
+            <td class="data-cell">E</td><td class="data-cell">D</td><td class="data-cell">C</td><td class="data-cell">B</td><td class="data-cell">A</td>
+        </tr>
+    </table>
+
+    <div class="comments-container">
+        <div class="comment-row">Conduct: <div class="line-dots"></div></div>
+        <div style="display: flex; gap: 20px;">
+            <div class="comment-row" style="flex: 2;">Class Teacher's Comment: <div class="line-dots"></div></div>
+            <div class="comment-row" style="flex: 1;">Signature: <div class="line-dots"></div></div>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <div class="comment-row" style="flex: 2;">Head Teacher's Comment: <div class="line-dots"></div></div>
+            <div class="comment-row" style="flex: 1;">Signature: <div class="line-dots"></div></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>
+            <div style="font-weight: 900; color: var(--theme-blue); font-size: 15px; margin-bottom: 10px;">Next Term Begins On: ____________________</div>
+            <div class="valid-warning">NOT VALID WITHOUT THE OFFICIAL SCHOOL STAMP</div>
+        </div>
+        <div class="stamp-box">OFFICIAL SCHOOL STAMP</div>
+    </div>
+</div>
+</body>
+</html>

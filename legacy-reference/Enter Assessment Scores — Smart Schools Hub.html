@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)https://smartschoolshub.com/multi-report/entry -->
+<html lang="en" class="h-full light" id="html-root"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://smartschoolshub.com/favicon.ico?v=20260823" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="https://smartschoolshub.com/favicon-32x32.png?v=20260823">
+<link rel="icon" type="image/png" sizes="16x16" href="https://smartschoolshub.com/favicon-16x16.png?v=20260823">
+<link rel="icon" type="image/png" sizes="192x192" href="https://smartschoolshub.com/favicon-192x192.png?v=20260823">
+<link rel="apple-touch-icon" sizes="180x180" href="https://smartschoolshub.com/apple-touch-icon.png?v=20260823">
+<link rel="manifest" href="https://smartschoolshub.com/site.webmanifest?v=20260823">
+<meta name="theme-color" content="#00af8f">
+    <meta name="csrf-token" content="Ygv2kleUgcaDvlNbDtOhMQYbvd1jATcYt5VgsNuX">
+    <title>Enter Assessment Scores — Smart Schools Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link href="./Enter Assessment Scores — Smart Schools Hub_files/css2" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./Enter Assessment Scores — Smart Schools Hub_files/tom-select.min.css">
+    <style>
+    /* ── Tom Select theme: matches SmartSchools brand ── */
+    .ts-wrapper.single .ts-control{border:1px solid #e0ece6;border-radius:8px;padding:9px 36px 9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#0e1f38;background:#fff;box-shadow:none;outline:none;min-height:unset;}
+    .ts-wrapper.single .ts-control:focus,.ts-wrapper.single.focus .ts-control{border-color:#2fa876;box-shadow:0 0 0 3px rgba(47,168,118,.12);}
+    .ts-wrapper.single.input-active .ts-control{border-color:#2fa876;}
+    .ts-dropdown{border:1px solid #e0ece6;border-radius:10px;box-shadow:0 8px 32px rgba(14,31,56,.12);font-size:13px;font-family:'Inter',sans-serif;overflow:hidden;margin-top:4px;}
+    .ts-dropdown .option{padding:9px 14px;color:#374151;}
+    .ts-dropdown .option:hover,.ts-dropdown .option.active{background:#dff2ea;color:#0e4f2e;}
+    .ts-dropdown .option.selected{background:#0e1f38;color:#fff;}
+    .ts-dropdown-content{max-height:260px;}
+    .ts-wrapper .ts-control input{font-size:13px;font-family:'Inter',sans-serif;color:#0e1f38;}
+    .ts-wrapper .ts-control .placeholder{color:#9ba8b5;}
+    /* dropdown arrow */
+    .ts-wrapper.single .ts-control::after{border-color:#9ba8b5 transparent transparent;right:12px;}
+    /* search input inside dropdown */
+    .ts-dropdown .ts-dropdown-header{padding:8px 10px;}
+    </style>
+    <script src="./Enter Assessment Scores — Smart Schools Hub_files/saved_resource"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: { DEFAULT: '#2fa876', light: '#dff2ea', dark: '#0e1f38' },
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="./Enter Assessment Scores — Smart Schools Hub_files/cdn.min.js.download" defer=""></script>
+    <script src="./Enter Assessment Scores — Smart Schools Hub_files/chart.umd.min.js.download"></script>
+    <style>
+        :root { --sidebar-w: 256px; }
+        .app-sidebar {
+            position: fixed; top: 0; left: 0;
+            width: var(--sidebar-w); height: 100vh;
+            z-index: 40; overflow-y: auto;
+        }
+        .app-main { margin-left: var(--sidebar-w); min-height: 100vh; }
+        @media (max-width: 1023px) {
+            .app-sidebar { transform: translateX(-100%); transition: transform .25s ease; z-index: 50; }
+            .app-sidebar.open { transform: translateX(0); }
+            .app-main { margin-left: 0; }
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 12px; border-radius: 8px; font-size: 13.5px;
+            color: #2d3f52; transition: background .15s, color .15s;
+            text-decoration: none; white-space: nowrap; overflow: hidden;
+        }
+        .nav-item:hover { background: #dff2ea; color: #0e1f38; }
+        .nav-item.active { background: #dff2ea; color: #0e1f38; font-weight: 600; }
+        .nav-item svg { flex-shrink: 0; width: 16px; height: 16px; }
+        .nav-section-label {
+            font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+            text-transform: uppercase; color: #9ba8b5;
+            padding: 10px 14px 4px;
+        }
+    </style>
+        <style>
+    /* ════════════════════════════════════════════════════════════════
+       DARK MODE — applies when html has class="dark"
+       OS auto-detect is handled by JS on page load.
+       ════════════════════════════════════════════════════════════════ */
+
+    /* ── Prevent flash on page load ── */
+    html { transition: background .2s, color .2s; }
+
+    /* ── Base ── */
+    html.dark body              { background:#0f1923 !important; color:#c4d5e5 !important; }
+    html.dark                   { color-scheme: dark; }
+
+    /* ── Sidebar ── */
+    html.dark .app-sidebar      { background:#162030 !important; border-color:#1e3048 !important; }
+    html.dark .nav-item         { color:#8fa3b8 !important; }
+    html.dark .nav-item:hover,
+    html.dark .nav-item.active  { background:#1e3048 !important; color:#e2e8f0 !important; }
+    html.dark .nav-section-label{ color:#4d6276 !important; }
+
+    /* ── Top bar ── */
+    html.dark header[style*="background:#fff"],
+    html.dark header            { background:#162030 !important; border-color:#1e3048 !important; }
+    html.dark header h1         { color:#e2e8f0 !important; }
+
+    /* ── Main content area ── */
+    html.dark main              { background:#0f1923 !important; }
+
+    /* ── White backgrounds → dark card ── */
+    html.dark [style*="background:#fff"],
+    html.dark [style*="background: #fff"],
+    html.dark [style*="background:white"],
+    html.dark .card,
+    html.dark .db-card,
+    html.dark .db-card-sm       { background:#1a2637 !important; }
+
+    /* ── Light grey backgrounds ── */
+    html.dark [style*="background:#f5faf8"],
+    html.dark [style*="background:#f9fdfb"],
+    html.dark [style*="background:#f0f5f3"],
+    html.dark [style*="background:#f9fdfc"],
+    html.dark [style*="background:#f5f8fa"] { background:#162030 !important; }
+
+    /* ── Borders ── */
+    html.dark [style*="border:1px solid #e0ece6"],
+    html.dark [style*="border: 1px solid #e0ece6"],
+    html.dark [style*="border-bottom:1px solid #e0ece6"],
+    html.dark [style*="border-color:#e0ece6"],
+    html.dark [style*="border-top:1px solid #e0ece6"] { border-color:#1e3048 !important; }
+    html.dark [style*="border:1px solid #f0f5f3"],
+    html.dark [style*="border-bottom:1px solid #f0f5f3"] { border-color:#1e3048 !important; }
+    html.dark .db-bar           { background:#243248 !important; }
+
+    /* ── Text colours ── */
+    html.dark [style*="color:#0e1f38"]  { color:#e2e8f0 !important; }
+    html.dark [style*="color:#121d2e"]  { color:#e2e8f0 !important; }
+    html.dark [style*="color:#2d3f52"]  { color:#a8bdd0 !important; }
+    html.dark [style*="color:#374151"]  { color:#9bb5cc !important; }
+    html.dark [style*="color:#6b7280"]  { color:#6b7f94 !important; }
+    html.dark [style*="color:#9ba8b5"]  { color:#4d6276 !important; }
+    html.dark h1,html.dark h2,
+    html.dark h3,html.dark h4   { color:#e2e8f0; }
+    html.dark p                 { color:#a8bdd0; }
+
+    /* ── Tables ── */
+    html.dark table             { background:#1a2637 !important; }
+    html.dark tr:hover          { background:#1e3048 !important; }
+    html.dark [style*="background:#f5faf8"] th,
+    html.dark thead tr          { background:#1e3048 !important; }
+    html.dark th                { color:#7a95ab !important; }
+    html.dark td                { color:#a8bdd0 !important; border-color:#1e3048 !important; }
+
+    /* ── Form inputs ── */
+    html.dark input,html.dark textarea,
+    html.dark select,html.dark .form-control { background:#0f1923 !important; color:#c4d5e5 !important; border-color:#243248 !important; }
+    html.dark input::placeholder,
+    html.dark textarea::placeholder { color:#4d6276 !important; }
+    html.dark input:focus,
+    html.dark textarea:focus,
+    html.dark select:focus      { border-color:#2fa876 !important; }
+
+    /* ── Tom Select dark ── */
+    html.dark .ts-wrapper.single .ts-control { background:#0f1923 !important; border-color:#243248 !important; color:#c4d5e5 !important; }
+    html.dark .ts-dropdown      { background:#1a2637 !important; border-color:#243248 !important; }
+    html.dark .ts-dropdown .option { color:#a8bdd0 !important; }
+    html.dark .ts-dropdown .option:hover,
+    html.dark .ts-dropdown .option.active { background:#1e3048 !important; color:#e2e8f0 !important; }
+
+    /* ── Dropdowns & modals ── */
+    html.dark [style*="position:absolute"][style*="background:#fff"],
+    html.dark [style*="position:fixed"][style*="background:#fff"]  { background:#1a2637 !important; border-color:#243248 !important; }
+    html.dark [style*="box-shadow"]     { box-shadow:0 8px 24px rgba(0,0,0,.4) !important; }
+
+    /* ── Stat cards ── */
+    html.dark .db-ring-wrap span { color:#e2e8f0 !important; }
+
+    /* ── OS auto-detect: when no localStorage preference, follow OS ── */
+    @media (prefers-color-scheme: dark) {
+        html:not(.light):not(.dark) body  { background:#0f1923 !important; color:#c4d5e5 !important; }
+        html:not(.light):not(.dark) .app-sidebar { background:#162030 !important; border-color:#1e3048 !important; }
+        html:not(.light):not(.dark) header { background:#162030 !important; border-color:#1e3048 !important; }
+        html:not(.light):not(.dark) [style*="background:#fff"] { background:#1a2637 !important; }
+        html:not(.light):not(.dark) [style*="color:#0e1f38"]   { color:#e2e8f0 !important; }
+        html:not(.light):not(.dark) [style*="border:1px solid #e0ece6"] { border-color:#1e3048 !important; }
+    }
+    </style>
+    <style>
+        /* Responsive main padding */
+        @media(max-width:767px){
+            main { padding: 14px !important; }
+        }
+        /* Shared component classes */
+        .card { background:#fff; border-radius:12px; border:1px solid #e0ece6; overflow:hidden; }
+        .card-header { padding:16px 20px; border-bottom:1px solid #e0ece6; }
+        .card-body { padding:16px 20px; }
+        .btn-primary { display:inline-flex; align-items:center; padding:10px 20px; background:#2fa876; color:#fff; border:none; border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer; text-decoration:none; gap:6px; }
+        .btn-primary:hover { background:#28996a; }
+        .form-label { display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:4px; }
+        .form-control { width:100%; padding:9px 12px; border:1px solid #e0ece6; border-radius:8px; font-size:13.5px; background:#fff; box-sizing:border-box; outline:none; }
+        .form-control:focus { border-color:#2fa876; box-shadow:0 0 0 2px rgba(47,168,118,0.15); }
+        .page-header { margin-bottom:20px; }
+        .page-title { font-size:22px; font-weight:700; color:#0e1f38; margin:0; }
+        .page-subtitle { font-size:14px; color:#6b7280; margin:4px 0 0; }
+        .alert-success { padding:12px 16px; background:#dff2ea; border:1px solid #b6e4ce; color:#166534; border-radius:10px; font-size:13.5px; margin-bottom:16px; }
+        .alert-danger { padding:12px 16px; background:#fee2e2; border:1px solid #fca5a5; color:#991b1b; border-radius:10px; font-size:13.5px; margin-bottom:16px; }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Inter, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.ml-auto{margin-left:auto}.flex{display:flex}.hidden{display:none}.h-full{height:100%}.flex-col{flex-direction:column}@media (min-width: 768px){.md\:block{display:block}}@media (min-width: 1024px){.lg\:hidden{display:none}}</style></head>
+<body class="h-full" style="background:#f5faf8; font-family:&#39;Inter&#39;,sans-serif;" x-data="{ sidebarOpen: false }">
+
+    
+    <aside class="app-sidebar flex flex-col" style="background:#f4f9f7; border-right:1px solid #e0ece6;" :class="{ &#39;open&#39;: sidebarOpen }">
+
+        
+        <div style="padding:16px 18px 12px; border-bottom:1px solid #e0ece6;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="./Enter Assessment Scores — Smart Schools Hub_files/logo.png" alt="Smart Schools Hub" style="height:52px;object-fit:contain;">
+                <button class="lg:hidden ml-auto" style="color:#9ba8b5;" @click="sidebarOpen=false">
+                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            
+                                    <div style="margin-top:10px;padding:8px 10px;background:#fff;border-radius:8px;border:1px solid #e0ece6;display:flex;align-items:center;gap:8px;">
+                                    <div style="width:34px;height:34px;border-radius:6px;background:#dff2ea;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#2fa876;flex-shrink:0;">
+                        E
+                    </div>
+                                <div style="min-width:0;">
+                    <p style="font-size:11.5px;font-weight:600;color:#0e1f38;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:158px;">Elite Islamic Junior</p>
+                    <p style="font-size:10px;color:#9ba8b5;margin-top:1px;">Pending</p>
+                </div>
+            </div>
+                    </div>
+
+        
+        
+        
+        <nav style="flex:1;overflow-y:auto;padding:8px 8px;">
+            <p class="nav-section-label">Main</p>
+<a href="https://smartschoolshub.com/dashboard" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+    Dashboard
+</a>
+<a href="https://smartschoolshub.com/analytics-dashboard" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+    Analytics
+</a>
+
+<div class="nav-group" id="sdGroup">
+    <button type="button" onclick="toggleNavGroup(&#39;sdGroup&#39;)" class="nav-item " style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;font-size:13px;font-weight:500;">
+        <span style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+            Student Details
+        </span>
+        <svg class="rc-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M19 9l-7 7-7-7"></path></svg>
+    </button>
+    <div id="sdGroupItems" style="display:none;padding-left:12px;border-left:2px solid #e5e7eb;margin-left:14px;">
+        <a href="https://smartschoolshub.com/students" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+            Student List
+        </a>
+        <a href="https://smartschoolshub.com/student-leadership" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+            Student Leadership
+        </a>
+        <a href="https://smartschoolshub.com/houses" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Student Houses
+        </a>
+        <a href="https://smartschoolshub.com/student-documents" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            Student Documents
+        </a>
+        <a href="https://smartschoolshub.com/progressions" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+            Student Promotion
+        </a>
+    </div>
+</div>
+
+<div class="nav-group" id="edGroup">
+    <button type="button" onclick="toggleNavGroup(&#39;edGroup&#39;)" class="nav-item " style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;font-size:13px;font-weight:500;">
+        <span style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            Employment Details
+        </span>
+        <svg class="rc-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M19 9l-7 7-7-7"></path></svg>
+    </button>
+    <div id="edGroupItems" style="display:none;padding-left:12px;border-left:2px solid #e5e7eb;margin-left:14px;">
+        <a href="https://smartschoolshub.com/teachers" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+            Employees
+        </a>
+        <a href="https://smartschoolshub.com/designations" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"></path></svg>
+            Employee Types
+        </a>
+        <a href="https://smartschoolshub.com/user-management" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+            Employee Login Details
+        </a>
+        <a href="https://smartschoolshub.com/departments" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5"></path></svg>
+            Departments
+        </a>
+        <a href="https://smartschoolshub.com/sections" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            Sections
+        </a>
+        <a href="https://smartschoolshub.com/appraisals" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+            Staff Appraisals
+        </a>
+    </div>
+</div>
+<a href="https://smartschoolshub.com/parents" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+    Parents
+</a>
+
+
+
+<p class="nav-section-label">Admissions</p>
+<a href="https://smartschoolshub.com/admissions" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+    Admissions
+</a>
+<a href="https://smartschoolshub.com/reception" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+    Reception
+</a>
+<a href="https://smartschoolshub.com/branches" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1"></path></svg>
+    Branches
+</a>
+
+
+<p class="nav-section-label">Academics</p>
+
+<div class="nav-group" id="acGroup">
+    <button type="button" onclick="toggleNavGroup(&#39;acGroup&#39;)" class="nav-item active" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;font-size:13px;font-weight:700;">
+        <span style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            Academics
+        </span>
+        <svg class="rc-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12" style="transform: rotate(180deg);"><path d="M19 9l-7 7-7-7"></path></svg>
+    </button>
+    <div id="acGroupItems" style="display:block;padding-left:12px;border-left:2px solid #e5e7eb;margin-left:14px;">
+        <a href="https://smartschoolshub.com/classes" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            Classes
+        </a>
+        <a href="https://smartschoolshub.com/streams" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            Streams
+        </a>
+        <a href="https://smartschoolshub.com/subjects" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            Subjects
+        </a>
+        <a href="https://smartschoolshub.com/class-subjects" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>
+            Subject Assignments
+        </a>
+        <a href="https://smartschoolshub.com/student-streaming" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
+            Stream Assignment
+        </a>
+                <a href="https://smartschoolshub.com/subject-combinations" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            A-Level Combinations
+        </a>
+                <a href="https://smartschoolshub.com/session-years" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Session Years
+        </a>
+        <a href="https://smartschoolshub.com/timetable" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Timetable
+        </a>
+        <a href="https://smartschoolshub.com/class-teacher-assignments" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            Class Teachers
+        </a>
+        <a href="https://smartschoolshub.com/teacher-schedule" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M9 16l2 2 4-4"></path></svg>
+            Teacher Schedule
+        </a>
+        <a href="https://smartschoolshub.com/lesson-plans" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 17h.01"></path></svg>
+            Lesson Plans
+        </a>
+        <a href="https://smartschoolshub.com/assignments" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path></svg>
+            Assignments
+        </a>
+        <a href="https://smartschoolshub.com/exam-schedules" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Exam Schedule
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/entry" class="nav-item active" style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Enter Marks
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/mark-sheets" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Mark Sheets
+        </a>
+        <a href="https://smartschoolshub.com/holidays" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"></path></svg>
+            Holidays
+        </a>
+        <a href="https://smartschoolshub.com/syllabus" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Syllabus Tracking
+        </a>
+        <a href="https://smartschoolshub.com/online-exams" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            Online Exams (CBT)
+        </a>
+    </div>
+</div>
+
+
+<div class="nav-group" id="rcGroup">
+    <button type="button" onclick="toggleNavGroup(&#39;rcGroup&#39;)" class="nav-item " style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;font-size:13px;font-weight:500;">
+        <span style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="18" height="18"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Report Cards
+        </span>
+        <svg class="rc-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M19 9l-7 7-7-7"></path></svg>
+    </button>
+    <div id="rcGroupItems" style="display:none;padding-left:12px;border-left:2px solid #e5e7eb;margin-left:14px;">
+        <a href="https://smartschoolshub.com/rc-sessions" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+            Sessions
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/entry" class="nav-item" style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Enter Marks
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/class" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm0 0h6"></path></svg>
+            Generate Reports
+        </a>
+        <a href="https://smartschoolshub.com/assessment-builder" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect></svg>
+            Assessment Mapping
+        </a>
+        <a href="https://smartschoolshub.com/report-branding" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="3"></circle><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"></path></svg>
+            Branding &amp; Colours
+        </a>
+        <a href="https://smartschoolshub.com/report-cards/grade-scale" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            Grading Settings
+        </a>
+        <a href="https://smartschoolshub.com/auto-comments" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>
+            Auto Comments
+        </a>
+        <a href="https://smartschoolshub.com/report-settings" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33"></path></svg>
+            Report Settings
+        </a>
+        <a href="https://smartschoolshub.com/theology" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
+            Theology / Islamic
+        </a>
+    </div>
+</div>
+
+
+
+
+<p class="nav-section-label">Attendance Management</p>
+<a href="https://smartschoolshub.com/daily-attendance" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    Daily Attendance
+</a>
+<a href="https://smartschoolshub.com/lesson-attendance" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+    Lesson Attendance
+</a>
+<a href="https://smartschoolshub.com/staff-attendance" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    Staff Attendance
+</a>
+<a href="https://smartschoolshub.com/leave-management" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path><path stroke-linecap="round" d="M9 13h.01M12 13h.01M15 13h.01M9 16h.01M12 16h.01"></path></svg>
+    Leave Management
+</a>
+<a href="https://smartschoolshub.com/attendance-reports" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+    Attendance Reports
+</a>
+<a href="https://smartschoolshub.com/biometric-attendance" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+    Biometric / QR
+</a>
+
+
+<p class="nav-section-label">Medical</p>
+<a href="https://smartschoolshub.com/medical/screening" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path><path d="M12 2v4m-2-2h4"></path></svg>
+    Medical Screening
+</a>
+<a href="https://smartschoolshub.com/medical/tests" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5z"></path></svg>
+    Medical Tests
+</a>
+<a href="https://smartschoolshub.com/medical/reports" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+    Medical Reports
+</a>
+
+
+<p class="nav-section-label">Student Accounting</p>
+
+<div class="nav-group" id="saGroup">
+    <button type="button" onclick="toggleNavGroup(&#39;saGroup&#39;)" class="nav-item " style="width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;font-size:13px;font-weight:500;">
+        <span style="display:flex;align-items:center;gap:8px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="18" height="18"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            Student Accounting
+        </span>
+        <svg class="rc-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M19 9l-7 7-7-7"></path></svg>
+    </button>
+    <div id="saGroupItems" style="display:none;padding-left:12px;border-left:2px solid #e5e7eb;margin-left:14px;">
+        <a href="https://smartschoolshub.com/fees" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            Fees
+        </a>
+        <a href="https://smartschoolshub.com/fee-types" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"></path></svg>
+            Fee Types
+        </a>
+        <a href="https://smartschoolshub.com/fee-groups" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            Fee Groups
+        </a>
+        <a href="https://smartschoolshub.com/fee-allocation" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7l2 2 4-4"></path></svg>
+            Fee Allocation
+        </a>
+        <a href="https://smartschoolshub.com/fee-invoices" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path></svg>
+            Fee Payment / Invoicing
+        </a>
+        <a href="https://smartschoolshub.com/fees/bursary" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Bursaries &amp; Discounts
+        </a>
+        <a href="https://smartschoolshub.com/requirements" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            Requirements
+        </a>
+        <a href="https://smartschoolshub.com/student-ledger" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            Student Ledger
+        </a>
+        <a href="https://smartschoolshub.com/finance-reports" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Financial Reports
+        </a>
+        <a href="https://smartschoolshub.com/schoolpay" class="nav-item " style="font-size:12.5px;padding:6px 10px;">
+            <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" width="14" height="14"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"></path><path d="M2 10h20M7 15h3"></path></svg>
+            SchoolPay
+        </a>
+    </div>
+</div>
+
+<p class="nav-section-label">Finance</p>
+<a href="https://smartschoolshub.com/expenses" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+    Expenses
+</a>
+<a href="https://smartschoolshub.com/payroll" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+    Payroll
+</a>
+
+
+<p class="nav-section-label">Communication Center</p>
+<a href="https://smartschoolshub.com/announcements" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+    Announcements
+</a>
+<a href="https://smartschoolshub.com/push-notifications" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+    Push Notifications
+</a>
+<a href="https://smartschoolshub.com/sms-center" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+    SMS Center
+</a>
+<a href="https://smartschoolshub.com/messaging" class="nav-item " style="position:relative;">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>
+    Messages
+        </a>
+
+<p class="nav-section-label">Events &amp; Activities</p>
+<a href="https://smartschoolshub.com/events" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M8 14h8m-4-2v8"></path></svg>
+    Events
+</a>
+
+
+<p class="nav-section-label">School Operations</p>
+<a href="https://smartschoolshub.com/transport" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 6v6m7-6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 00-2 2v10h3"></path><circle cx="7" cy="18" r="2"></circle><path d="M9 18h5"></path><circle cx="16" cy="18" r="2"></circle></svg>
+    Transport
+</a>
+<a href="https://smartschoolshub.com/transport/tracking" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+    Live Tracking
+</a>
+<a href="https://smartschoolshub.com/transport-ops" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"></path></svg>
+    Fleet, Fuel &amp; Trips
+</a>
+<a href="https://smartschoolshub.com/inventory" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+    Inventory
+</a>
+<a href="https://smartschoolshub.com/disciplinary" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    Disciplinary
+</a>
+<a href="https://smartschoolshub.com/id-cards" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+    ID Cards
+</a>
+<a href="https://smartschoolshub.com/certificates" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"></circle><path stroke-linecap="round" stroke-linejoin="round" d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"></path></svg>
+    Certificates
+</a>
+
+
+<p class="nav-section-label">Administration</p>
+<a href="https://smartschoolshub.com/role-management" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+    Role Management
+</a>
+<a href="https://smartschoolshub.com/account-deletion-requests" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path></svg>
+    Deletion Requests
+    </a>
+
+<a href="https://smartschoolshub.com/audit-logs" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    Audit Logs
+</a>
+
+<a href="https://smartschoolshub.com/settings" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    School Settings
+</a>
+
+
+<p class="nav-section-label">Website</p>
+<a href="https://smartschoolshub.com/website-pages" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
+    Website Pages
+</a>
+<a href="https://smartschoolshub.com/website-sections" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"></path></svg>
+    Sections
+</a>
+<a href="https://smartschoolshub.com/website-faqs" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01"></path></svg>
+    FAQs
+</a>
+<a href="https://smartschoolshub.com/website-sliders" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+    Sliders
+</a>
+<a href="https://smartschoolshub.com/gallery" class="nav-item ">
+    <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+    Gallery
+</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+function toggleNavGroup(id) {
+    var items = document.getElementById(id + 'Items');
+    var chevron = document.querySelector('#' + id + ' .rc-chevron');
+    if (!items) return;
+    var isOpen = items.style.display !== 'none';
+    items.style.display = isOpen ? 'none' : 'block';
+    if (chevron) chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+// Auto-rotate chevron if group is open on load
+(function() {
+    ['rcGroup','sdGroup','saGroup','acGroup','edGroup'].forEach(function(id) {
+        var items = document.getElementById(id + 'Items');
+        var chevron = document.querySelector('#' + id + ' .rc-chevron');
+        if (items && items.style.display !== 'none' && chevron) {
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    });
+})();
+</script>
+        </nav>
+
+        
+        <div style="padding:8px;border-top:1px solid #e0ece6;">
+                        <form method="POST" action="https://smartschoolshub.com/logout">
+                <input type="hidden" name="_token" value="Ygv2kleUgcaDvlNbDtOhMQYbvd1jATcYt5VgsNuX" autocomplete="off">                <button type="submit" class="nav-item" style="width:100%;background:none;border:none;cursor:pointer;color:#e53e3e;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    
+    <div x-show="sidebarOpen" @click="sidebarOpen=false" x-transition="" style="position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.5); z-index: 40; display: none;" class="lg:hidden"></div>
+
+    
+    <div class="app-main" style="min-height:100vh;display:flex;flex-direction:column;">
+
+        
+        <header style="position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid #e0ece6;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <button class="lg:hidden" style="padding:6px;color:#9ba8b5;" @click="sidebarOpen=true">
+                    <svg style="width:22px;height:22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <h1 style="font-family:&#39;Plus Jakarta Sans&#39;,sans-serif;font-size:16px;font-weight:700;color:#0e1f38;">Dashboard</h1>
+                            </div>
+
+            
+            <div id="navSearchWrap" class="hidden md:block" style="position:relative;flex:1;max-width:440px;margin:0 16px;">
+                <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#9ba8b5;pointer-events:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"></path></svg>
+                <input id="navSearch" type="text" autocomplete="off" placeholder="Search modules…  ( press / )" style="width:100%;padding:8px 12px 8px 36px;border:1px solid #e0ece6;border-radius:10px;font-size:13px;background:#f7fbf9;color:#0e1f38;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=&#39;#2fa876&#39;;this.style.background=&#39;#fff&#39;;" onblur="this.style.borderColor=&#39;#e0ece6&#39;;this.style.background=&#39;#f7fbf9&#39;;">
+                <div id="navSearchResults" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #e0ece6;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.14);overflow:hidden;z-index:60;max-height:360px;overflow-y:auto;"></div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;">
+                
+                <button id="dm-toggle" onclick="toggleDarkMode()" title="Toggle dark / light mode" style="position:relative;padding:7px;color:#9ba8b5;border-radius:8px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background=&#39;#f5faf8&#39;" onmouseout="this.style.background=&#39;&#39;">
+                    
+                    <svg id="dm-sun" style="width:20px;height:20px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10A5 5 0 0012 7z"></path></svg>
+                    
+                    <svg id="dm-moon" style="width: 20px; height: 20px; display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+
+                
+                <button style="position:relative;padding:7px;color:#9ba8b5;border-radius:8px;background:none;border:none;cursor:pointer;" onmouseover="this.style.background=&#39;#f5faf8&#39;" onmouseout="this.style.background=&#39;&#39;">
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </button>
+                
+                <div x-data="{ open: false }" style="position:relative;">
+                    <button @click="open=!open" style="width:34px;height:34px;border-radius:50%;background:#2fa876;color:#fff;font-family:&#39;Plus Jakarta Sans&#39;,sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;">
+                        H
+                    </button>
+                    <div x-show="open" @click.away="open=false" x-transition="" style="position: absolute; right: 0px; margin-top: 8px; width: 200px; background: rgb(255, 255, 255); border-radius: 12px; box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px; border: 1px solid rgb(224, 236, 230); overflow: hidden; z-index: 50; display: none;">
+                        <div style="padding:12px 16px;border-bottom:1px solid #e0ece6;">
+                            <p style="font-size:13px;font-weight:600;color:#0e1f38;">Hajji Muhumuza Shafik</p>
+                            <p style="font-size:11px;color:#9ba8b5;margin-top:1px;">info@eliteislamicjunior.com</p>
+                        </div>
+                                                <a href="https://smartschoolshub.com/profile" style="display:block;padding:9px 16px;font-size:13px;color:#2d3f52;" onmouseover="this.style.background=&#39;#f5faf8&#39;" onmouseout="this.style.background=&#39;&#39;">Profile</a>
+                                                <form method="POST" action="https://smartschoolshub.com/logout">
+                            <input type="hidden" name="_token" value="Ygv2kleUgcaDvlNbDtOhMQYbvd1jATcYt5VgsNuX" autocomplete="off">                            <button style="width:100%;text-align:left;padding:9px 16px;font-size:13px;color:#e53e3e;background:none;border:none;cursor:pointer;" onmouseover="this.style.background=&#39;#fff5f5&#39;" onmouseout="this.style.background=&#39;&#39;">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+                
+        
+        <main style="flex:1;padding:24px;">
+            
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+        <h1 class="page-title">Assessment Marks Entry</h1>
+        <p class="page-subtitle">Enter scores per assessment component for each student</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="https://smartschoolshub.com/multi-report/bulk-assign" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid #e5e7eb;border-radius:8px;color:#374151;text-decoration:none;font-size:14px;">
+            Bulk Assign Subjects
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/teacher-assignments" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid #e5e7eb;border-radius:8px;color:#374151;text-decoration:none;font-size:14px;">
+            Teacher Assignments
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/rollover" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid #fde68a;border-radius:8px;color:#92400e;background:#fffbeb;text-decoration:none;font-size:14px;font-weight:600;">
+            Year Rollover
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/carry-forward" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid #e5e7eb;border-radius:8px;color:#374151;text-decoration:none;font-size:14px;">
+            Copy Optional Subjects
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/class" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid #e5e7eb;border-radius:8px;color:#374151;text-decoration:none;font-size:14px;">
+            View Reports
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/status?term=1" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid #bfdbfe;border-radius:8px;color:#1d4ed8;background:#eff6ff;text-decoration:none;font-size:14px;font-weight:600;">
+            📊 Entry Status
+        </a>
+        <a href="https://smartschoolshub.com/multi-report/mark-sheets?term=1" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid #bbf7d0;border-radius:8px;color:#15803d;background:#f0fdf4;text-decoration:none;font-size:14px;font-weight:600;">
+            🖨️ Download Mark Sheet
+        </a>
+    </div>
+</div>
+
+
+
+
+
+
+<div class="card" style="margin-bottom:16px;">
+    <div class="card-body">
+        <form method="GET" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;align-items:flex-end;">
+            
+                        <div>
+                <label class="form-label">Curriculum <span style="color:red;">*</span></label>
+                <select name="curriculum_id" class="form-control" data-no-search="" onchange="this.form.submit()">
+                    <option value="">Select...</option>
+                                    </select>
+            </div>
+                        <div>
+                <label class="form-label">Session Year</label>
+                <select name="session_year_id" class="form-control" data-no-search="">
+                    <option value="">Select Year</option>
+                                    </select>
+            </div>
+            <div>
+                <label class="form-label">Term</label>
+                <select name="term" class="form-control" data-no-search="">
+                    <option value="1" selected="">Term I</option>
+                    <option value="2">Term II</option>
+                    <option value="3">Term III</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Class</label>
+                <select name="class_id" class="form-control" data-no-search="">
+                    <option value="">All Classes</option>
+                                    </select>
+            </div>
+                                    <div style="align-self:flex-end;">
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+                    Load Students
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+<div class="card" style="margin-bottom:16px;border:1px solid #e0ece6;border-radius:12px;overflow:visible;">
+    <div style="padding:14px 20px;border-bottom:1px solid #f0f5f3;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <h3 style="font-size:14px;font-weight:700;color:#0e1f38;margin:0;">Enter Marks by Student</h3>
+            <p style="font-size:12px;color:#9ba8b5;margin:3px 0 0;">Search one student — all their subjects appear, enter every mark at once</p>
+        </div>
+    </div>
+    <div style="padding:16px 20px;">
+
+    
+    
+    <form method="GET" action="https://smartschoolshub.com/multi-report/entry" id="studentEntrySearchForm" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:0;">
+        <input type="hidden" name="curriculum_id" value="">
+        <input type="hidden" name="session_year_id" value="">
+        <input type="hidden" name="class_id" value="">
+        <input type="hidden" name="subject_id" value="">
+        <input type="hidden" name="student_entry_id" id="seStudentId" value="">
+
+        <div style="flex:1;min-width:260px;position:relative;">
+            <label style="display:block;font-size:11px;font-weight:700;color:#9ba8b5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Search Student</label>
+            <input type="text" id="seSearchInput" placeholder="Type student name or admission number…" autocomplete="off" value="" style="width:100%;padding:8px 12px;border:1px solid #d0ddd6;border-radius:8px;font-size:13px;box-sizing:border-box;" oninput="seFilter(this.value)" onfocus="seShow()" onblur="seHide()">
+            
+            <div id="seDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #d0ddd6;border-radius:8px;max-height:240px;overflow-y:auto;z-index:1050;box-shadow:0 6px 20px rgba(0,0,0,.12);">
+                                <div id="seNoResult" style="display:none;padding:12px 14px;color:#9ba8b5;font-size:13px;">No student found</div>
+            </div>
+        </div>
+
+                <div style="flex:0 0 180px;">
+            <label style="display:block;font-size:11px;font-weight:700;color:#9ba8b5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Curriculum</label>
+            <select name="curriculum_id" id="seCurriculumId" style="width:100%;padding:8px 10px;border:1px solid #d0ddd6;border-radius:8px;font-size:13px;">
+                <option value="">Select…</option>
+                            </select>
+        </div>
+        
+                <div style="flex:0 0 150px;">
+            <label style="display:block;font-size:11px;font-weight:700;color:#9ba8b5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Session Year</label>
+            <select name="session_year_id" style="width:100%;padding:8px 10px;border:1px solid #d0ddd6;border-radius:8px;font-size:13px;">
+                <option value="">Select…</option>
+                            </select>
+        </div>
+        
+        <div style="flex:0 0 120px;">
+            <label style="display:block;font-size:11px;font-weight:700;color:#9ba8b5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;">Term</label>
+            <select name="term" style="width:100%;padding:8px 10px;border:1px solid #d0ddd6;border-radius:8px;font-size:13px;">
+                <option value="1" selected="">Term I</option>
+                <option value="2">Term II</option>
+                <option value="3">Term III</option>
+            </select>
+        </div>
+
+        <button type="submit" style="padding:9px 20px;background:#1a3a6b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;margin-top:0;">
+            Load Marks
+        </button>
+    </form>
+
+    
+    
+    </div>
+</div>
+
+
+<div class="card" style="text-align:center;padding:48px 24px;color:#9ca3af;">
+    <p>Select a curriculum first to begin entering marks.</p>
+</div>
+
+ 
+        </main>
+    </div>
+
+    <script>
+// Component definitions for live computation
+// Each computed component knows which source components feed it and what their maxes are
+const componentDefs = {
+};
+
+// Name→{id,max} map for source components
+const compByName = {
+};
+
+function computeRow(studentId) {
+    // For each computed component, re-calculate and update the display span
+    Object.keys(componentDefs).forEach(function(compId) {
+        var def     = componentDefs[compId];
+        var spanEl  = document.getElementById('computed-' + studentId + '-' + compId);
+        if (!spanEl) return;
+
+        var sumEntered = 0, sumMax = 0, hasAny = false;
+        def.from.forEach(function(srcName) {
+            var srcDef = compByName[srcName];
+            if (!srcDef) return;
+            // Find the input for this student + source component
+            var inp = document.querySelector(
+                'input[data-student="' + studentId + '"][data-comp="' + srcDef.id + '"]'
+            );
+            if (inp && inp.value !== '') {
+                var val = parseFloat(inp.value);
+                if (!isNaN(val)) {
+                    sumEntered += val;
+                    sumMax     += srcDef.max;
+                    hasAny      = true;
+                }
+            }
+        });
+
+        if (hasAny && sumMax > 0) {
+            var scaled = Math.round((sumEntered / sumMax) * def.max * 100) / 100;
+            spanEl.textContent = scaled;
+            spanEl.style.color = '#92400e';
+        } else {
+            spanEl.textContent = '—';
+            spanEl.style.color = '#d1d5db';
+        }
+    });
+}
+
+// ── Student search dropdown ─────────────────────────────────────────────────
+(function() {
+    var inp  = document.getElementById('seSearchInput');
+    var hid  = document.getElementById('seStudentId');
+    var drop = document.getElementById('seDropdown');
+    if (!inp || !drop) return;
+
+    var opts    = drop.querySelectorAll('.se-opt');
+    var noRes   = document.getElementById('seNoResult');
+
+    function doFilter(q) {
+        q = q.toLowerCase().trim();
+        var tokens = q.split(/\s+/).filter(Boolean);
+        var found = 0;
+        opts.forEach(function(o) {
+            var ds = o.dataset.search;
+            var match = !tokens.length || tokens.every(function(t) { return ds.indexOf(t) !== -1; });
+            o.style.display = match ? '' : 'none';
+            if (match) found++;
+        });
+        if (noRes) noRes.style.display = found === 0 ? '' : 'none';
+    }
+
+    inp.addEventListener('input', function() { doFilter(this.value); drop.style.display = ''; });
+    inp.addEventListener('focus', function() { doFilter(this.value); drop.style.display = ''; });
+    inp.addEventListener('blur',  function() { setTimeout(function(){ drop.style.display = 'none'; }, 200); });
+})();
+
+window.seFilter = function(q) {};   // placeholder (handled inline above)
+window.seShow   = function() {};
+window.seHide   = function() {};
+window.seSelect = function(el) {
+    document.getElementById('seSearchInput').value = el.dataset.name;
+    document.getElementById('seStudentId').value   = el.dataset.id;
+    document.getElementById('seDropdown').style.display = 'none';
+
+    // Check if the visible curriculum / session selects still need a value
+    var curriculumOk   = true;
+    var sessionOk      = true;
+    var currSel  = document.getElementById('seCurriculumId');
+    var sessSels = document.querySelectorAll('#studentEntrySearchForm select[name="session_year_id"]');
+
+    if (currSel && !currSel.value) {
+        curriculumOk = false;
+        currSel.style.border = '2px solid #f59e0b';
+        currSel.focus();
+    }
+    sessSels.forEach(function(s) {
+        if (!s.value) { sessionOk = false; s.style.border = '2px solid #f59e0b'; }
+    });
+
+    if (!curriculumOk || !sessionOk) {
+        // Don't auto-submit — let the user fill in the highlighted fields then click Load Marks
+        return;
+    }
+
+    document.getElementById('studentEntrySearchForm').submit();
+};
+</script>
+<script>
+// Scroll sidebar to show the active nav item on every page load
+document.addEventListener('DOMContentLoaded', function () {
+    var active = document.querySelector('.app-sidebar .nav-item.active');
+    if (active) {
+        var nav = active.closest('nav');
+        if (nav) {
+            var activeRect = active.getBoundingClientRect();
+            var navRect = nav.getBoundingClientRect();
+            var relativeTop = activeRect.top - navRect.top + nav.scrollTop;
+            // Center the active item in the nav
+            nav.scrollTop = Math.max(0, relativeTop - navRect.height / 2 + active.offsetHeight / 2);
+        }
+    }
+});
+</script>
+
+
+
+
+<script>
+(function(){
+    var saved = localStorage.getItem('ss-theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var html = document.getElementById('html-root');
+    if (saved === 'dark' || (!saved && prefersDark)) {
+        html.classList.add('dark');
+        html.classList.remove('light');
+    } else {
+        html.classList.add('light');
+        html.classList.remove('dark');
+    }
+})();
+
+function toggleDarkMode() {
+    var html = document.getElementById('html-root');
+    var isDark = html.classList.toggle('dark');
+    html.classList.toggle('light', !isDark);
+    localStorage.setItem('ss-theme', isDark ? 'dark' : 'light');
+    updateDMIcons(isDark);
+}
+
+function updateDMIcons(isDark) {
+    var sun  = document.getElementById('dm-sun');
+    var moon = document.getElementById('dm-moon');
+    if (!sun || !moon) return;
+    sun.style.display  = isDark ? 'block' : 'none';
+    moon.style.display = isDark ? 'none'  : 'block';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+    updateDMIcons(document.getElementById('html-root').classList.contains('dark'));
+
+    // Also listen for OS change (if user changes OS setting and no manual override)
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e){
+        if (!localStorage.getItem('ss-theme')) {
+            var html = document.getElementById('html-root');
+            html.classList.toggle('dark', e.matches);
+            html.classList.toggle('light', !e.matches);
+            updateDMIcons(e.matches);
+        }
+    });
+});
+</script>
+
+
+<script src="./Enter Assessment Scores — Smart Schools Hub_files/tom-select.complete.min.js.download"></script>
+<script>
+/**
+ * Auto-apply Tom Select to:
+ *  1. Any <select data-search="true"> — explicitly marked
+ *  2. Any <select> that has ≥ 12 options and is NOT a filter/status bar
+ *  3. Never on selects with data-no-search or inside .no-ts
+ */
+(function initTomSelect() {
+    function shouldSkip(el) {
+        // skip if already initialized or explicitly excluded
+        if (el.tomselect)                       return true;
+        if (el.closest('.no-ts'))               return true;
+        if (el.dataset.noSearch !== undefined)  return true;
+        // skip tiny status/type filters (usually have ≤ 6 options and no required attr)
+        const opts = el.querySelectorAll('option');
+        if (el.dataset.search !== 'true' && opts.length < 12) return true;
+        return false;
+    }
+
+    function buildConfig(el) {
+        const placeholder = el.dataset.placeholder
+            || el.querySelector('option[value=""]')?.textContent?.trim()
+            || 'Search…';
+        return {
+            placeholder,
+            allowEmptyOption: true,
+            maxOptions: 500,
+            searchField: ['text'],
+            plugins: [],
+            render: {
+                no_results: () => '<div class="no-results" style="padding:10px 14px;color:#9ba8b5;font-size:13px;">No results found</div>',
+            },
+        };
+    }
+
+    function apply(el) {
+        if (shouldSkip(el)) return;
+        try { new TomSelect(el, buildConfig(el)); } catch(e) { /* already init */ }
+    }
+
+    // Initial scan
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('select').forEach(apply);
+    });
+
+    // Re-scan if new content is injected (Alpine components, modals, etc.)
+    const obs = new MutationObserver(mutations => {
+        mutations.forEach(m => m.addedNodes.forEach(node => {
+            if (node.nodeType !== 1) return;
+            node.querySelectorAll?.('select').forEach(apply);
+            if (node.tagName === 'SELECT') apply(node);
+        }));
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+(function () {
+    var input   = document.getElementById('navSearch');
+    var box     = document.getElementById('navSearchResults');
+    if (!input || !box) return;
+
+    // Build the index from the sidebar links already rendered for THIS user's role.
+    var index = [];
+    var seen  = {};
+    document.querySelectorAll('.app-sidebar a[href]').forEach(function (a) {
+        var href = a.getAttribute('href') || '';
+        if (!href || href === '#' || href.indexOf('javascript') === 0) return;
+        // clean label: text only, collapse whitespace, drop count badges
+        var label = (a.textContent || '').replace(/\s+/g, ' ').trim();
+        if (!label) return;
+        var key = label.toLowerCase() + '|' + href;
+        if (seen[key]) return;
+        seen[key] = 1;
+        // section label = nearest preceding .nav-section-label for context
+        var section = '';
+        var el = a;
+        while (el && el.previousElementSibling !== undefined) {
+            el = el.previousElementSibling || (el.parentElement);
+            if (el && el.classList && el.classList.contains('nav-section-label')) { section = el.textContent.trim(); break; }
+            if (!el) break;
+        }
+        index.push({ label: label, href: href, section: section, lc: label.toLowerCase() });
+    });
+
+    var results = [];
+    var active  = -1;
+
+    function render() {
+        if (!results.length) { box.style.display = 'none'; return; }
+        box.innerHTML = results.map(function (r, i) {
+            var hl = (i === active);
+            return '<a href="' + r.href + '" data-i="' + i + '" ' +
+                'style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;text-decoration:none;' +
+                'background:' + (hl ? '#f0f9f5' : '#fff') + ';border-bottom:1px solid #f2f6f4;">' +
+                '<span style="font-size:13px;font-weight:600;color:#0e1f38;">' + r.label + '</span>' +
+                (r.section ? '<span style="font-size:10.5px;color:#9ba8b5;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;">' + r.section + '</span>' : '') +
+                '</a>';
+        }).join('');
+        box.style.display = 'block';
+        // click handling
+        box.querySelectorAll('a').forEach(function (el) {
+            el.addEventListener('mouseenter', function () { active = parseInt(el.getAttribute('data-i')); paint(); });
+        });
+    }
+
+    function paint() {
+        box.querySelectorAll('a').forEach(function (el, i) {
+            el.style.background = (i === active) ? '#f0f9f5' : '#fff';
+        });
+    }
+
+    function search(q) {
+        q = q.trim().toLowerCase();
+        if (!q) { results = []; active = -1; box.style.display = 'none'; return; }
+        var starts = [], contains = [];
+        index.forEach(function (r) {
+            var p = r.lc.indexOf(q);
+            if (p === 0) starts.push(r);
+            else if (p > 0) contains.push(r);
+        });
+        results = starts.concat(contains).slice(0, 8);
+        active = results.length ? 0 : -1;
+        render();
+    }
+
+    input.addEventListener('input', function () { search(this.value); });
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); if (results.length) { active = (active + 1) % results.length; paint(); } }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); if (results.length) { active = (active - 1 + results.length) % results.length; paint(); } }
+        else if (e.key === 'Enter') { e.preventDefault(); if (active >= 0 && results[active]) window.location.href = results[active].href; }
+        else if (e.key === 'Escape') { this.value = ''; results = []; box.style.display = 'none'; this.blur(); }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('#navSearchWrap')) box.style.display = 'none';
+    });
+
+    // "/" or Ctrl/Cmd+K focuses the search from anywhere (except when typing in a field)
+    document.addEventListener('keydown', function (e) {
+        var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) || document.activeElement.isContentEditable;
+        if (e.key === '/' && !typing) { e.preventDefault(); input.focus(); }
+        else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.focus(); }
+    });
+})();
+</script>
+
+
+
+
+</body></html>

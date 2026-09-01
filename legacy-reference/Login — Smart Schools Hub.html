@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!-- saved from url=(0033)https://smartschoolshub.com/login -->
+<html lang="en" class="h-full"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://smartschoolshub.com/favicon.ico?v=20260823" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="https://smartschoolshub.com/favicon-32x32.png?v=20260823">
+<link rel="icon" type="image/png" sizes="16x16" href="https://smartschoolshub.com/favicon-16x16.png?v=20260823">
+<link rel="icon" type="image/png" sizes="192x192" href="https://smartschoolshub.com/favicon-192x192.png?v=20260823">
+<link rel="apple-touch-icon" sizes="180x180" href="https://smartschoolshub.com/apple-touch-icon.png?v=20260823">
+<link rel="manifest" href="https://smartschoolshub.com/site.webmanifest?v=20260823">
+<meta name="theme-color" content="#00af8f">
+    <meta name="csrf-token" content="ZwdcrpkBSBhveERwvwVA6DN2nKAebYZxUKqj3Rd7">
+    <title>Login — Smart Schools Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link href="./Login — Smart Schools Hub_files/css2" rel="stylesheet">
+    <link rel="preload" as="style" href="./Login — Smart Schools Hub_files/app-BLoSMdB-.css"><link rel="modulepreload" as="script" href="./Login — Smart Schools Hub_files/app-BbzB21r_.js.download"><link rel="stylesheet" href="./Login — Smart Schools Hub_files/app-BLoSMdB-.css"><script type="module" src="./Login — Smart Schools Hub_files/app-BbzB21r_.js.download"></script>    <script src="./Login — Smart Schools Hub_files/cdn.min.js.download" defer=""></script>
+</head>
+<body class="h-full font-sans">
+    <div class="min-h-screen flex">
+        
+        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 relative overflow-hidden flex-col items-center justify-center p-12">
+            
+            <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+            <div class="relative z-10 text-center">
+                
+                <div class="flex items-center justify-center mb-12">
+                    <div style="background:#fff;border-radius:14px;padding:8px 18px;display:inline-block;">
+                        <img src="./Login — Smart Schools Hub_files/logo.png" alt="Smart Schools Hub" style="height:60px;object-fit:contain;display:block;">
+                    </div>
+                </div>
+
+                <h2 class="text-3xl font-bold text-white mb-4">The complete multi-school<br>management platform.</h2>
+                <p class="text-slate-400 text-lg">Manage academics, finance,<br>communication &amp; more.</p>
+
+                
+                <div class="flex gap-8 mt-12 justify-center">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-emerald-400">21+</p>
+                        <p class="text-xs text-slate-400 mt-1">Modules</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-emerald-400">99.9%</p>
+                        <p class="text-xs text-slate-400 mt-1">Uptime</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-emerald-400">24/7</p>
+                        <p class="text-xs text-slate-400 mt-1">Support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="flex-1 flex items-center justify-center p-8 bg-white">
+            <div class="w-full max-w-md">
+                
+                <div class="flex items-center mb-8 lg:hidden">
+                    <img src="./Login — Smart Schools Hub_files/logo.png" alt="Smart Schools Hub" style="height:40px;">
+                </div>
+
+                <div x-data="{ showPassword: false, loading: false }">
+    <h1 class="text-2xl font-bold text-gray-900 mb-1">Welcome back</h1>
+    <p class="text-gray-500 text-sm mb-8">Sign in to your account to continue</p>
+
+    
+    <form method="POST" action="https://smartschoolshub.com/login" @submit="loading = true">
+        <input type="hidden" name="_token" value="ZwdcrpkBSBhveERwvwVA6DN2nKAebYZxUKqj3Rd7" autocomplete="off">
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Email or Phone Number</label>
+            <input type="text" name="email" value="" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-sm" placeholder="you@school.com or 0712345678" required="" autofocus="" autocomplete="username">
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+            <div class="relative">
+                <input :type="showPassword ? &#39;text&#39; : &#39;password&#39;" name="password" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-sm pr-12" placeholder="••••••••••••" required="" type="password">
+                <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <svg x-show="!showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <svg x-show="showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all duration-200 text-sm flex items-center justify-center gap-2" :class="loading ? &#39;opacity-80 cursor-wait&#39; : &#39;&#39;">
+            <svg x-show="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" style="display: none;"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span x-text="loading ? &#39;Signing in...&#39; : &#39;Sign In&#39;">Sign In</span>
+        </button>
+    </form>
+
+
+    <div class="mt-5 text-center">
+        <a href="https://smartschoolshub.com/password/reset" class="text-sm text-gray-500 hover:text-gray-700">Forgot your password?</a>
+    </div>
+
+    <div class="mt-3 text-center text-sm text-gray-500">
+        Don't have an account? <a href="https://smartschoolshub.com/register" class="text-emerald-600 font-medium hover:text-emerald-700">Create one</a>
+    </div>
+
+    <div class="mt-5 text-center">
+        <a href="https://smartschoolshub.com/" class="text-xs text-gray-400 hover:text-gray-600">← Back to home</a>
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+
+
+</body></html>

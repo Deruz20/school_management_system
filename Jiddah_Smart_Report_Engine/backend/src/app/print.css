@@ -1,0 +1,31 @@
+@page portrait-page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@page landscape-page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+/* Base rule, default to portrait */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+/* Apply named pages to the report containers based on data attribute */
+div[data-report-orientation="portrait"] {
+  page: portrait-page;
+}
+
+div[data-report-orientation="landscape"] {
+  page: landscape-page;
+}
+
+@media print { 
+  html, body { 
+    height: auto !important; 
+    overflow: visible !important; 
+  } 
+}

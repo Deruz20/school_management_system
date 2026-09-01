@@ -1,0 +1,66 @@
+# NOVA Development Tasks
+
+- `[x]` **A. Verify/fix the local development environment**
+  - `[x]` Detect locally installed PostgreSQL
+  - `[x]` Verify connectivity
+  - `[x]` Create `nova_dev` database
+- `[x]` **C. Fix the AuditLog schema inconsistency**
+  - `[x]` Add `AuditLog` model to `schema.prisma`
+  - `[x]` Update `User` relation
+  - `[x]` Run `prisma validate`
+  - `[x]` Run `prisma migrate dev` (creates DB and applies schema)
+- `[x]` **D. Complete authentication protection**
+  - `[x]` Create `src/middleware.ts` for lightweight cookie check
+  - `[x]` Create `src/lib/auth/require-auth.ts` for strict DB-backed tenant context
+  - `[x]` Update `actions.ts` to log to `AuditLog`
+- `[x]` **5. Curriculum Core Implementation**
+  - `[x]` Implement `SubjectDAO` (Subject CRUD, SubjectCombination, CombinationSubject).
+  - `[x]` Implement `ClassSubjectDAO` (Assign Subjects to Classes for the correct Academic Year).
+  - `[x]` Implement `EnrollmentSubjectDAO` (Student subject assignment for an Enrollment).
+  - `[x]` Build minimal UI: `/curriculum/subjects`, `/curriculum/combinations`, `/curriculum/classes`.
+  - `[x]` Build minimal UI: Student subjects view (e.g. within student profile).
+  - `[x]` Write unit tests for all Curriculum DAOs.
+  - `[x]` Verify TS, Lint, Build, and Playwright Tests.
+- `[x]` **6. Assessment & Marks Implementation**
+  - `[x]` Implement `AssessmentDAO` (CRUD, validation for classSubject, term, maxScore, weight).
+  - `[x]` Implement `MarkDAO` (Upsert logic, status semantics, eligible student validation).
+  - `[x]` Implement calculation helper for normalization and weighting.
+  - `[x]` Build minimal UI: `/curriculum/assessments` (Create/Manage Assessments).
+  - `[x]` Build minimal UI: `/curriculum/assessments/[id]` (Mark entry grid).
+  - `[x]` Write comprehensive unit tests for DAOs and calculations.
+  - `[x]` Verify TS, Lint, Build, and Playwright tests.
+- `[x]` **E. Verify tenant isolation**
+  - `[x]` Set up Vitest / testing framework
+  - `[x]` Write DAO tenant isolation tests
+  - `[x]` Pass tests
+- `[x]` **F. Connect Students to the real database**
+  - `[x]` Build Student Creation UI (`NewStudentForm.tsx`)
+  - `[x]` Implement Server Action (`createStudent`)
+  - `[x]` Connect Student Listing UI to `StudentDAO`
+- `[x]` **G. Connect Attendance to the real database**
+  - `[x]` Build `AttendanceDAO.ts` with upsert/unique enforcement
+  - `[x]` Connect Attendance UI to actual students and persistence
+  - `[x]` Add Audit logs for attendance changes
+- `[x]` **Seed Data**
+  - `[x]` Fix `prisma/seed.js` to `seed.ts`
+  - `[x]` Seed Organizations, Schools, Branches, Users, Classes, Students
+- `[x]` **H. Add tests**
+  - `[x]` Unit/Integration tests
+  - `[x]` E2E Tests (Playwright)
+- `[x]` **I. Run complete verification**
+  - `[x]` Type check (`npx tsc --noEmit`)
+  - `[x]` Lint (`npm run lint`)
+  - `[x]` Build (`npm run build`)
+
+- `[x]` **Phase 2: Staff & HR Core**
+  - `[x]` Update schema.prisma with EmployeeStatus, Department, EmployeeType, Employee models
+  - `[x]` Replace TeacherProfile with Employee
+  - `[x]` Update ClassSubject and User relations
+  - `[x]` Implement StaffDAO, DepartmentDAO, EmployeeTypeDAO
+  - `[x]` Enforce RBAC ('staff:read', 'staff:write') and Tenant boundaries
+  - `[x]` Integrate AuditService for Staff mutations
+  - `[x]` Build UI for `/staff`, `/staff/new`, `/staff/[id]`
+  - `[x]` Build UI for `/staff/departments`, `/staff/departments/new`, `/staff/departments/[id]`
+  - `[x]` Build UI for `/staff/types`, `/staff/types/new`, `/staff/types/[id]`
+  - `[x]` Update sidebar navigation
+  - `[x]` Write Staff tests and E2E Playwright tests

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Primary MOT Report - Single Page Optimized</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    @media print {
+        body { background: none; padding: 0; }
+        .report { margin: 0; border: 4px solid #163f2d !important; -webkit-print-color-adjust: exact; }
+    }
+
+    body {
+        background: #dcdcdc;
+        font-family: 'Poppins', sans-serif;
+        padding: 20px;
+    }
+
+    .report {
+        width: 794px; /* A4 Width at 96 DPI */
+        height: 1123px; /* Fixed A4 Height to ensure single page fit */
+        margin: auto;
+        background: #fffef8;
+        border: 4px solid #163f2d;
+        position: relative;
+        overflow: hidden;
+        padding: 20px 25px; /* Reduced padding */
+    }
+
+    /* Decorative Border */
+    .report::before {
+        content: "✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦";
+        position: absolute;
+        top: 6px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        color: #0d5c3f;
+        letter-spacing: 6px;
+        font-size: 14px;
+    }
+
+    .report::after {
+        content: "✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦";
+        position: absolute;
+        bottom: 6px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        color: #0d5c3f;
+        letter-spacing: 6px;
+        font-size: 14px;
+    }
+
+    /* Header */
+    .top-arabic {
+        text-align: center;
+        font-family: 'Cairo', sans-serif;
+        font-size: 24px;
+        color: #0d5c3f;
+        font-weight: 700;
+        margin-top: 5px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 5px;
+    }
+
+    .school-left { width: 42%; }
+    .school-left h1 {
+        color: #7a1408;
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: 800;
+    }
+
+    .school-left p {
+        margin-top: 5px;
+        font-size: 11px;
+        line-height: 1.5;
+        color: #444;
+    }
+
+    .logo {
+        width: 85px;
+        height: 85px;
+        border-radius: 50%;
+        background: #f6f6f6;
+        border: 3px solid #d6b14c;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #0d5c3f;
+        font-weight: 700;
+        text-align: center;
+        font-size: 10px;
+    }
+
+    .school-right { width: 42%; text-align: right; font-family: 'Cairo', sans-serif; }
+    .school-right h2 { color: #7a1408; font-size: 21px; line-height: 1.4; }
+
+    /* Ribbon */
+    .ribbon {
+        width: 320px;
+        margin: 15px auto;
+        background: linear-gradient(to right, #0d5c3f, #15734f);
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+        border-radius: 50px;
+        font-size: 20px;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(0,0,0,.15);
+        border: 3px solid #d6b14c;
+    }
+
+    /* Info Section */
+    .info {
+        margin-top: 15px;
+        border: 2px solid #d6b14c;
+        border-radius: 12px;
+        padding: 12px 18px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .field { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+    .line { border-bottom: 2px dotted #555; width: 150px; height: 18px; }
+
+    /* Main Table */
+    .main-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .main-table th {
+        background: #0d5c3f;
+        color: #fff;
+        padding: 8px 4px;
+        border: 1px solid #d6b14c;
+        font-size: 12px;
+    }
+
+    .main-table td {
+        border: 1px solid #d6b14c;
+        padding: 8px;
+        height: 38px;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .main-table .subhead { background: #e8f3ec; color: #0d5c3f; font-weight: 700; }
+    .subject { font-weight: 700; text-align: left !important; }
+
+    /* Grading */
+    .grading { margin-top: 15px; }
+    .grade-title { font-size: 15px; font-weight: 700; color: #7a1408; margin-bottom: 5px; }
+    .grade-table { width: 100%; border-collapse: collapse; }
+    .grade-table th { background: #d6b14c; color: #000; padding: 6px; border: 1px solid #333; font-size: 11px; }
+    .grade-table td { border: 1px solid #333; text-align: center; padding: 6px; font-size: 11px; }
+
+    /* Bottom Section */
+    .bottom { margin-top: 20px; }
+    .comment-box { margin-bottom: 15px; }
+    .comment-label { font-weight: 700; font-size: 13px; margin-bottom: 5px; color: #111; }
+    .comment-line { border-bottom: 2px dotted #444; height: 22px; margin-bottom: 5px; }
+
+    .footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 10px;
+    }
+
+    .signature { width: 200px; }
+    .signature .line { width: 100%; }
+
+    .stamp {
+        width: 130px;
+        height: 100px;
+        border: 3px dashed #c0c0c0;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #999;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        background: white;
+    }
+
+    /* Footer */
+    .final-footer {
+        position: absolute;
+        bottom: 25px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        color: #b10000;
+        font-weight: 700;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="report">
+
+    <div class="top-arabic">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+
+    <div class="header">
+        <div class="school-left">
+            <h1>JIDDAH ISLAMIC NURSERY <br> AND PRIMARY SCHOOL - Nsaggu</h1>
+            <p>
+                P.O.Box 34008 Kampala (U)<br>
+                Tel: +256 744950042 / 0705316961<br>
+                jiddahislamicnurseryandpri@gmail.com
+            </p>
+        </div>
+
+        <div class="logo">SCHOOL<br>LOGO</div>
+
+        <div class="school-right">
+            <h2>مدرسة جدة الإسلامية للروضة <br> والإبتدائية بنساغو</h2>
+        </div>
+    </div>
+
+    <div class="ribbon">PROVISIONAL REPORT FORM</div>
+
+    <div class="info">
+        <div class="info-row">
+            <div class="field">Class: <div class="line"></div></div>
+            <div class="field">Term: <div class="line"></div></div>
+            <div class="field">Year: <div class="line" style="width:100px;"></div></div>
+        </div>
+        <div class="info-row" style="margin-bottom:0;">
+            <div class="field" style="width:100%;">
+                Pupil’s Name: <div class="line" style="width:100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <table class="main-table">
+        <tr>
+            <th rowspan="2" style="width:20%;">SUBJECTS</th>
+            <th colspan="2">BEGINNING OF TERM</th>
+            <th colspan="2">MIDTERM</th>
+            <th rowspan="2" style="width:25%;">SUBJECT TEACHER’S COMMENT</th>
+        </tr>
+        <tr class="subhead">
+            <th>MARK</th><th>AGG</th><th>MARK</th><th>AGG</th>
+        </tr>
+        <tr><td class="subject">MATHEMATICS</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="subject">SST</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="subject">SCIENCE</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="subject">ENGLISH</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="subject">COMPUTER</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="subject">TOTAL</td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+
+    <div class="grading">
+        <div class="grade-title">Grading</div>
+        <table class="grade-table">
+            <tr>
+                <th>Grade</th><th>D1</th><th>D2</th><th>C3</th><th>C4</th><th>C5</th><th>C6</th><th>P7</th><th>P8</th><th>F9</th>
+            </tr>
+            <tr>
+                <td><strong>Marks</strong></td>
+                <td>85-100</td><td>75-84</td><td>70-74</td><td>60-69</td><td>55-59</td><td>50-54</td><td>40-49</td><td>35-39</td><td>0-34</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="bottom">
+        <div class="comment-box">
+            <div class="comment-label">Class Teacher’s Comment:</div>
+            <div class="comment-line"></div>
+        </div>
+
+        <div class="footer-row">
+            <div style="width:68%;">
+                <div class="comment-label">Conduct:</div>
+                <div class="comment-line"></div>
+            </div>
+            <div class="signature">
+                <div class="comment-label">Signature:</div>
+                <div class="line"></div>
+            </div>
+        </div>
+
+        <div class="comment-box" style="margin-top:15px;">
+            <div class="comment-label">Head Teacher’s Comment:</div>
+            <div class="comment-line"></div>
+            <div class="comment-line"></div>
+        </div>
+
+        <div class="footer-row">
+            <div class="signature">
+                <div class="comment-label">Signature:</div>
+                <div class="line"></div>
+            </div>
+            <div class="stamp">OFFICIAL<br>SCHOOL STAMP</div>
+        </div>
+    </div>
+
+    <div class="final-footer">
+        THIS REPORT FORM IS INVALID WITHOUT THE OFFICIAL SCHOOL STAMP
+    </div>
+
+</div>
+
+</body>
+</html>

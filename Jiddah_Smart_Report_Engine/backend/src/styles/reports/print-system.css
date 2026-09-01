@@ -1,0 +1,178 @@
+/**
+ * UNIFIED PRINT SYSTEM CSS
+ * 
+ * Centralized print rules for all report components.
+ * Source of truth for print behavior across all A4 report types.
+ * 
+ * RULES:
+ * - NO report-specific selectors (use ReportContainer)
+ * - NO duplicated @page declarations
+ * - NO component-specific media queries
+ * - Print-safe values only (px units, no transforms, no hacks)
+ */
+
+/* ============================================================================
+   PRINT MEDIA BASE RULES
+   ============================================================================ */
+
+@media print {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only print root */
+  .print-root,
+  .print-root * {
+    visibility: visible;
+  }
+
+  .print-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible !important;
+    transform: none !important;
+  }
+
+  /* Remove transforms from all print contexts */
+  .print-root,
+  .print-area {
+    transform: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .report-container {
+    transform: none !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Hide non-print controls */
+  .print-hide,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Disable transforms and transitions */
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ============================================================================
+   PAGE SIZE STRATEGY — DIMENSION-DRIVEN APPROACH
+   ============================================================================
+   
+   NOTE: @page rules do NOT reliably respond to media queries or container
+   selectors across all browsers. Instead, print sizing is driven by the
+   ReportContainer component dimensions:
+   
+   * width: 794px (A4 portrait) or 1123px (A4 landscape)
+   * minHeight: 1123px (A4 portrait) or 794px (A4 landscape)
+   
+   This ensures browser's print preview/PDF export respects container dimensions.
+   Browser will scale to fit page, or browser defaults may apply.
+   
+   If explicit @page rules are needed, implement at report component level
+   with component-specific @page declarations (not in this global file).
+   ============================================================================ */
+
+/* ============================================================================
+   PRINT-SAFE COLOR PRESERVATION
+   ============================================================================ */
+
+@media print {
+  /* Ensure exact color reproduction */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Preserve backgrounds */
+  * {
+    background-attachment: scroll !important;
+  }
+}
+
+/* ============================================================================
+   PAGE BREAK RULES
+   ============================================================================ */
+
+@media print {
+  /* Prevent content splitting */
+  .no-page-break,
+  .report-container,
+  .page-content {
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Explicit page breaks if needed */
+  .page-break {
+    page-break-after: always;
+  }
+
+  .page-break-before {
+    page-break-before: always;
+  }
+}
+
+/* ============================================================================
+   CONTENT OVERFLOW PROTECTION
+   ============================================================================ */
+
+@media print {
+  /* Allow content to expand naturally on print */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* ============================================================================
+   IMAGE AND MEDIA RULES
+   ============================================================================ */
+
+@media print {
+  /* Ensure images print */
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  /* Hide shadows for cleaner print */
+  * {
+    box-shadow: none !important;
+  }
+}
+
+/* ============================================================================
+   TEXT AND TYPOGRAPHY RULES
+   ============================================================================ */
+
+@media print {
+  /* Preserve font rendering */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent text truncation */
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    text-decoration: none;
+  }
+}
