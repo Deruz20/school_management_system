@@ -10,7 +10,7 @@ import { PayrollDAO } from "@/lib/dao/payroll.dao";
 import { BudgetDAO } from "@/lib/dao/budget.dao";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote, Scale, Package, QrCode } from "lucide-react";
+import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote, Scale, Package, QrCode, Bus } from "lucide-react";
 
 export default async function FinancePage() {
   const ctx = await requireAuth();
@@ -408,6 +408,34 @@ export default async function FinancePage() {
             </Link>
             <Link href="/finance/clearance" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
               <span>Issue Permits</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* School Transport & Fleet Operations Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Bus size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Transport &amp; Fleet Operations</h2>
+            <p className="text-sm text-slate-500">
+              Transport routes, stages, passenger manifests, automated term billing, fuel logging, and fleet cost efficiency.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-amber-800 font-mono">
+              Transport Hub{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">routes, fleet &amp; billing</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/transport">
+              <Button size="sm" variant="outline" className="bg-amber-50 text-amber-700 hover:bg-amber-100">
+                Transport Hub
+              </Button>
+            </Link>
+            <Link href="/finance/transport" className="inline-flex items-center gap-1 text-sm font-medium text-amber-600 hover:text-amber-700">
+              <span>Manage Fleet</span>
               <ArrowRight size={16} />
             </Link>
           </div>
