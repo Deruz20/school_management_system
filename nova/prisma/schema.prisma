@@ -75,6 +75,8 @@ model Branch {
   payrollRuns        PayrollRun[]
   payslips           Payslip[]
   payrollSequences   PayrollSequence[]
+  budgets            Budget[]
+  budgetSequences    BudgetSequence[]
 }
 
 model BranchSettings {
@@ -121,6 +123,11 @@ model User {
   submittedPayrollRuns PayrollRun[] @relation("PayrollSubmitter")
   approvedPayrollRuns  PayrollRun[] @relation("PayrollApprover")
   disbursedPayrollRuns PayrollRun[] @relation("PayrollDisburser")
+  createdBudgets       Budget[]     @relation("BudgetCreator")
+  submittedBudgets     Budget[]     @relation("BudgetSubmitter")
+  approvedBudgets      Budget[]     @relation("BudgetApprover")
+  preparedBudgetRevisions BudgetRevision[] @relation("RevisionPreparer")
+  authorizedBudgetRevisions BudgetRevision[] @relation("RevisionAuthorizer")
 }
 
 enum UserType {
@@ -190,6 +197,7 @@ model AcademicYear {
   feeDiscounts   StudentFeeDiscount[]
   invoices       Invoice[]
   ledgerEntries  StudentLedgerEntry[]
+  budgets        Budget[]
 }
 
 model Term {
@@ -207,6 +215,7 @@ model Term {
   feeDiscounts   StudentFeeDiscount[]
   invoices       Invoice[]
   ledgerEntries  StudentLedgerEntry[]
+  budgets        Budget[]
 }
 
 model Class {
@@ -638,6 +647,7 @@ model FeeType {
   structureItems FeeStructureItem[]
   discounts      StudentFeeDiscount[]
   invoiceItems   InvoiceItem[]
+  budgetItems    BudgetItem[]
 
   @@unique([branchId, name])
   @@unique([branchId, code])
@@ -993,6 +1003,7 @@ model ExpenseCategory {
 
   branch      Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
   expenses    Expense[]
+  budgetItems BudgetItem[]
 
   @@unique([branchId, name])
   @@unique([branchId, code])
@@ -1392,5 +1403,162 @@ model PayrollSequence {
   branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, type, year])
+}
+
+// ============================================================================
+// FINANCE PHASE 3.1G — SCHOOL BUDGETING, VOTE HEADS & EXPENDITURE CONTROL
+// ============================================================================
+
+enum BudgetStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CLOSED
+}
+
+enum BudgetItemType {
+  EXPENSE_VOTE_HEAD
+  REVENUE_TARGET
+}
+
+enum BudgetRevisionStatus {
+  DRAFT
+  APPROVED
+  REJECTED
+}
+
+model Budget {
+  id              String         @id @default(cuid())
+  branchId        String
+  academicYearId  String
+  termId          String?        // Null = Full Academic Year Budget
+  budgetNumber    String         // e.g. BUD-2026-0001
+  title           String         // e.g. "2026 Annual School Operating Budget"
+  description     String?
+  status          BudgetStatus   @default(DRAFT)
+
+  // Computed Totals (Decimal 12,2 UGX)
+  totalIncome     Decimal        @default(0) @db.Decimal(12, 2)
+  totalExpense    Decimal        @default(0) @db.Decimal(12, 2)
+  netSurplus      Decimal        @default(0) @db.Decimal(12, 2)
+
+  // Four-Eye Governance
+  createdById     String
+  submittedById   String?
+  submittedAt     DateTime?
+  approvedById    String?
+  approvedAt      DateTime?
+  rejectionReason String?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relationships
+  branch          Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  academicYear    AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+  term            Term?          @relation(fields: [termId], references: [id], onDelete: SetNull)
+  createdBy       User           @relation("BudgetCreator", fields: [createdById], references: [id])
+  submittedBy     User?          @relation("BudgetSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
+  approvedBy      User?          @relation("BudgetApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  items           BudgetItem[]
+  revisions       BudgetRevision[]
+
+  @@unique([branchId, budgetNumber])
+  @@unique([branchId, academicYearId, termId])
+  @@index([branchId, academicYearId, status])
+}
+
+model BudgetItem {
+  id              String         @id @default(cuid())
+  budgetId        String
+  type            BudgetItemType @default(EXPENSE_VOTE_HEAD)
+  
+  // Linkages to existing catalogs
+  categoryId      String?        // For Expense Vote Heads (linked to ExpenseCategory)
+  feeTypeId       String?        // For Revenue Targets (linked to FeeType)
+  
+  code            String         // e.g. "SALARIES_AND_WAGES", "REV_TUITION"
+  name            String         // e.g. "Staff Salaries & Wages", "Tuition Revenue"
+  allocatedAmount Decimal        @db.Decimal(12, 2)
+  notes           String?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relationships
+  budget          Budget         @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  category        ExpenseCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  feeType         FeeType?       @relation(fields: [feeTypeId], references: [id], onDelete: SetNull)
+  revisionItems   BudgetRevisionItem[]
+
+  @@index([budgetId, type])
+  @@index([budgetId, categoryId])
+}
+
+model BudgetRevision {
+  id              String               @id @default(cuid())
+  budgetId        String
+  revisionNumber  Int                  // 1, 2, 3...
+  title           String               // e.g. "Supplementary Allocation - Term 2 Food Provisions"
+  reason          String               // Mandatory explanation for audit
+  status          BudgetRevisionStatus @default(DRAFT)
+  
+  // Total adjustments in this revision
+  totalDelta      Decimal              @default(0) @db.Decimal(12, 2)
+  
+  // Frozen JSON snapshot of budget state prior to revision
+  snapshotJson    String               @db.Text
+  
+  preparedById    String
+  preparedAt      DateTime             @default(now())
+  authorizedById  String?
+  authorizedAt    DateTime?
+  rejectionReason String?
+
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  // Relationships
+  budget          Budget               @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  preparedBy      User                 @relation("RevisionPreparer", fields: [preparedById], references: [id], onDelete: Restrict)
+  authorizedBy    User?                @relation("RevisionAuthorizer", fields: [authorizedById], references: [id], onDelete: SetNull)
+  items           BudgetRevisionItem[]
+
+  @@unique([budgetId, revisionNumber])
+  @@index([budgetId, status])
+}
+
+model BudgetRevisionItem {
+  id              String         @id @default(cuid())
+  revisionId      String
+  budgetItemId    String
+  
+  previousAmount  Decimal        @db.Decimal(12, 2)
+  deltaAmount     Decimal        @db.Decimal(12, 2) // Can be positive (increase) or negative (reduction)
+  newAmount       Decimal        @db.Decimal(12, 2)
+  notes           String?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relationships
+  revision        BudgetRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  budgetItem      BudgetItem     @relation(fields: [budgetItemId], references: [id], onDelete: Cascade)
+
+  @@index([revisionId, budgetItemId])
+}
+
+model BudgetSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, year])
 }
 

@@ -2,6 +2,7 @@ import { db } from "../db";
 import { Prisma, PaymentMethod, ExpenseStatus } from "@prisma/client";
 import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
+import { BudgetDAO } from "./budget.dao";
 import crypto from "crypto";
 
 export interface CreateExpenseInput {
@@ -172,6 +173,13 @@ export class ExpenseDAO {
       });
     });
 
+    const budgetCeiling = await BudgetDAO.checkExpenseBudgetCeiling(ctx, {
+      categoryId: input.categoryId,
+      amount,
+      expenseDate,
+      excludeExpenseId: created.id,
+    });
+
     await AuditService.log(
       ctx,
       'CREATE_EXPENSE',
@@ -184,13 +192,33 @@ export class ExpenseDAO {
         categoryId: created.categoryId,
         categoryName: category.name,
         paymentMethod: created.paymentMethod,
-        vendorName: created.vendorName
+        vendorName: created.vendorName,
+        isOverBudget: budgetCeiling.isOverBudget,
       })
     );
 
+    if (budgetCeiling.isOverBudget) {
+      await AuditService.log(
+        ctx,
+        'BUDGET_OVER_EXPENDITURE_WARNING',
+        'Expense',
+        created.id,
+        JSON.stringify({
+          budgetId: budgetCeiling.budgetId,
+          budgetNumber: budgetCeiling.budgetNumber,
+          categoryName: budgetCeiling.categoryName,
+          allocatedBudget: budgetCeiling.allocatedBudget?.toString(),
+          currentSpent: budgetCeiling.currentSpent?.toString(),
+          voucherAmount: amount.toString(),
+          overBudgetAmount: budgetCeiling.overBudgetAmount?.toString(),
+        })
+      );
+    }
+
     return {
       expense: created,
-      isReplay: false
+      isReplay: false,
+      budgetCeiling,
     };
   }
 

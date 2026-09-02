@@ -7,14 +7,15 @@ import { PaymentDAO } from "@/lib/dao/payment.dao";
 import { ExpenseDAO } from "@/lib/dao/expense.dao";
 import { SchoolPayDAO } from "@/lib/dao/schoolpay.dao";
 import { PayrollDAO } from "@/lib/dao/payroll.dao";
+import { BudgetDAO } from "@/lib/dao/budget.dao";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote } from "lucide-react";
+import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote, Scale } from "lucide-react";
 
 export default async function FinancePage() {
   const ctx = await requireAuth();
 
-  const [feeTypes, feeStructures, invoices, discounts, paymentsData, expenseSummary, schoolPayStats, payrollRuns] = await Promise.all([
+  const [feeTypes, feeStructures, invoices, discounts, paymentsData, expenseSummary, schoolPayStats, payrollRuns, budgets] = await Promise.all([
     FeeTypeDAO.list(ctx),
     FeeStructureDAO.list(ctx),
     InvoiceDAO.list(ctx),
@@ -22,7 +23,8 @@ export default async function FinancePage() {
     PaymentDAO.listPayments(ctx, { limit: 100 }),
     ExpenseDAO.getSummary(ctx),
     SchoolPayDAO.getStats(ctx),
-    PayrollDAO.listPayrollRuns(ctx, { limit: 5 })
+    PayrollDAO.listPayrollRuns(ctx, { limit: 5 }),
+    BudgetDAO.listBudgets(ctx)
   ]);
 
   return (
@@ -322,6 +324,34 @@ export default async function FinancePage() {
             </Link>
             <Link href="/finance/payroll" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
               <span>View Runs</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* School Budgets & Vote Heads Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Scale size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">School Budgets &amp; Vote Heads</h2>
+            <p className="text-sm text-slate-500">
+              Annual &amp; termly school budgets, vote head expense ceilings, revenue realization targets, and live variance.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-emerald-800 font-mono">
+              {budgets.length}{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">budgets on record</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/budgets">
+              <Button size="sm" variant="outline" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+                Manage Budgets
+              </Button>
+            </Link>
+            <Link href="/finance/budgets" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+              <span>Open Hub</span>
               <ArrowRight size={16} />
             </Link>
           </div>
