@@ -10,7 +10,7 @@ import { PayrollDAO } from "@/lib/dao/payroll.dao";
 import { BudgetDAO } from "@/lib/dao/budget.dao";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote, Scale } from "lucide-react";
+import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote, Scale, Package, QrCode } from "lucide-react";
 
 export default async function FinancePage() {
   const ctx = await requireAuth();
@@ -352,6 +352,62 @@ export default async function FinancePage() {
             </Link>
             <Link href="/finance/budgets" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
               <span>Open Hub</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* School Requirements & In-Kind Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-cyan-50 text-cyan-700 flex items-center justify-center">
+              <Package size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Requirements &amp; In-Kind</h2>
+            <p className="text-sm text-slate-500">
+              Class physical materials checklists, reams, hygiene supplies, cash-in-lieu monetization, and store tallies.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-cyan-800 font-mono">
+              In-Kind Tracker{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">physical goods &amp; cash</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/requirements">
+              <Button size="sm" variant="outline" className="bg-cyan-50 text-cyan-700 hover:bg-cyan-100">
+                Requirements Hub
+              </Button>
+            </Link>
+            <Link href="/finance/requirements" className="inline-flex items-center gap-1 text-sm font-medium text-cyan-600 hover:text-cyan-700">
+              <span>View Checklists</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Financial Clearance & Exam Permits Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <QrCode size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Clearance &amp; Exam Permits</h2>
+            <p className="text-sm text-slate-500">
+              Automated financial balance + requirements clearance, printable exam cards, gate passes, and QR checks.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-emerald-800 font-mono">
+              Exam Permits{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">256-bit QR verified</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/clearance">
+              <Button size="sm" variant="outline" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+                Clearance Roster
+              </Button>
+            </Link>
+            <Link href="/finance/clearance" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+              <span>Issue Permits</span>
               <ArrowRight size={16} />
             </Link>
           </div>
