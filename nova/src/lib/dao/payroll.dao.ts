@@ -798,89 +798,119 @@ export class PayrollDAO {
       throw new Error(`Only APPROVED payroll runs can be disbursed. Current status: ${run.status}.`);
     }
 
-    const disbursedResult = await db.$transaction(async (tx) => {
-      // Ensure Salaries & Wages category exists
-      let salaryCategory = await tx.expenseCategory.findFirst({
-        where: { branchId, code: 'SALARIES_AND_WAGES' },
-      });
+    try {
+      const disbursedResult = await db.$transaction(async (tx) => {
+        // Re-check inside transaction
+        const freshRun = await tx.payrollRun.findFirst({
+          where: { id, branchId },
+          include: { payslips: true, expense: true },
+        });
 
-      if (!salaryCategory) {
-        salaryCategory = await tx.expenseCategory.create({
+        if (!freshRun) throw new Error("Payroll run not found or access denied.");
+        if (freshRun.status === PayrollStatus.PAID) {
+          return { payrollRun: freshRun, expense: freshRun.expense!, isReplay: true };
+        }
+
+        if (freshRun.status !== PayrollStatus.APPROVED) {
+          throw new Error(`Only APPROVED payroll runs can be disbursed. Current status: ${freshRun.status}.`);
+        }
+
+        // Ensure Salaries & Wages category exists
+        let salaryCategory = await tx.expenseCategory.findFirst({
+          where: { branchId, code: 'SALARIES_AND_WAGES' },
+        });
+
+        if (!salaryCategory) {
+          salaryCategory = await tx.expenseCategory.create({
+            data: {
+              branchId,
+              name: 'Salaries & Wages',
+              code: 'SALARIES_AND_WAGES',
+              description: 'Staff payroll remuneration and net salary disbursements',
+              isActive: true,
+            },
+          });
+        }
+
+        // Generate Expense Voucher Number
+        const voucherNumber = await ExpenseDAO.generateNextVoucherNumber(tx, branchId, paymentDate);
+        const idempotencyKey = `EXP_PR_${freshRun.payrollNumber}`;
+
+        // Create linked Expense voucher in Phase 3.1D
+        const expense = await tx.expense.create({
           data: {
             branchId,
-            name: 'Salaries & Wages',
-            code: 'SALARIES_AND_WAGES',
-            description: 'Staff payroll remuneration and net salary disbursements',
-            isActive: true,
+            categoryId: salaryCategory.id,
+            idempotencyKey,
+            voucherNumber,
+            title: `Staff Payroll Disbursed - ${freshRun.title}`,
+            amount: freshRun.totalNet,
+            expenseDate: paymentDate,
+            paymentMethod: PaymentMethod.BANK_TRANSFER,
+            vendorName: 'School Staff Remuneration',
+            receiptRef: paymentReference?.trim() || freshRun.payrollNumber,
+            notes: `Payroll Run ${freshRun.payrollNumber} (Gross: UGX ${freshRun.totalGross.toFixed(2)}, Deductions: UGX ${freshRun.totalDeductions.toFixed(2)}, Net: UGX ${freshRun.totalNet.toFixed(2)}, Employer NSSF: UGX ${freshRun.totalEmployerCost.minus(freshRun.totalGross).toFixed(2)})`,
+            status: ExpenseStatus.COMPLETED,
+            recordedById: ctx.userId!,
           },
         });
+
+        // Update all payslips to PAID
+        await tx.payslip.updateMany({
+          where: { payrollRunId: freshRun.id },
+          data: {
+            status: PayslipStatus.PAID,
+            paymentDate,
+            paymentReference: paymentReference?.trim() || `DISB-${freshRun.payrollNumber}`,
+          },
+        });
+
+        // Update PayrollRun to PAID
+        const updatedRun = await tx.payrollRun.update({
+          where: { id: freshRun.id },
+          data: {
+            status: PayrollStatus.PAID,
+            paidEmployees: freshRun.payslips.length,
+            disbursedById: ctx.userId,
+            disbursedAt: paymentDate,
+            expenseId: expense.id,
+          },
+          include: {
+            payslips: { include: { items: true } },
+            expense: true,
+          },
+        });
+
+        return { payrollRun: updatedRun, expense, isReplay: false };
+      });
+
+      if (!disbursedResult.isReplay) {
+        await AuditService.log(
+          ctx,
+          'PAYROLL_RUN_DISBURSED',
+          'PayrollRun',
+          id,
+          JSON.stringify({
+            payrollNumber: run.payrollNumber,
+            totalNet: run.totalNet.toString(),
+            expenseVoucher: disbursedResult.expense.voucherNumber,
+          })
+        );
       }
 
-      // Generate Expense Voucher Number
-      const voucherNumber = await ExpenseDAO.generateNextVoucherNumber(tx, branchId, paymentDate);
-      const idempotencyKey = `EXP_PR_${run.payrollNumber}`;
-
-      // Create linked Expense voucher in Phase 3.1D
-      const expense = await tx.expense.create({
-        data: {
-          branchId,
-          categoryId: salaryCategory.id,
-          idempotencyKey,
-          voucherNumber,
-          title: `Staff Payroll Disbursed - ${run.title}`,
-          amount: run.totalNet,
-          expenseDate: paymentDate,
-          paymentMethod: PaymentMethod.BANK_TRANSFER,
-          vendorName: 'School Staff Remuneration',
-          receiptRef: paymentReference?.trim() || run.payrollNumber,
-          notes: `Payroll Run ${run.payrollNumber} (Gross: UGX ${run.totalGross.toFixed(2)}, Deductions: UGX ${run.totalDeductions.toFixed(2)}, Net: UGX ${run.totalNet.toFixed(2)}, Employer NSSF: UGX ${run.totalEmployerCost.minus(run.totalGross).toFixed(2)})`,
-          status: ExpenseStatus.COMPLETED,
-          recordedById: ctx.userId!,
-        },
-      });
-
-      // Update all payslips to PAID
-      await tx.payslip.updateMany({
-        where: { payrollRunId: run.id },
-        data: {
-          status: PayslipStatus.PAID,
-          paymentDate,
-          paymentReference: paymentReference?.trim() || `DISB-${run.payrollNumber}`,
-        },
-      });
-
-      // Update PayrollRun to PAID
-      const updatedRun = await tx.payrollRun.update({
-        where: { id: run.id },
-        data: {
-          status: PayrollStatus.PAID,
-          paidEmployees: run.payslips.length,
-          disbursedById: ctx.userId,
-          disbursedAt: paymentDate,
-          expenseId: expense.id,
-        },
-        include: {
-          payslips: { include: { items: true } },
-          expense: true,
-        },
-      });
-
-      return { payrollRun: updatedRun, expense, isReplay: false };
-    });
-
-    await AuditService.log(
-      ctx,
-      'PAYROLL_RUN_DISBURSED',
-      'PayrollRun',
-      id,
-      JSON.stringify({
-        payrollNumber: run.payrollNumber,
-        totalNet: run.totalNet.toString(),
-        expenseVoucher: disbursedResult.expense.voucherNumber,
-      })
-    );
-
-    return disbursedResult;
+      return disbursedResult;
+    } catch (err: unknown) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        const reloaded = await db.payrollRun.findFirst({
+          where: { id, branchId },
+          include: { expense: true, payslips: { include: { items: true } } },
+        });
+        if (reloaded && reloaded.status === PayrollStatus.PAID) {
+          return { payrollRun: reloaded, expense: reloaded.expense!, isReplay: true };
+        }
+      }
+      throw err;
+    }
   }
 
   /**

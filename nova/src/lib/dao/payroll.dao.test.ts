@@ -50,10 +50,11 @@ describe('NOVA Finance Phase 3.1F — Staff Payroll & Compensation Engine (PAY-0
       permissions: ['all'],
     };
 
-    // Clean up previous test payroll runs and compensations in this branch
+    // Clean up previous test payroll runs, expenses, and compensations in this branch
     await prisma.payslipItem.deleteMany({ where: { payslip: { branchId } } });
     await prisma.payslip.deleteMany({ where: { branchId } });
     await prisma.payrollRun.deleteMany({ where: { branchId } });
+    await prisma.expense.deleteMany({ where: { branchId } });
     await prisma.employeeSalaryItem.deleteMany({ where: { compensation: { branchId } } });
     await prisma.employeeCompensation.deleteMany({ where: { branchId } });
 
