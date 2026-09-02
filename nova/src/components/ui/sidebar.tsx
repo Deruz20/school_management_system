@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, BookOpen, CreditCard, Settings, LayoutDashboard, Receipt, BarChart3, TrendingDown } from "lucide-react";
+import { Users, BookOpen, CreditCard, Settings, LayoutDashboard, Receipt, BarChart3, TrendingDown, Wifi } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -65,6 +65,10 @@ export function Sidebar() {
           <Link href="/finance/reports" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <BarChart3 size={20} />
             <span>Financial Reports</span>
+          </Link>
+          <Link href="/finance/schoolpay" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <Wifi size={20} />
+            <span>SchoolPay</span>
           </Link>
           <Link href="/finance/discounts" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <CreditCard size={20} />

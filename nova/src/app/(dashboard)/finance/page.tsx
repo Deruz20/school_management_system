@@ -5,20 +5,22 @@ import { InvoiceDAO } from "@/lib/dao/invoice.dao";
 import { DiscountDAO } from "@/lib/dao/discount.dao";
 import { PaymentDAO } from "@/lib/dao/payment.dao";
 import { ExpenseDAO } from "@/lib/dao/expense.dao";
+import { SchoolPayDAO } from "@/lib/dao/schoolpay.dao";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown } from "lucide-react";
+import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi } from "lucide-react";
 
 export default async function FinancePage() {
   const ctx = await requireAuth();
 
-  const [feeTypes, feeStructures, invoices, discounts, paymentsData, expenseSummary] = await Promise.all([
+  const [feeTypes, feeStructures, invoices, discounts, paymentsData, expenseSummary, schoolPayStats] = await Promise.all([
     FeeTypeDAO.list(ctx),
     FeeStructureDAO.list(ctx),
     InvoiceDAO.list(ctx),
     DiscountDAO.list(ctx),
     PaymentDAO.listPayments(ctx, { limit: 100 }),
-    ExpenseDAO.getSummary(ctx)
+    ExpenseDAO.getSummary(ctx),
+    SchoolPayDAO.getStats(ctx)
   ]);
 
   return (
@@ -256,6 +258,40 @@ export default async function FinancePage() {
             </Link>
             <Link href="/finance/reports" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
               <span>View Reports</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* SchoolPay Uganda Reconciliation Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Wifi size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">SchoolPay Reconciliation</h2>
+            <p className="text-sm text-slate-500">
+              Automated webhook ingestion, student payment code matching, and real-time FIFO ledger settlement.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-emerald-700 font-mono">
+              {schoolPayStats.needsReviewCount > 0 ? (
+                <span className="text-amber-600">{schoolPayStats.needsReviewCount} in review</span>
+              ) : (
+                <span>{schoolPayStats.postedCount} posted</span>
+              )}{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">
+                ({schoolPayStats.totalLinkedStudents}/{schoolPayStats.totalActiveStudents} students linked)
+              </span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/schoolpay">
+              <Button size="sm" variant="outline" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+                Open Reconciliation
+              </Button>
+            </Link>
+            <Link href="/finance/schoolpay" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+              <span>View Gateway</span>
               <ArrowRight size={16} />
             </Link>
           </div>

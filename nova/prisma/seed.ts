@@ -434,21 +434,21 @@ async function main() {
 
   // 14. Create Students and Enrollments
   const studentsData = [
-    { firstName: 'Charlie', lastName: 'Brown', admissionNo: 'A1001', branchId: branch1.id, classId: class1.id, ayId: ay1.id },
-    { firstName: 'Diana', lastName: 'Prince', admissionNo: 'A1002', branchId: branch1.id, classId: class1.id, ayId: ay1.id },
-    { firstName: 'Eve', lastName: 'Polastri', admissionNo: 'B2001', branchId: branch2.id, classId: class2.id, ayId: ay2.id },
+    { firstName: 'Charlie', lastName: 'Brown', admissionNo: 'A1001', schoolPayCode: '1002345001', branchId: branch1.id, classId: class1.id, ayId: ay1.id },
+    { firstName: 'Diana', lastName: 'Prince', admissionNo: 'A1002', schoolPayCode: '1002345002', branchId: branch1.id, classId: class1.id, ayId: ay1.id },
+    { firstName: 'Eve', lastName: 'Polastri', admissionNo: 'B2001', schoolPayCode: '2004565001', branchId: branch2.id, classId: class2.id, ayId: ay2.id },
   ];
 
   for (const s of studentsData) {
     let student = await prisma.student.findFirst({ where: { admissionNo: s.admissionNo } });
     if (!student) {
       student = await prisma.student.create({
-        data: { firstName: s.firstName, lastName: s.lastName, admissionNo: s.admissionNo, branchId: s.branchId, classId: s.classId }
+        data: { firstName: s.firstName, lastName: s.lastName, admissionNo: s.admissionNo, schoolPayCode: s.schoolPayCode, branchId: s.branchId, classId: s.classId }
       });
     } else {
       await prisma.student.update({
         where: { id: student.id },
-        data: { branchId: s.branchId, classId: s.classId }
+        data: { branchId: s.branchId, classId: s.classId, schoolPayCode: s.schoolPayCode }
       });
     }
     
@@ -654,6 +654,22 @@ async function main() {
       });
     }
   }
+
+  // 17. SchoolPay Gateway Configuration Seed (Phase 3.1E)
+  await prisma.schoolPayConfig.upsert({
+    where: { branchId: branch1.id },
+    create: {
+      branchId: branch1.id,
+      schoolCode: '100234',
+      enabled: true,
+      autoPostMatched: true
+    },
+    update: {
+      schoolCode: '100234',
+      enabled: true,
+      autoPostMatched: true
+    }
+  });
 
   console.log("Seeding complete!");
 }

@@ -67,6 +67,9 @@ model Branch {
   expenseCategories  ExpenseCategory[]
   expenses           Expense[]
   expenseSequences   ExpenseSequence[]
+  schoolPayConfig    SchoolPayConfig?
+  schoolPayTransactions SchoolPayTransaction[]
+  schoolPaySyncLogs  SchoolPaySyncLog[]
 }
 
 model BranchSettings {
@@ -242,6 +245,9 @@ model Student {
   classId  String?
   streamId String?
 
+  // SchoolPay Uganda Integration
+  schoolPayCode String?
+
   branch    Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
   classRef  Class?  @relation(fields: [classId], references: [id])
   streamRef Stream? @relation(fields: [streamId], references: [id])
@@ -254,9 +260,12 @@ model Student {
   ledgerEntries StudentLedgerEntry[]
   payments    Payment[]
   receipts    Receipt[]
+  schoolPayTransactions SchoolPayTransaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([branchId, schoolPayCode])
 }
 
 enum StudentStatus {
@@ -872,6 +881,7 @@ model Payment {
   student           Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
   allocations       PaymentAllocation[]
   receipt           Receipt?
+  schoolPayTransaction SchoolPayTransaction?
 
   @@unique([branchId, idempotencyKey])
   @@unique([branchId, paymentNumber])
@@ -1019,4 +1029,112 @@ model ExpenseSequence {
   branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, year])
+}
+
+// ============================================================================
+// FINANCE PHASE 3.1E — SCHOOLPAY UGANDA GATEWAY & RECONCILIATION
+// ============================================================================
+
+enum SchoolPayTxStatus {
+  RECEIVED        // Staged from webhook/sync, awaiting processing
+  MATCHED         // High-confidence match identified, waiting for 1-click post
+  POSTED          // Successfully posted via PaymentDAO to student subledger
+  NEEDS_REVIEW    // Unmatched, ambiguous match, or validation issue; in review queue
+  IGNORED         // Non-financial, test, or dismissed transaction
+  FAILED          // Processing error during PaymentDAO execution; retryable
+}
+
+enum SchoolPaySourceChannel {
+  STANBIC_BANK
+  CENTENARY_BANK
+  ABSA_BANK
+  DFCU_BANK
+  POST_BANK
+  EQUITY_BANK
+  MTN_MOMO
+  AIRTEL_MONEY
+  OTHER_BANK
+  UNKNOWN
+}
+
+model SchoolPayConfig {
+  id                String    @id @default(cuid())
+  branchId          String    @unique
+  schoolCode        String    @unique // Official SchoolPay school code
+  apiPasswordEnc    String?   // AES-256-GCM encrypted API password
+  channelKeyEnc     String?   // AES-256-GCM encrypted channel key
+  webhookSecretEnc  String?   // AES-256-GCM encrypted webhook secret
+  enabled           Boolean   @default(false)
+  autoPostMatched   Boolean   @default(true) // Automatically post high-confidence matches
+  allowedIps        String?   // Optional comma-separated IP whitelist
+  lastSyncedAt      DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  branch            Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  syncLogs          SchoolPaySyncLog[]
+
+  @@index([branchId])
+  @@index([schoolCode])
+}
+
+model SchoolPayTransaction {
+  id                    String                 @id @default(cuid())
+  branchId              String
+  schoolPayReceiptNo    String                 // SchoolPay receipt number (SP...)
+  transactionId         String                 // Bank / Telco transaction reference
+  schoolPayCode         String                 // 10-digit student payment code submitted
+  amount                Decimal                @db.Decimal(12, 2)
+  feeAmount             Decimal?               @db.Decimal(12, 2)
+  payerName             String?
+  payerPhone            String?
+  channel               SchoolPaySourceChannel @default(UNKNOWN)
+  paymentDate           DateTime
+  status                SchoolPayTxStatus      @default(RECEIVED)
+  
+  // Student & Payment Linkage
+  studentId             String?
+  paymentId             String?                @unique
+  
+  // Metadata & Resolution
+  rawPayload            Json?
+  reviewNotes           String?
+  errorMessage          String?
+  resolvedById          String?
+  resolvedAt            DateTime?
+  
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  branch                Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student               Student?               @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  payment               Payment?               @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@unique([branchId, schoolPayReceiptNo])
+  @@unique([branchId, transactionId])
+  @@index([branchId, status])
+  @@index([branchId, schoolPayCode])
+  @@index([branchId, paymentDate])
+}
+
+model SchoolPaySyncLog {
+  id                String          @id @default(cuid())
+  branchId          String
+  configId          String
+  dateFrom          DateTime
+  dateTo            DateTime
+  totalFetched      Int             @default(0)
+  newReceived       Int             @default(0)
+  autoPosted        Int             @default(0)
+  needsReview       Int             @default(0)
+  skippedExisting   Int             @default(0)
+  status            String          // "SUCCESS", "PARTIAL", "FAILED"
+  errorMessage      String?
+  syncedById        String?
+  createdAt         DateTime        @default(now())
+
+  branch            Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  config            SchoolPayConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, createdAt])
 }
