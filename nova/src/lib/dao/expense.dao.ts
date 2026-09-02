@@ -1,8 +1,16 @@
 import { db } from "../db";
-import { Prisma, PaymentMethod, ExpenseStatus } from "@prisma/client";
+import {
+  Prisma,
+  PaymentMethod,
+  ExpenseStatus,
+  CashbookMovementType,
+  CashDirection,
+  TreasuryAccountType
+} from "@prisma/client";
 import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
 import { BudgetDAO } from "./budget.dao";
+import { TreasuryDAO } from "./treasury.dao";
 import crypto from "crypto";
 
 export interface CreateExpenseInput {
@@ -15,6 +23,7 @@ export interface CreateExpenseInput {
   receiptRef?: string | null;
   notes?: string | null;
   idempotencyKey?: string | null;
+  treasuryAccountId?: string | null;
 }
 
 export interface ListExpensesFilters {
@@ -151,7 +160,31 @@ export class ExpenseDAO {
     const created = await db.$transaction(async (tx) => {
       const voucherNumber = await this.generateNextVoucherNumber(tx, ctx.branchId, expenseDate);
 
-      return tx.expense.create({
+      // Resolve Treasury Account (Phase 3.1K)
+      let resolvedAccountId = input.treasuryAccountId || null;
+      if (!resolvedAccountId) {
+        if (input.paymentMethod === PaymentMethod.CASH) {
+          const defaultSafe = await tx.treasuryAccount.findFirst({
+            where: {
+              branchId: ctx.branchId,
+              accountType: { in: [TreasuryAccountType.CASH_OFFICE_SAFE, TreasuryAccountType.CASHIER_TILL] },
+              isActive: true,
+            },
+          });
+          if (defaultSafe) resolvedAccountId = defaultSafe.id;
+        } else {
+          const defaultOps = await tx.treasuryAccount.findFirst({
+            where: {
+              branchId: ctx.branchId,
+              isDefaultOperations: true,
+              isActive: true,
+            },
+          });
+          if (defaultOps) resolvedAccountId = defaultOps.id;
+        }
+      }
+
+      const expense = await tx.expense.create({
         data: {
           branchId: ctx.branchId,
           categoryId: input.categoryId,
@@ -165,12 +198,28 @@ export class ExpenseDAO {
           receiptRef: input.receiptRef?.trim() || null,
           notes: input.notes?.trim() || null,
           status: ExpenseStatus.COMPLETED,
-          recordedById: ctx.userId
+          recordedById: ctx.userId,
+          treasuryAccountId: resolvedAccountId,
         },
         include: {
           category: true
         }
       });
+
+      if (resolvedAccountId) {
+        await TreasuryDAO.recordCashbookMovement(tx, ctx, {
+          accountId: resolvedAccountId,
+          movementType: CashbookMovementType.OPERATIONAL_EXPENSE,
+          direction: CashDirection.OUTFLOW,
+          amount,
+          description: `Expense: ${title} (${voucherNumber})`,
+          referenceNumber: voucherNumber,
+          expenseId: expense.id,
+          transactionDate: expenseDate,
+        });
+      }
+
+      return expense;
     });
 
     const budgetCeiling = await BudgetDAO.checkExpenseBudgetCeiling(ctx, {
@@ -245,17 +294,33 @@ export class ExpenseDAO {
       throw new Error("Expense voucher is already voided.");
     }
 
-    const voided = await db.expense.update({
-      where: { id },
-      data: {
-        status: ExpenseStatus.VOID,
-        voidedAt: new Date(),
-        voidReason,
-        voidedById: ctx.userId
-      },
-      include: {
-        category: true
+    const voided = await db.$transaction(async (tx) => {
+      const updated = await tx.expense.update({
+        where: { id },
+        data: {
+          status: ExpenseStatus.VOID,
+          voidedAt: new Date(),
+          voidReason,
+          voidedById: ctx.userId
+        },
+        include: {
+          category: true
+        }
+      });
+
+      if (expense.treasuryAccountId) {
+        await TreasuryDAO.recordCashbookMovement(tx, ctx, {
+          accountId: expense.treasuryAccountId,
+          movementType: CashbookMovementType.EXPENSE_VOID_IN,
+          direction: CashDirection.INFLOW,
+          amount: expense.amount,
+          description: `Expense Void Re-credit: ${expense.title} (${expense.voucherNumber})`,
+          referenceNumber: expense.voucherNumber,
+          expenseId: expense.id,
+        });
       }
+
+      return updated;
     });
 
     await AuditService.log(

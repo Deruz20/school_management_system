@@ -7,11 +7,16 @@ import {
   ReceiptStatus,
   InvoiceStatus,
   LedgerEntryType,
-  LedgerDirection
+  LedgerDirection,
+  CashbookMovementType,
+  CashDirection,
+  TreasuryAccountType,
+  SessionStatus
 } from "@prisma/client";
 import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
 import { LedgerDAO } from "./ledger.dao";
+import { TreasuryDAO } from "./treasury.dao";
 import { amountToWords } from "../utils/number-to-words";
 import crypto from "crypto";
 
@@ -31,6 +36,7 @@ export interface RecordPaymentInput {
   notes?: string | null;
   idempotencyKey?: string | null;
   manualAllocations?: ManualAllocationItem[];
+  treasuryAccountId?: string | null;
 }
 
 export interface ListPaymentsFilters {
@@ -303,6 +309,37 @@ export class PaymentDAO {
         }
       }
 
+      // Step D0: Resolve Treasury Account (Phase 3.1K)
+      let resolvedTreasuryAccountId = input.treasuryAccountId || null;
+      if (!resolvedTreasuryAccountId) {
+        if (input.paymentMethod === PaymentMethod.CASH) {
+          const activeShift = await tx.cashierShiftSession.findFirst({
+            where: { branchId: ctx.branchId, cashierId: ctx.userId, status: SessionStatus.OPEN },
+          });
+          if (activeShift) {
+            resolvedTreasuryAccountId = activeShift.tillAccountId;
+          } else {
+            const defaultCash = await tx.treasuryAccount.findFirst({
+              where: {
+                branchId: ctx.branchId,
+                accountType: { in: [TreasuryAccountType.CASHIER_TILL, TreasuryAccountType.CASH_OFFICE_SAFE] },
+                isActive: true,
+              },
+            });
+            if (defaultCash) resolvedTreasuryAccountId = defaultCash.id;
+          }
+        } else {
+          const defaultBank = await tx.treasuryAccount.findFirst({
+            where: {
+              branchId: ctx.branchId,
+              isDefaultFeeCollection: true,
+              isActive: true,
+            },
+          });
+          if (defaultBank) resolvedTreasuryAccountId = defaultBank.id;
+        }
+      }
+
       // Step D: Create Payment Record
       const payment = await tx.payment.create({
         data: {
@@ -318,7 +355,8 @@ export class PaymentDAO {
           payerPhone: input.payerPhone?.trim() || null,
           status: PaymentStatus.COMPLETED,
           notes: input.notes?.trim() || null,
-          collectedById: ctx.userId
+          collectedById: ctx.userId,
+          treasuryAccountId: resolvedTreasuryAccountId,
         }
       });
 
@@ -376,6 +414,20 @@ export class PaymentDAO {
           status: ReceiptStatus.ISSUED
         }
       });
+
+      // Step H: Record Cashbook Movement in Treasury (Phase 3.1K)
+      if (resolvedTreasuryAccountId) {
+        await TreasuryDAO.recordCashbookMovement(tx, ctx, {
+          accountId: resolvedTreasuryAccountId,
+          movementType: CashbookMovementType.FEE_PAYMENT_RECEIPT,
+          direction: CashDirection.INFLOW,
+          amount: paymentAmount,
+          description: `Fee Payment Receipt #${receiptNumber} (${studentFullName})`,
+          referenceNumber: receiptNumber,
+          paymentId: payment.id,
+          transactionDate: paymentDate,
+        });
+      }
 
       return {
         ...payment,
@@ -514,6 +566,19 @@ export class PaymentDAO {
         description: `Payment Reversal of Receipt #${receiptRef}: ${reversalReason}`,
         createdById: ctx.userId
       });
+
+      // 6b. Reverse Treasury Movement if linked (Phase 3.1K)
+      if (payment.treasuryAccountId) {
+        await TreasuryDAO.recordCashbookMovement(tx, ctx, {
+          accountId: payment.treasuryAccountId,
+          movementType: CashbookMovementType.PAYMENT_REVERSAL_OUT,
+          direction: CashDirection.OUTFLOW,
+          amount: payment.amount,
+          description: `Payment Reversal of Receipt #${receiptRef}: ${reversalReason}`,
+          referenceNumber: receiptRef,
+          paymentId: payment.id,
+        });
+      }
 
       return updatedPayment;
     });

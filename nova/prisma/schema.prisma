@@ -99,8 +99,18 @@ model Branch {
   goodsReceivedNotes        GoodsReceivedNote[]
   storeRequisitions         StoreRequisition[]
   studentStoreSales         StudentStoreSale[]
-  stockMovements            StockMovement[]
   inventorySequences        InventorySequence[]
+  treasuryAccounts          TreasuryAccount[]
+  cashbookMovements         CashbookMovement[]
+  treasuryTransfers         TreasuryTransfer[]
+  cashierShiftSessions      CashierShiftSession[]
+  pettyCashImprests         PettyCashImprest[]
+  pettyCashVouchers         PettyCashVoucher[]
+  bankStatements            BankStatement[]
+  bankStatementLines        BankStatementLine[]
+  bankReconciliations       BankReconciliation[]
+  treasurySequences         TreasurySequence[]
+  StockMovement             StockMovement[]
 }
 
 model BranchSettings {
@@ -163,6 +173,17 @@ model User {
   approvedStoreRequisitions StoreRequisition[]       @relation("RequisitionApprover")
   recordedStoreSales        StudentStoreSale[]       @relation("StoreSaleRecorder")
   performedStockMovements   StockMovement[]          @relation("StockMovementPerformer")
+  custodianAccounts         TreasuryAccount[]        @relation("AccountCustodian")
+  cashbookMovements         CashbookMovement[]       @relation("CashbookMovementCreatedBy")
+  initiatedTransfers        TreasuryTransfer[]       @relation("TransferInitiator")
+  approvedTransfers         TreasuryTransfer[]       @relation("TransferApprover")
+  cashierShifts             CashierShiftSession[]    @relation("CashierShift")
+  supervisedShifts          CashierShiftSession[]    @relation("ShiftSupervisor")
+  custodianImprests         PettyCashImprest[]       @relation("PettyCustodian")
+  requestedPettyVouchers    PettyCashVoucher[]       @relation("VoucherRequester")
+  approvedPettyVouchers     PettyCashVoucher[]       @relation("VoucherApprover")
+  importedBankStatements    BankStatement[]          @relation("StatementImporter")
+  certifiedReconciliations  BankReconciliation[]     @relation("ReconcileCertifier")
 }
 
 enum UserType {
@@ -223,7 +244,7 @@ model AcademicYear {
   startDate DateTime
   endDate   DateTime
 
-  branch                    Branch                     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch                    Branch                         @relation(fields: [branchId], references: [id], onDelete: Cascade)
   terms                     Term[]
   enrollments               Enrollment[]
   classSubjects             ClassSubject[]
@@ -251,7 +272,7 @@ model Term {
   startDate      DateTime
   endDate        DateTime
 
-  academicYear              AcademicYear               @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  academicYear              AcademicYear                   @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
   assessments               Assessment[]
   termResults               TermResult[]
   branchSettings            BranchSettings[]
@@ -324,14 +345,14 @@ model Student {
   classRef  Class?  @relation(fields: [classId], references: [id])
   streamRef Stream? @relation(fields: [streamId], references: [id])
 
-  attendance            DailyAttendanceRecord[]
-  enrollments           Enrollment[]
-  marks                 Mark[]
-  feeDiscounts          StudentFeeDiscount[]
-  invoices              Invoice[]
-  ledgerEntries         StudentLedgerEntry[]
-  payments              Payment[]
-  receipts              Receipt[]
+  attendance             DailyAttendanceRecord[]
+  enrollments            Enrollment[]
+  marks                  Mark[]
+  feeDiscounts           StudentFeeDiscount[]
+  invoices               Invoice[]
+  ledgerEntries          StudentLedgerEntry[]
+  payments               Payment[]
+  receipts               Receipt[]
   schoolPayTransactions  SchoolPayTransaction[]
   requirementRecords     StudentRequirementRecord[]
   clearances             StudentClearance[]
@@ -633,6 +654,7 @@ model Department {
   hod               Employee?          @relation("DepartmentHead", fields: [hodId], references: [id])
   employees         Employee[]
   storeRequisitions StoreRequisition[]
+  pettyCashImprests PettyCashImprest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -679,12 +701,12 @@ model Employee {
   // Back-relation for Department HOD
   headedDepartments Department[] @relation("DepartmentHead")
 
-  classSubjects    ClassSubject[] // Replaces TeacherProfile
-  compensation     EmployeeCompensation?
+  classSubjects     ClassSubject[] // Replaces TeacherProfile
+  compensation      EmployeeCompensation?
   payslips          Payslip[]
   transportDrivers  TransportDriver[]
   managedStores     InventoryStore[]
-  storeRequisitions StoreRequisition[]   @relation("RequisitionRequester")
+  storeRequisitions StoreRequisition[]    @relation("RequisitionRequester")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -972,6 +994,9 @@ model Payment {
   schoolPayTransaction      SchoolPayTransaction?
   monetizedRequirementItems StudentRequirementItem[]
   studentStoreSales         StudentStoreSale[]
+  treasuryAccountId         String?
+  treasuryAccount           TreasuryAccount?         @relation(fields: [treasuryAccountId], references: [id], onDelete: SetNull)
+  cashbookMovements         CashbookMovement[]
 
   @@unique([branchId, idempotencyKey])
   @@unique([branchId, paymentNumber])
@@ -1070,9 +1095,10 @@ model ExpenseCategory {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  expenses    Expense[]
-  budgetItems BudgetItem[]
+  branch            Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  expenses          Expense[]
+  budgetItems       BudgetItem[]
+  pettyCashVouchers PettyCashVoucher[]
 
   @@unique([branchId, name])
   @@unique([branchId, code])
@@ -1100,12 +1126,16 @@ model Expense {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  branch          Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  category        ExpenseCategory         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  branch             Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  category           ExpenseCategory         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   payrollRun         PayrollRun?
   fuelLogs           VehicleFuelLog[]
   maintenanceLogs    VehicleMaintenanceLog[]
   goodsReceivedNotes GoodsReceivedNote[]
+  treasuryAccountId  String?
+  treasuryAccount    TreasuryAccount?        @relation(fields: [treasuryAccountId], references: [id], onDelete: SetNull)
+  cashbookMovements  CashbookMovement[]
+  pettyCashVouchers  PettyCashVoucher[]
 
   @@unique([branchId, idempotencyKey])
   @@unique([branchId, voucherNumber])
@@ -1560,10 +1590,11 @@ model BudgetItem {
   updatedAt DateTime @updatedAt
 
   // Relationships
-  budget        Budget               @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-  category      ExpenseCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  feeType       FeeType?             @relation(fields: [feeTypeId], references: [id], onDelete: SetNull)
-  revisionItems BudgetRevisionItem[]
+  budget            Budget               @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  category          ExpenseCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  feeType           FeeType?             @relation(fields: [feeTypeId], references: [id], onDelete: SetNull)
+  revisionItems     BudgetRevisionItem[]
+  pettyCashVouchers PettyCashVoucher[]
 
   @@index([budgetId, type])
   @@index([budgetId, categoryId])
@@ -1826,19 +1857,19 @@ model StudentRequirementItem {
 
 // Append-only Handover Log for Physical Goods Delivery & Corrections
 model InKindHandoverLog {
-  id                       String   @id @default(cuid())
+  id                       String    @id @default(cuid())
   branchId                 String
   studentRequirementItemId String
   receiptNumber            String // INK-2026-00001
-  deltaDelivered           Decimal  @db.Decimal(8, 2)
-  previousQuantity         Decimal  @db.Decimal(8, 2)
-  newQuantity              Decimal  @db.Decimal(8, 2)
+  deltaDelivered           Decimal   @db.Decimal(8, 2)
+  previousQuantity         Decimal   @db.Decimal(8, 2)
+  newQuantity              Decimal   @db.Decimal(8, 2)
   receivedById             String
-  receivedAt               DateTime @default(now())
-  isCorrection             Boolean  @default(false)
+  receivedAt               DateTime  @default(now())
+  isCorrection             Boolean   @default(false)
   correctionReason         String?
   notes                    String?
-  isIngestedIntoInventory  Boolean  @default(false)
+  isIngestedIntoInventory  Boolean   @default(false)
   ingestedAt               DateTime?
 
   branch      Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -1953,19 +1984,19 @@ model TransportRoute {
   branchId        String
   academicYearId  String
   termId          String?
-  code            String   // e.g. "RT-01", "KAMPALA-NORTH"
-  name            String   // e.g. "Ntinda - Kisaasi - Kyanja Route"
+  code            String // e.g. "RT-01", "KAMPALA-NORTH"
+  name            String // e.g. "Ntinda - Kisaasi - Kyanja Route"
   description     String?
-  destinationZone String?  // e.g. "Zone 2: 5-10km"
+  destinationZone String? // e.g. "Zone 2: 5-10km"
   twoWayFee       Decimal  @db.Decimal(12, 2)
   oneWayFee       Decimal  @db.Decimal(12, 2)
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  branch       Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  academicYear AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
-  term         Term?          @relation(fields: [termId], references: [id], onDelete: Cascade)
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term         Term?        @relation(fields: [termId], references: [id], onDelete: Cascade)
 
   stops         TransportRouteStop[]
   assignments   VehicleRouteAssignment[]
@@ -1978,11 +2009,11 @@ model TransportRoute {
 model TransportRouteStop {
   id                String   @id @default(cuid())
   routeId           String
-  stopName          String   // e.g. "Kisaasi Total Fuel Station"
-  landmark          String?  // e.g. "Opposite Kensington Heights"
+  stopName          String // e.g. "Kisaasi Total Fuel Station"
+  landmark          String? // e.g. "Opposite Kensington Heights"
   sequenceOrder     Int      @default(1)
-  morningPickupTime String?  // e.g. "06:30 AM"
-  eveningDropTime   String?  // e.g. "05:15 PM"
+  morningPickupTime String? // e.g. "06:30 AM"
+  eveningDropTime   String? // e.g. "05:15 PM"
   surchargeAmount   Decimal  @default(0) @db.Decimal(12, 2)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -1996,9 +2027,9 @@ model TransportRouteStop {
 model TransportVehicle {
   id                 String        @id @default(cuid())
   branchId           String
-  registrationNumber String        // e.g. "UBJ 412X"
-  makeModel          String        // e.g. "Toyota Coaster 30-Seater"
-  capacity           Int           // e.g. 30 seats
+  registrationNumber String // e.g. "UBJ 412X"
+  makeModel          String // e.g. "Toyota Coaster 30-Seater"
+  capacity           Int // e.g. 30 seats
   fuelType           String        @default("DIESEL") // DIESEL, PETROL
   status             VehicleStatus @default(ACTIVE)
   insuranceExpiry    DateTime?
@@ -2018,17 +2049,17 @@ model TransportVehicle {
 }
 
 model TransportDriver {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   branchId      String
-  employeeId    String?  // Optional link to HR Employee model
-  fullName      String   // e.g. "John Mukasa"
-  phone         String   // e.g. "+256772123456"
-  licenseNumber String   // e.g. "DL-UG-882319"
-  licenseClass  String   // e.g. "CM, CH"
+  employeeId    String? // Optional link to HR Employee model
+  fullName      String // e.g. "John Mukasa"
+  phone         String // e.g. "+256772123456"
+  licenseNumber String // e.g. "DL-UG-882319"
+  licenseClass  String // e.g. "CM, CH"
   licenseExpiry DateTime?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   branch      Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   employee    Employee?                @relation(fields: [employeeId], references: [id], onDelete: SetNull)
@@ -2047,10 +2078,10 @@ model VehicleRouteAssignment {
   academicYearId          String
   termId                  String?
   isPrimary               Boolean  @default(true)
-  vehiclePlateSnapshot    String   // e.g. "UBJ 412X"
-  vehicleCapacitySnapshot Int      // e.g. 30
-  driverNameSnapshot      String?  // e.g. "John Mukasa"
-  driverPhoneSnapshot     String?  // e.g. "+256772123456"
+  vehiclePlateSnapshot    String // e.g. "UBJ 412X"
+  vehicleCapacitySnapshot Int // e.g. 30
+  driverNameSnapshot      String? // e.g. "John Mukasa"
+  driverPhoneSnapshot     String? // e.g. "+256772123456"
   notes                   String?
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
@@ -2076,16 +2107,16 @@ model StudentTransportSubscription {
   termId                String?
   subscriptionType      TransportSubscriptionType   @default(TWO_WAY)
   status                TransportSubscriptionStatus @default(ACTIVE)
-  routeNameSnapshot     String                      // Frozen historical route name
-  stopNameSnapshot      String?                     // Frozen historical stop name
+  routeNameSnapshot     String // Frozen historical route name
+  stopNameSnapshot      String? // Frozen historical stop name
   baseFeeSnapshot       Decimal                     @db.Decimal(12, 2)
   stopSurchargeSnapshot Decimal                     @default(0) @db.Decimal(12, 2)
   finalFeeAmount        Decimal                     @db.Decimal(12, 2)
-  invoiceItemId         String?                     // Direct foreign key to InvoiceItem
+  invoiceItemId         String? // Direct foreign key to InvoiceItem
   startDate             DateTime                    @default(now())
   endDate               DateTime?
   cancellationReason    String?
-  overrideJustification String?                     // Stored if capacity override granted
+  overrideJustification String? // Stored if capacity override granted
   notes                 String?
   createdAt             DateTime                    @default(now())
   updatedAt             DateTime                    @updatedAt
@@ -2108,14 +2139,14 @@ model VehicleFuelLog {
   branchId      String
   vehicleId     String
   driverId      String?
-  expenseId     String?  // Direct link to Phase 3.1D Expense record
+  expenseId     String? // Direct link to Phase 3.1D Expense record
   logDate       DateTime @default(now())
   odometerKm    Int
   litersFilled  Decimal  @db.Decimal(8, 2)
   unitPrice     Decimal  @db.Decimal(10, 2)
   totalCost     Decimal  @db.Decimal(12, 2)
-  fuelStation   String   // e.g. "TotalEnergies Ntinda"
-  receiptNumber String?  // Vendor pump receipt reference
+  fuelStation   String // e.g. "TotalEnergies Ntinda"
+  receiptNumber String? // Vendor pump receipt reference
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -2133,11 +2164,11 @@ model VehicleMaintenanceLog {
   id                String          @id @default(cuid())
   branchId          String
   vehicleId         String
-  expenseId         String?         // Direct link to Phase 3.1D Expense record
+  expenseId         String? // Direct link to Phase 3.1D Expense record
   maintenanceDate   DateTime        @default(now())
   maintenanceType   MaintenanceType @default(ROUTINE_SERVICE)
-  garageName        String          // e.g. "Spear Motors Workshop"
-  description       String          // Work done, parts replaced
+  garageName        String // e.g. "Spear Motors Workshop"
+  description       String // Work done, parts replaced
   partsCost         Decimal         @default(0) @db.Decimal(12, 2)
   laborCost         Decimal         @default(0) @db.Decimal(12, 2)
   totalCost         Decimal         @db.Decimal(12, 2)
@@ -2222,16 +2253,16 @@ enum RequisitionStatus {
 }
 
 model InventoryStore {
-  id          String            @id @default(cuid())
-  branchId    String
-  code        String            // e.g. "STR-CENTRAL"
-  name        String            // e.g. "Main Central Store"
-  storeType   StoreLocationType @default(CENTRAL_STORE)
-  location    String?           // Room/Block
-  managerId   String?           // Staff custodian
-  isActive    Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id        String            @id @default(cuid())
+  branchId  String
+  code      String // e.g. "STR-CENTRAL"
+  name      String // e.g. "Main Central Store"
+  storeType StoreLocationType @default(CENTRAL_STORE)
+  location  String? // Room/Block
+  managerId String? // Staff custodian
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 
   branch       Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
   manager      Employee?             @relation(fields: [managerId], references: [id], onDelete: SetNull)
@@ -2248,10 +2279,10 @@ model InventoryStore {
 model InventoryItem {
   id            String                @id @default(cuid())
   branchId      String
-  code          String                // SKU e.g. "UNIF-P3-BOY"
-  name          String                // e.g. "Primary 3 Boys Uniform Set"
+  code          String // SKU e.g. "UNIF-P3-BOY"
+  name          String // e.g. "Primary 3 Boys Uniform Set"
   category      InventoryItemCategory @default(GENERAL)
-  unitOfMeasure String                // pcs, pairs, kg, bags, reams
+  unitOfMeasure String // pcs, pairs, kg, bags, reams
   unitCostPrice Decimal               @default(0) @db.Decimal(12, 2) // Weighted Average Cost
   sellingPrice  Decimal?              @db.Decimal(12, 2) // Retail price for student sales
   reorderLevel  Decimal               @default(10) @db.Decimal(10, 2)
@@ -2294,14 +2325,14 @@ model InventoryStoreStock {
 model InventorySupplier {
   id           String   @id @default(cuid())
   branchId     String
-  supplierCode String   // e.g. "SUP-001"
-  name         String   // e.g. "Mukwano Industries"
+  supplierCode String // e.g. "SUP-001"
+  name         String // e.g. "Mukwano Industries"
   contactName  String?
   phone        String
   email        String?
   address      String?
-  taxIdNumber  String?  // URA TIN
-  paymentTerms String?  // e.g. "Net 30"
+  taxIdNumber  String? // URA TIN
+  paymentTerms String? // e.g. "Net 30"
   isActive     Boolean  @default(true)
   notes        String?
   createdAt    DateTime @default(now())
@@ -2318,7 +2349,7 @@ model InventorySupplier {
 model PurchaseOrder {
   id                 String              @id @default(cuid())
   branchId           String
-  poNumber           String              // PO-2026-00001
+  poNumber           String // PO-2026-00001
   supplierId         String
   academicYearId     String
   termId             String?
@@ -2365,25 +2396,25 @@ model PurchaseOrderItem {
 }
 
 model GoodsReceivedNote {
-  id                   String    @id @default(cuid())
+  id                   String   @id @default(cuid())
   branchId             String
-  grnNumber            String    // GRN-2026-00001
+  grnNumber            String // GRN-2026-00001
   poId                 String?
   supplierId           String
   storeId              String
-  expenseId            String?   // Linked Expense voucher in ExpenseDAO
+  expenseId            String? // Linked Expense voucher in ExpenseDAO
   academicYearId       String
   termId               String?
-  deliveryDate         DateTime  @default(now())
+  deliveryDate         DateTime @default(now())
   supplierInvoiceRef   String?
   supplierNameSnapshot String
-  totalAmount          Decimal   @db.Decimal(12, 2)
+  totalAmount          Decimal  @db.Decimal(12, 2)
   notes                String?
   receivedById         String
-  isVoided             Boolean   @default(false)
+  isVoided             Boolean  @default(false)
   voidReason           String?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
   po           PurchaseOrder?      @relation(fields: [poId], references: [id], onDelete: SetNull)
@@ -2420,7 +2451,7 @@ model GoodsReceivedItem {
 model StoreRequisition {
   id              String            @id @default(cuid())
   branchId        String
-  requisitionNo   String            // REQ-2026-00001
+  requisitionNo   String // REQ-2026-00001
   storeId         String
   departmentId    String?
   requestedById   String
@@ -2462,15 +2493,15 @@ model RequisitionItem {
 model StudentStoreSale {
   id             String    @id @default(cuid())
   branchId       String
-  saleReceiptNo  String    // STR-SALE-2026-00001
+  saleReceiptNo  String // STR-SALE-2026-00001
   studentId      String
   storeId        String
   academicYearId String
   termId         String?
   saleDate       DateTime  @default(now())
   totalAmount    Decimal   @db.Decimal(12, 2)
-  invoiceItemId  String?   // If billed on account (InvoiceItem link)
-  paymentId      String?   // If paid cash/MoMo (Payment link)
+  invoiceItemId  String? // If billed on account (InvoiceItem link)
+  paymentId      String? // If paid cash/MoMo (Payment link)
   recordedById   String
   isReturned     Boolean   @default(false)
   returnReason   String?
@@ -2518,7 +2549,7 @@ model StockMovement {
   balanceAfter       Decimal           @db.Decimal(12, 2)
   unitCostAtMovement Decimal           @db.Decimal(12, 2)
   totalValuation     Decimal           @db.Decimal(14, 2)
-  referenceType      String            // "GRN", "PO", "REQUISITION", "SALE", "TRANSFER", "STOCKTAKE", "REQUIREMENT"
+  referenceType      String // "GRN", "PO", "REQUISITION", "SALE", "TRANSFER", "STOCKTAKE", "REQUIREMENT"
   referenceId        String?
   reason             String?
   performedById      String
@@ -2536,7 +2567,7 @@ model StockMovement {
 model InventorySequence {
   id        String   @id @default(cuid())
   branchId  String
-  type      String   // "PO", "GRN", "REQ", "SALE"
+  type      String // "PO", "GRN", "REQ", "SALE"
   year      Int
   lastValue Int      @default(0)
   updatedAt DateTime @updatedAt
@@ -2546,4 +2577,368 @@ model InventorySequence {
   @@unique([branchId, type, year])
 }
 
+// ==========================================
+// PHASE 3.1K: SCHOOL TREASURY, CASHBOOK & BANK RECONCILIATION
+// ==========================================
 
+enum TreasuryAccountType {
+  COMMERCIAL_BANK
+  CASH_OFFICE_SAFE
+  CASHIER_TILL
+  MOBILE_MONEY_FLOAT
+  PETTY_CASH_FLOAT
+}
+
+enum CashbookMovementType {
+  FEE_PAYMENT_RECEIPT
+  STORE_SALE_RECEIPT
+  OPERATIONAL_EXPENSE
+  PAYROLL_DISBURSEMENT
+  BANK_DEPOSIT_OUT
+  BANK_DEPOSIT_IN
+  INTER_ACCOUNT_TRANSFER_OUT
+  INTER_ACCOUNT_TRANSFER_IN
+  PETTY_CASH_DISBURSEMENT
+  PETTY_CASH_REPLENISHMENT_OUT
+  PETTY_CASH_REPLENISHMENT_IN
+  PETTY_CASH_CHANGE_RETURN
+  BANK_CHARGE
+  BANK_INTEREST_CREDIT
+  PAYMENT_REVERSAL_OUT
+  EXPENSE_VOID_IN
+  OPENING_BALANCE
+  AUDIT_ADJUSTMENT
+}
+
+enum CashDirection {
+  INFLOW
+  OUTFLOW
+}
+
+enum TransferMethod {
+  CASH_BANKING_DEPOSIT
+  BANK_TO_BANK_EFT
+  BANK_WITHDRAWAL_TO_SAFE
+  TILL_TO_SAFE_SWEEP
+  SAFE_TO_PETTY_FLOAT
+  MOMO_TO_BANK_SWEEP
+}
+
+enum TransferStatus {
+  PENDING_APPROVAL
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+}
+
+enum SessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum PettyVoucherStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  DISBURSED
+  RETIRED
+  REJECTED
+  VOIDED
+}
+
+enum StatementLineMatchStatus {
+  UNRECONCILED
+  AUTO_MATCHED
+  MANUALLY_MATCHED
+  EXCEPTION_DISCREPANCY
+  EXCLUDED
+}
+
+enum BRSStatus {
+  DRAFT
+  CERTIFIED
+  LOCKED
+}
+
+model TreasuryAccount {
+  id                     String              @id @default(cuid())
+  branchId               String
+  code                   String
+  name                   String
+  accountType            TreasuryAccountType
+  bankName               String?
+  accountNumber          String?
+  currency               String              @default("UGX")
+  swiftCode              String?
+  branchSortCode         String?
+  openingBalance         Decimal             @default(0.00) @db.Decimal(12, 2)
+  currentBalance         Decimal             @default(0.00) @db.Decimal(12, 2)
+  openingDate            DateTime            @default(now())
+  isDefaultFeeCollection Boolean             @default(false)
+  isDefaultOperations    Boolean             @default(false)
+  isDefaultPettyCash     Boolean             @default(false)
+  isActive               Boolean             @default(true)
+  custodianId            String?
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  branch            Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  custodian         User?                 @relation("AccountCustodian", fields: [custodianId], references: [id])
+  movements         CashbookMovement[]
+  outboundTransfers TreasuryTransfer[]    @relation("TransferFrom")
+  inboundTransfers  TreasuryTransfer[]    @relation("TransferTo")
+  shiftSessions     CashierShiftSession[]
+  pettyCashImprests PettyCashImprest[]
+  bankStatements    BankStatement[]
+  reconciliations   BankReconciliation[]
+  payments          Payment[]
+  expenses          Expense[]
+
+  @@unique([branchId, code])
+  @@index([branchId, accountType])
+}
+
+model CashbookMovement {
+  id              String               @id @default(cuid())
+  branchId        String
+  accountId       String
+  movementNumber  String
+  movementType    CashbookMovementType
+  direction       CashDirection
+  amount          Decimal              @db.Decimal(12, 2)
+  balanceBefore   Decimal              @db.Decimal(12, 2)
+  balanceAfter    Decimal              @db.Decimal(12, 2)
+  transactionDate DateTime             @default(now())
+  referenceNumber String?
+  description     String
+  paymentId       String?
+  expenseId       String?
+  transferId      String?
+  payrollRunId    String?
+  storeSaleId     String?
+  pettyVoucherId  String?
+  isReconciled    Boolean              @default(false)
+  reconciledAt    DateTime?
+  statementLineId String?
+  createdById     String
+  createdAt       DateTime             @default(now())
+
+  branch        Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account       TreasuryAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  payment       Payment?           @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  expense       Expense?           @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  transfer      TreasuryTransfer?  @relation(fields: [transferId], references: [id], onDelete: SetNull)
+  pettyVoucher  PettyCashVoucher?  @relation(fields: [pettyVoucherId], references: [id], onDelete: SetNull)
+  statementLine BankStatementLine? @relation(fields: [statementLineId], references: [id], onDelete: SetNull)
+  createdBy     User               @relation("CashbookMovementCreatedBy", fields: [createdById], references: [id])
+
+  @@unique([branchId, movementNumber])
+  @@index([branchId, accountId, transactionDate])
+  @@index([branchId, paymentId])
+  @@index([branchId, expenseId])
+}
+
+model TreasuryTransfer {
+  id                    String         @id @default(cuid())
+  branchId              String
+  transferNumber        String
+  fromAccountId         String
+  toAccountId           String
+  amount                Decimal        @db.Decimal(12, 2)
+  transferMethod        TransferMethod
+  depositSlipNumber     String?
+  securityEscortDetails String?
+  notes                 String?
+  status                TransferStatus @default(COMPLETED)
+  initiatedById         String
+  approvedById          String?
+  completedAt           DateTime?
+  idempotencyKey        String?
+  createdAt             DateTime       @default(now())
+
+  branch      Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  fromAccount TreasuryAccount    @relation("TransferFrom", fields: [fromAccountId], references: [id], onDelete: Restrict)
+  toAccount   TreasuryAccount    @relation("TransferTo", fields: [toAccountId], references: [id], onDelete: Restrict)
+  initiatedBy User               @relation("TransferInitiator", fields: [initiatedById], references: [id])
+  approvedBy  User?              @relation("TransferApprover", fields: [approvedById], references: [id])
+  movements   CashbookMovement[]
+
+  @@unique([branchId, transferNumber])
+  @@unique([branchId, idempotencyKey])
+  @@index([branchId, fromAccountId])
+  @@index([branchId, toAccountId])
+}
+
+model CashierShiftSession {
+  id                     String        @id @default(cuid())
+  branchId               String
+  cashierId              String
+  tillAccountId          String
+  openedAt               DateTime      @default(now())
+  closedAt               DateTime?
+  openingFloat           Decimal       @default(0.00) @db.Decimal(12, 2)
+  expectedClosingBalance Decimal?      @db.Decimal(12, 2)
+  actualCashCounted      Decimal?      @db.Decimal(12, 2)
+  cashVariance           Decimal?      @db.Decimal(12, 2)
+  denominationsJson      String? // JSON of denomination breakdown
+  varianceNotes          String?
+  supervisorWitnessId    String?
+  status                 SessionStatus @default(OPEN)
+  createdAt              DateTime      @default(now())
+
+  branch            Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  cashier           User            @relation("CashierShift", fields: [cashierId], references: [id])
+  tillAccount       TreasuryAccount @relation(fields: [tillAccountId], references: [id], onDelete: Restrict)
+  supervisorWitness User?           @relation("ShiftSupervisor", fields: [supervisorWitnessId], references: [id])
+
+  @@index([branchId, cashierId, status])
+}
+
+model PettyCashImprest {
+  id                     String   @id @default(cuid())
+  branchId               String
+  accountId              String
+  custodianId            String
+  departmentId           String?
+  name                   String
+  floatCeiling           Decimal  @db.Decimal(12, 2)
+  replenishmentThreshold Decimal  @db.Decimal(12, 2)
+  isActive               Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  branch     Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account    TreasuryAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  custodian  User               @relation("PettyCustodian", fields: [custodianId], references: [id])
+  department Department?        @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  vouchers   PettyCashVoucher[]
+
+  @@index([branchId, custodianId])
+}
+
+model PettyCashVoucher {
+  id              String             @id @default(cuid())
+  branchId        String
+  imprestId       String
+  voucherNumber   String
+  requesterId     String
+  purpose         String
+  categoryId      String
+  budgetItemId    String?
+  requestedAmount Decimal            @db.Decimal(12, 2)
+  approvedAmount  Decimal?           @db.Decimal(12, 2)
+  disbursedAmount Decimal?           @db.Decimal(12, 2)
+  spentAmount     Decimal?           @db.Decimal(12, 2)
+  changeReturned  Decimal?           @db.Decimal(12, 2)
+  receiptUrl      String?
+  status          PettyVoucherStatus @default(DRAFT)
+  approvedById    String?
+  disbursedAt     DateTime?
+  retiredAt       DateTime?
+  expenseId       String?
+  createdAt       DateTime           @default(now())
+
+  branch     Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  imprest    PettyCashImprest   @relation(fields: [imprestId], references: [id], onDelete: Restrict)
+  requester  User               @relation("VoucherRequester", fields: [requesterId], references: [id])
+  category   ExpenseCategory    @relation(fields: [categoryId], references: [id])
+  budgetItem BudgetItem?        @relation(fields: [budgetItemId], references: [id])
+  approvedBy User?              @relation("VoucherApprover", fields: [approvedById], references: [id])
+  expense    Expense?           @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  movements  CashbookMovement[]
+
+  @@unique([branchId, voucherNumber])
+  @@index([branchId, imprestId, status])
+}
+
+model BankStatement {
+  id                  String   @id @default(cuid())
+  branchId            String
+  accountId           String
+  statementIdentifier String
+  startDate           DateTime
+  endDate             DateTime
+  openingBalance      Decimal  @db.Decimal(12, 2)
+  closingBalance      Decimal  @db.Decimal(12, 2)
+  fileHash            String
+  importedById        String
+  createdAt           DateTime @default(now())
+
+  branch          Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account         TreasuryAccount      @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  importedBy      User                 @relation("StatementImporter", fields: [importedById], references: [id])
+  lines           BankStatementLine[]
+  reconciliations BankReconciliation[]
+
+  @@unique([branchId, fileHash])
+  @@unique([branchId, accountId, statementIdentifier])
+}
+
+model BankStatementLine {
+  id              String                   @id @default(cuid())
+  statementId     String
+  branchId        String
+  transactionDate DateTime
+  valueDate       DateTime?
+  reference       String?
+  narrative       String
+  amount          Decimal                  @db.Decimal(12, 2)
+  direction       CashDirection
+  runningBalance  Decimal?                 @db.Decimal(12, 2)
+  matchStatus     StatementLineMatchStatus @default(UNRECONCILED)
+  matchNotes      String?
+  matchedById     String?
+  matchedAt       DateTime?
+  createdAt       DateTime                 @default(now())
+
+  statement        BankStatement      @relation(fields: [statementId], references: [id], onDelete: Cascade)
+  branch           Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  matchedMovements CashbookMovement[]
+
+  @@index([statementId, matchStatus])
+}
+
+model BankReconciliation {
+  id                      String    @id @default(cuid())
+  branchId                String
+  accountId               String
+  statementId             String
+  reconciliationNumber    String
+  periodStartDate         DateTime
+  periodEndDate           DateTime
+  statementClosingBalance Decimal   @db.Decimal(12, 2)
+  cashbookClosingBalance  Decimal   @db.Decimal(12, 2)
+  totalDepositsInTransit  Decimal   @default(0.00) @db.Decimal(12, 2)
+  totalUnpresentedCheques Decimal   @default(0.00) @db.Decimal(12, 2)
+  totalBankCharges        Decimal   @default(0.00) @db.Decimal(12, 2)
+  totalBankInterest       Decimal   @default(0.00) @db.Decimal(12, 2)
+  adjustedBankBalance     Decimal   @db.Decimal(12, 2)
+  adjustedCashbookBalance Decimal   @db.Decimal(12, 2)
+  variance                Decimal   @default(0.00) @db.Decimal(12, 2)
+  status                  BRSStatus @default(DRAFT)
+  certifiedById           String?
+  certifiedAt             DateTime?
+  notes                   String?
+  createdAt               DateTime  @default(now())
+
+  branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account     TreasuryAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  statement   BankStatement   @relation(fields: [statementId], references: [id], onDelete: Restrict)
+  certifiedBy User?           @relation("ReconcileCertifier", fields: [certifiedById], references: [id])
+
+  @@unique([branchId, reconciliationNumber])
+  @@index([branchId, accountId, status])
+}
+
+model TreasurySequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  prefix    String // CBM, TRF, PCV, BRS
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, prefix, year])
+}

@@ -10,7 +10,7 @@ import { PayrollDAO } from "@/lib/dao/payroll.dao";
 import { BudgetDAO } from "@/lib/dao/budget.dao";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote, Scale, Package, QrCode, Bus } from "lucide-react";
+import { Tag, Layers, ArrowRight, FileText, Award, Receipt, CreditCard, BarChart3, TrendingDown, Wifi, Banknote, Scale, Package, QrCode, Bus, Vault } from "lucide-react";
 
 export default async function FinancePage() {
   const ctx = await requireAuth();
@@ -464,6 +464,34 @@ export default async function FinancePage() {
             </Link>
             <Link href="/finance/inventory" className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700">
               <span>Manage Stores</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Treasury, Multi-Account Cashbook & Bank Reconciliation Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Vault size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Treasury &amp; Bank Reconciliation</h2>
+            <p className="text-sm text-slate-500">
+              Multi-account cashbook, cashier till balancing, cash banking, petty cash imprest, and statutory BRS statements.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-emerald-800 font-mono">
+              Treasury Hub{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">cashbook &amp; BRS proof</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/treasury">
+              <Button size="sm" variant="outline" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+                Treasury Hub
+              </Button>
+            </Link>
+            <Link href="/finance/treasury" className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+              <span>Manage Treasury</span>
               <ArrowRight size={16} />
             </Link>
           </div>
