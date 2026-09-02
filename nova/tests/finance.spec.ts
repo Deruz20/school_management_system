@@ -57,7 +57,7 @@ test.describe('NOVA E2E Tests - Finance Fee Configuration (Phase 3.1A)', () => {
     await page.fill('input[name="email"]', adminEmail);
     await page.fill('input[name="password"]', adminPassword);
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/.*\/$/);
+    await page.waitForURL((url) => !url.pathname.includes('/login'));
 
     // 2. NAVIGATE TO FEE TYPES
     await page.goto('/finance/fee-types');

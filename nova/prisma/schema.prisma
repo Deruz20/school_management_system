@@ -70,6 +70,11 @@ model Branch {
   schoolPayConfig    SchoolPayConfig?
   schoolPayTransactions SchoolPayTransaction[]
   schoolPaySyncLogs  SchoolPaySyncLog[]
+  employeeCompensations EmployeeCompensation[]
+  salaryComponents   SalaryComponent[]
+  payrollRuns        PayrollRun[]
+  payslips           Payslip[]
+  payrollSequences   PayrollSequence[]
 }
 
 model BranchSettings {
@@ -112,6 +117,10 @@ model User {
 
   auditLogs      AuditLog[]
   finalizedResults TermResult[] @relation("FinalizedResults")
+  createdPayrollRuns   PayrollRun[] @relation("PayrollCreator")
+  submittedPayrollRuns PayrollRun[] @relation("PayrollSubmitter")
+  approvedPayrollRuns  PayrollRun[] @relation("PayrollApprover")
+  disbursedPayrollRuns PayrollRun[] @relation("PayrollDisburser")
 }
 
 enum UserType {
@@ -602,6 +611,8 @@ model Employee {
   headedDepartments Department[]  @relation("DepartmentHead")
 
   classSubjects  ClassSubject[] // Replaces TeacherProfile
+  compensation   EmployeeCompensation?
+  payslips       Payslip[]
 
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -1011,6 +1022,7 @@ model Expense {
 
   branch            Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   category          ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  payrollRun        PayrollRun?
 
   @@unique([branchId, idempotencyKey])
   @@unique([branchId, voucherNumber])
@@ -1138,3 +1150,247 @@ model SchoolPaySyncLog {
 
   @@index([branchId, createdAt])
 }
+
+// ============================================================================
+// FINANCE PHASE 3.1F — STAFF PAYROLL & COMPENSATION ENGINE
+// ============================================================================
+
+enum PayrollStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum PayslipStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum SalaryComponentType {
+  ALLOWANCE
+  DEDUCTION
+  EMPLOYER_CONTRIBUTION
+}
+
+enum CalculationType {
+  FIXED_AMOUNT
+  PERCENTAGE_OF_BASIC
+  PERCENTAGE_OF_GROSS
+  UGANDA_PAYE_TIER
+  NSSF_STANDARD
+}
+
+enum SalaryPaymentMethod {
+  BANK_TRANSFER
+  MOBILE_MONEY
+  CASH
+  CHEQUE
+}
+
+model EmployeeCompensation {
+  id                  String              @id @default(cuid())
+  branchId            String
+  employeeId          String              @unique
+  baseSalary          Decimal             @db.Decimal(12, 2)
+  currency            String              @default("UGX")
+  paymentMethod       SalaryPaymentMethod @default(BANK_TRANSFER)
+  
+  // Banking details
+  bankName            String?
+  bankBranch          String?
+  accountNumber       String?
+  accountName         String?
+  
+  // Mobile Money details
+  mobileMoneyNumber   String?
+  mobileMoneyProvider String?             // MTN, AIRTEL
+  
+  // Statutory IDs
+  tinNumber           String?             // URA Tax Identification Number
+  nssfNumber          String?             // NSSF 13-digit number
+  
+  isActive            Boolean             @default(true)
+  effectiveDate       DateTime            @default(now())
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  branch              Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  employee            Employee            @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  items               EmployeeSalaryItem[]
+
+  @@unique([branchId, employeeId])
+  @@index([branchId, isActive])
+}
+
+model SalaryComponent {
+  id              String              @id @default(cuid())
+  branchId        String
+  name            String              // e.g. "Housing Allowance", "NSSF Employee", "Staff SACCO"
+  code            String              // e.g. "HOUSING", "NSSF_EMP", "PAYE", "SACCO"
+  type            SalaryComponentType // ALLOWANCE, DEDUCTION, EMPLOYER_CONTRIBUTION
+  calculationType CalculationType     // FIXED_AMOUNT, PERCENTAGE_OF_BASIC, UGANDA_PAYE_TIER, NSSF_STANDARD
+  defaultAmount   Decimal?            @db.Decimal(12, 2)
+  percentageRate  Decimal?            @db.Decimal(5, 2)
+  isStatutory     Boolean             @default(false)
+  isTaxable       Boolean             @default(true)
+  description     String?
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  branch          Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  employeeItems   EmployeeSalaryItem[]
+  payslipItems    PayslipItem[]
+
+  @@unique([branchId, name])
+  @@unique([branchId, code])
+}
+
+model EmployeeSalaryItem {
+  id             String               @id @default(cuid())
+  compensationId String
+  componentId    String
+  amount         Decimal?             @db.Decimal(12, 2)
+  percentageRate Decimal?             @db.Decimal(5, 2)
+  isActive       Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  compensation   EmployeeCompensation @relation(fields: [compensationId], references: [id], onDelete: Cascade)
+  component      SalaryComponent      @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@unique([compensationId, componentId])
+}
+
+model PayrollRun {
+  id                 String        @id @default(cuid())
+  branchId           String
+  payrollNumber      String        // PR-2026-00001 (Sequential)
+  year               Int           // e.g. 2026
+  month              Int           // 1 to 12
+  title              String        // e.g. "August 2026 Staff Payroll"
+  status             PayrollStatus @default(DRAFT)
+  
+  // Aggregated Totals
+  totalBasic         Decimal       @default(0) @db.Decimal(12, 2)
+  totalAllowances    Decimal       @default(0) @db.Decimal(12, 2)
+  totalGross         Decimal       @default(0) @db.Decimal(12, 2)
+  totalDeductions    Decimal       @default(0) @db.Decimal(12, 2)
+  totalNet           Decimal       @default(0) @db.Decimal(12, 2)
+  totalEmployerCost  Decimal       @default(0) @db.Decimal(12, 2) // Gross + Employer NSSF
+  
+  totalEmployees     Int           @default(0)
+  paidEmployees      Int           @default(0)
+  
+  // Operational Outflow Link (Phase 3.1D)
+  expenseId          String?       @unique
+
+  // Lifecycle & Approvals
+  createdById        String
+  submittedById      String?
+  submittedAt        DateTime?
+  approvedById       String?
+  approvedAt         DateTime?
+  disbursedById      String?
+  disbursedAt        DateTime?
+  cancellationReason String?
+  notes              String?
+  
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  branch             Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdBy          User          @relation("PayrollCreator", fields: [createdById], references: [id])
+  submittedBy        User?         @relation("PayrollSubmitter", fields: [submittedById], references: [id])
+  approvedBy         User?         @relation("PayrollApprover", fields: [approvedById], references: [id])
+  disbursedBy        User?         @relation("PayrollDisburser", fields: [disbursedById], references: [id])
+  expense            Expense?      @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  payslips           Payslip[]
+
+  @@unique([branchId, year, month])
+  @@unique([branchId, payrollNumber])
+  @@index([branchId, year, month, status])
+}
+
+model Payslip {
+  id                   String              @id @default(cuid())
+  branchId             String
+  payrollRunId         String
+  employeeId           String
+  payslipNumber        String              // PS-2026-00001 (Sequential)
+  status               PayslipStatus       @default(PENDING)
+  
+  // Historical Snapshot Fields
+  employeeCode         String
+  employeeName         String
+  departmentName       String?
+  employeeTypeName     String?
+  tinNumber            String?
+  nssfNumber           String?
+
+  // Financial Snapshot
+  baseSalary           Decimal             @db.Decimal(12, 2)
+  totalAllowances      Decimal             @default(0) @db.Decimal(12, 2)
+  grossSalary          Decimal             @db.Decimal(12, 2)
+  totalDeductions      Decimal             @default(0) @db.Decimal(12, 2)
+  netSalary            Decimal             @db.Decimal(12, 2)
+  employerContribution Decimal             @default(0) @db.Decimal(12, 2)
+  
+  // Payment Details Snapshot
+  paymentMethod        SalaryPaymentMethod
+  bankName             String?
+  accountNumber        String?
+  accountName          String?
+  mobileMoneyNumber    String?
+  paymentDate          DateTime?
+  paymentReference     String?             // Bank transfer slip / MoMo TxID
+  
+  notes                String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  branch               Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  payrollRun           PayrollRun          @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  employee             Employee            @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  items                PayslipItem[]
+
+  @@unique([payrollRunId, employeeId])
+  @@unique([branchId, payslipNumber])
+  @@index([branchId, employeeId])
+}
+
+model PayslipItem {
+  id          String              @id @default(cuid())
+  payslipId   String
+  componentId String?
+  name        String              // e.g. "Housing Allowance", "PAYE Tax", "NSSF 5%"
+  code        String              // e.g. "HOUSING", "PAYE", "NSSF_EMP"
+  type        SalaryComponentType // ALLOWANCE, DEDUCTION, EMPLOYER_CONTRIBUTION
+  amount      Decimal             @db.Decimal(12, 2)
+  rateApplied Decimal?            @db.Decimal(5, 2)
+  isStatutory Boolean             @default(false)
+  isTaxable   Boolean             @default(true)
+  notes       String?
+
+  payslip     Payslip             @relation(fields: [payslipId], references: [id], onDelete: Cascade)
+  component   SalaryComponent?    @relation(fields: [componentId], references: [id], onDelete: SetNull)
+
+  @@index([payslipId, type])
+}
+
+model PayrollSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  type      String   // "PAYROLL_RUN" or "PAYSLIP"
+  year      Int
+  nextValue Int      @default(1)
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, type, year])
+}
+

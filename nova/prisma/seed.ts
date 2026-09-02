@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, SalaryComponentType, CalculationType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -670,6 +670,130 @@ async function main() {
       autoPostMatched: true
     }
   });
+
+  // 18. Staff Payroll & Compensation Engine Seed (Phase 3.1F)
+  const defaultSalaryComponents = [
+    {
+      name: 'Basic Salary',
+      code: 'BASIC_SALARY',
+      type: 'ALLOWANCE',
+      calculationType: 'FIXED_AMOUNT',
+      isStatutory: false,
+      isTaxable: true,
+      description: 'Base contracted monthly salary'
+    },
+    {
+      name: 'Housing Allowance',
+      code: 'HOUSING_ALLOWANCE',
+      type: 'ALLOWANCE',
+      calculationType: 'FIXED_AMOUNT',
+      isStatutory: false,
+      isTaxable: true,
+      description: 'Staff residential housing support'
+    },
+    {
+      name: 'Transport Allowance',
+      code: 'TRANSPORT_ALLOWANCE',
+      type: 'ALLOWANCE',
+      calculationType: 'FIXED_AMOUNT',
+      isStatutory: false,
+      isTaxable: true,
+      description: 'Commuter allowance'
+    },
+    {
+      name: 'NSSF Employee Contribution (5%)',
+      code: 'NSSF_EMPLOYEE',
+      type: 'DEDUCTION',
+      calculationType: 'STATUTORY_NSSF_EMPLOYEE',
+      isStatutory: true,
+      isTaxable: false,
+      description: 'Uganda statutory 5% employee NSSF contribution'
+    },
+    {
+      name: 'NSSF Employer Contribution (10%)',
+      code: 'NSSF_EMPLOYER',
+      type: 'EMPLOYER_CONTRIBUTION',
+      calculationType: 'STATUTORY_NSSF_EMPLOYER',
+      isStatutory: true,
+      isTaxable: false,
+      description: 'Uganda statutory 10% employer NSSF contribution'
+    },
+    {
+      name: 'PAYE Income Tax',
+      code: 'PAYE_TAX',
+      type: 'DEDUCTION',
+      calculationType: 'STATUTORY_PAYE',
+      isStatutory: true,
+      isTaxable: false,
+      description: 'Uganda Revenue Authority progressive Pay As You Earn tax'
+    },
+    {
+      name: 'Salary Advance Recovery',
+      code: 'ADVANCE_RECOVERY',
+      type: 'DEDUCTION',
+      calculationType: 'FIXED_AMOUNT',
+      isStatutory: false,
+      isTaxable: false,
+      description: 'Monthly recovery of approved employee advances'
+    }
+  ];
+
+  for (const sc of defaultSalaryComponents) {
+    const existingComp = await prisma.salaryComponent.findFirst({
+      where: {
+        branchId: branch1.id,
+        OR: [{ code: sc.code }, { name: sc.name }]
+      }
+    });
+    if (!existingComp) {
+      await prisma.salaryComponent.create({
+        data: {
+          branchId: branch1.id,
+          name: sc.name,
+          code: sc.code,
+          type: sc.type as SalaryComponentType,
+          calculationType: sc.calculationType as CalculationType,
+          isStatutory: sc.isStatutory,
+          isTaxable: sc.isTaxable,
+          description: sc.description,
+          isActive: true
+        }
+      });
+    }
+  }
+
+  // Seed compensation profiles for active branch employees
+  const branchEmployees = await prisma.employee.findMany({
+    where: { branchId: branch1.id, status: 'ACTIVE' }
+  });
+
+  for (const emp of branchEmployees) {
+    await prisma.employeeCompensation.upsert({
+      where: { employeeId: emp.id },
+      create: {
+        branchId: branch1.id,
+        employeeId: emp.id,
+        baseSalary: new Prisma.Decimal('1800000.00'),
+        paymentMethod: 'BANK_TRANSFER',
+        bankName: 'Stanbic Bank Uganda',
+        accountNumber: '903000889123',
+        accountName: `${emp.firstName} ${emp.lastName}`,
+        tinNumber: '1000293841',
+        nssfNumber: '1092837465012',
+        isActive: true
+      },
+      update: {
+        baseSalary: new Prisma.Decimal('1800000.00'),
+        paymentMethod: 'BANK_TRANSFER',
+        bankName: 'Stanbic Bank Uganda',
+        accountNumber: '903000889123',
+        accountName: `${emp.firstName} ${emp.lastName}`,
+        tinNumber: '1000293841',
+        nssfNumber: '1092837465012',
+        isActive: true
+      }
+    });
+  }
 
   console.log("Seeding complete!");
 }
