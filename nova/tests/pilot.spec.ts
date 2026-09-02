@@ -11,6 +11,12 @@ test.describe('NOVA E2E Tests - Pilot Verification', () => {
   test('Unauthenticated user is redirected to login', async ({ page }) => {
     await page.goto('/students');
     await expect(page).toHaveURL(/.*\/login/);
+
+    await page.goto('/finance/schoolpay');
+    await expect(page).toHaveURL(/.*\/login/);
+
+    await page.goto('/curriculum/subjects');
+    await expect(page).toHaveURL(/.*\/login/);
   });
 
   test('Full Workflow: Login, Create Student, Attendance, Verify Database', async ({ page }) => {

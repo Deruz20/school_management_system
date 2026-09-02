@@ -47,7 +47,9 @@ export async function loginAction(prevState: unknown, formData: FormData) {
     }
   });
 
-  redirect("/");
+  const callbackUrl = (formData.get("callbackUrl") as string) || "/";
+  const safeRedirect = callbackUrl.startsWith("/") && !callbackUrl.startsWith("//") ? callbackUrl : "/";
+  redirect(safeRedirect);
 }
 
 export async function logoutAction() {
