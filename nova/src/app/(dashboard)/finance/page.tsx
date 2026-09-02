@@ -440,7 +440,36 @@ export default async function FinancePage() {
             </Link>
           </div>
         </div>
+
+        {/* School Stores, Procurement & Inventory Card */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">
+              <Package size={20} />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Stores, Inventory &amp; Procurement</h2>
+            <p className="text-sm text-slate-500">
+              Multi-store stock management, Weighted Average Cost (WAC), Purchase Orders, GRNs, requisitions, and student store sales.
+            </p>
+            <div className="pt-2 text-2xl font-bold text-indigo-800 font-mono">
+              Stores &amp; Inventory{' '}
+              <span className="text-xs font-normal text-slate-500 font-sans">WAC valuation &amp; POS</span>
+            </div>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link href="/finance/inventory">
+              <Button size="sm" variant="outline" className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100">
+                Inventory Hub
+              </Button>
+            </Link>
+            <Link href="/finance/inventory" className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700">
+              <span>Manage Stores</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+

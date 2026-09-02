@@ -91,6 +91,16 @@ model Branch {
   transportSubscriptions    StudentTransportSubscription[]
   vehicleFuelLogs           VehicleFuelLog[]
   vehicleMaintenanceLogs    VehicleMaintenanceLog[]
+  inventoryStores           InventoryStore[]
+  inventoryItems            InventoryItem[]
+  inventoryStoreStocks      InventoryStoreStock[]
+  inventorySuppliers        InventorySupplier[]
+  purchaseOrders            PurchaseOrder[]
+  goodsReceivedNotes        GoodsReceivedNote[]
+  storeRequisitions         StoreRequisition[]
+  studentStoreSales         StudentStoreSale[]
+  stockMovements            StockMovement[]
+  inventorySequences        InventorySequence[]
 }
 
 model BranchSettings {
@@ -147,6 +157,12 @@ model User {
   handoversReceived         InKindHandoverLog[]      @relation("HandoverReceivedBy")
   clearancesAuthorized      StudentClearance[]       @relation("ClearanceAuthorizedBy")
   clearancesRevoked         StudentClearance[]       @relation("ClearanceRevokedBy")
+  createdPurchaseOrders     PurchaseOrder[]          @relation("POCreator")
+  approvedPurchaseOrders    PurchaseOrder[]          @relation("POApprover")
+  receivedGoodsNotes        GoodsReceivedNote[]      @relation("GRNReceiver")
+  approvedStoreRequisitions StoreRequisition[]       @relation("RequisitionApprover")
+  recordedStoreSales        StudentStoreSale[]       @relation("StoreSaleRecorder")
+  performedStockMovements   StockMovement[]          @relation("StockMovementPerformer")
 }
 
 enum UserType {
@@ -223,6 +239,9 @@ model AcademicYear {
   transportRoutes           TransportRoute[]
   vehicleRouteAssignments   VehicleRouteAssignment[]
   transportSubscriptions    StudentTransportSubscription[]
+  purchaseOrders            PurchaseOrder[]
+  goodsReceivedNotes        GoodsReceivedNote[]
+  studentStoreSales         StudentStoreSale[]
 }
 
 model Term {
@@ -247,6 +266,9 @@ model Term {
   transportRoutes           TransportRoute[]
   vehicleRouteAssignments   VehicleRouteAssignment[]
   transportSubscriptions    StudentTransportSubscription[]
+  purchaseOrders            PurchaseOrder[]
+  goodsReceivedNotes        GoodsReceivedNote[]
+  studentStoreSales         StudentStoreSale[]
 }
 
 model Class {
@@ -314,6 +336,7 @@ model Student {
   requirementRecords     StudentRequirementRecord[]
   clearances             StudentClearance[]
   transportSubscriptions StudentTransportSubscription[]
+  studentStoreSales      StudentStoreSale[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -606,9 +629,10 @@ model Department {
   description String?
   hodId       String? // Head of Department (NO @unique constraint to allow heading multiple departments)
 
-  branch    Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  hod       Employee?  @relation("DepartmentHead", fields: [hodId], references: [id])
-  employees Employee[]
+  branch            Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  hod               Employee?          @relation("DepartmentHead", fields: [hodId], references: [id])
+  employees         Employee[]
+  storeRequisitions StoreRequisition[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -657,8 +681,10 @@ model Employee {
 
   classSubjects    ClassSubject[] // Replaces TeacherProfile
   compensation     EmployeeCompensation?
-  payslips         Payslip[]
-  transportDrivers TransportDriver[]
+  payslips          Payslip[]
+  transportDrivers  TransportDriver[]
+  managedStores     InventoryStore[]
+  storeRequisitions StoreRequisition[]   @relation("RequisitionRequester")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -827,6 +853,7 @@ model InvoiceItem {
   feeType FeeType? @relation(fields: [feeTypeId], references: [id], onDelete: SetNull)
 
   transportSubscriptions StudentTransportSubscription[]
+  studentStoreSales      StudentStoreSale[]
 
   @@index([invoiceId])
 }
@@ -944,6 +971,7 @@ model Payment {
   receipt                   Receipt?
   schoolPayTransaction      SchoolPayTransaction?
   monetizedRequirementItems StudentRequirementItem[]
+  studentStoreSales         StudentStoreSale[]
 
   @@unique([branchId, idempotencyKey])
   @@unique([branchId, paymentNumber])
@@ -1074,9 +1102,10 @@ model Expense {
 
   branch          Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
   category        ExpenseCategory         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  payrollRun      PayrollRun?
-  fuelLogs        VehicleFuelLog[]
-  maintenanceLogs VehicleMaintenanceLog[]
+  payrollRun         PayrollRun?
+  fuelLogs           VehicleFuelLog[]
+  maintenanceLogs    VehicleMaintenanceLog[]
+  goodsReceivedNotes GoodsReceivedNote[]
 
   @@unique([branchId, idempotencyKey])
   @@unique([branchId, voucherNumber])
@@ -1809,6 +1838,8 @@ model InKindHandoverLog {
   isCorrection             Boolean  @default(false)
   correctionReason         String?
   notes                    String?
+  isIngestedIntoInventory  Boolean  @default(false)
+  ingestedAt               DateTime?
 
   branch      Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
   studentItem StudentRequirementItem @relation(fields: [studentRequirementItemId], references: [id], onDelete: Cascade)
@@ -2125,4 +2156,394 @@ model VehicleMaintenanceLog {
 
   @@index([branchId, vehicleId, maintenanceDate])
 }
+
+// ==========================================
+// FINANCE: INVENTORY, PROCUREMENT & STORES (PHASE 3.1J)
+// ==========================================
+
+enum StoreLocationType {
+  CENTRAL_STORE
+  BURSAR_UNIFORM_STORE
+  KITCHEN_STORE
+  SCIENCE_LAB_STORE
+  LIBRARY_STORE
+  MAINTENANCE_WORKSHOP
+  OTHER
+}
+
+enum InventoryItemCategory {
+  UNIFORM
+  SCHOLASTIC_TEXTBOOK
+  STATIONERY_OFFICE
+  FOOD_RATIONS
+  LAB_CHEMICAL_APPARATUS
+  BOARDING_SUPPLIES
+  CLEANING_HYGIENE
+  SPORTS_EQUIPMENT
+  MAINTENANCE_TOOLS
+  GENERAL
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  REJECTED
+  CANCELLED
+}
+
+enum StockMovementType {
+  PROCUREMENT_RECEIPT
+  REQUIREMENT_HANDOVER_INFLOW
+  TRANSFER_IN
+  TRANSFER_OUT
+  DEPARTMENT_ISSUE
+  DEPARTMENT_RETURN
+  STUDENT_SALE_OUTFLOW
+  STUDENT_SALE_RETURN
+  STOCKTAKE_SURPLUS
+  STOCKTAKE_DEFICIT
+  DAMAGE_WRITEOFF
+  EXPIRATION_WRITEOFF
+  VENDOR_RETURN
+}
+
+enum RequisitionStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  ISSUED
+  PARTIALLY_ISSUED
+  REJECTED
+  CANCELLED
+}
+
+model InventoryStore {
+  id          String            @id @default(cuid())
+  branchId    String
+  code        String            // e.g. "STR-CENTRAL"
+  name        String            // e.g. "Main Central Store"
+  storeType   StoreLocationType @default(CENTRAL_STORE)
+  location    String?           // Room/Block
+  managerId   String?           // Staff custodian
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  branch       Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  manager      Employee?             @relation(fields: [managerId], references: [id], onDelete: SetNull)
+  stocks       InventoryStoreStock[]
+  movements    StockMovement[]
+  grns         GoodsReceivedNote[]
+  requisitions StoreRequisition[]
+  sales        StudentStoreSale[]
+
+  @@unique([branchId, code])
+  @@index([branchId, storeType, isActive])
+}
+
+model InventoryItem {
+  id            String                @id @default(cuid())
+  branchId      String
+  code          String                // SKU e.g. "UNIF-P3-BOY"
+  name          String                // e.g. "Primary 3 Boys Uniform Set"
+  category      InventoryItemCategory @default(GENERAL)
+  unitOfMeasure String                // pcs, pairs, kg, bags, reams
+  unitCostPrice Decimal               @default(0) @db.Decimal(12, 2) // Weighted Average Cost
+  sellingPrice  Decimal?              @db.Decimal(12, 2) // Retail price for student sales
+  reorderLevel  Decimal               @default(10) @db.Decimal(10, 2)
+  description   String?
+  isActive      Boolean               @default(true)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  branch           Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  stocks           InventoryStoreStock[]
+  movements        StockMovement[]
+  poItems          PurchaseOrderItem[]
+  grnItems         GoodsReceivedItem[]
+  requisitionItems RequisitionItem[]
+  saleItems        StudentStoreSaleItem[]
+
+  @@unique([branchId, code])
+  @@index([branchId, category, isActive])
+}
+
+model InventoryStoreStock {
+  id               String    @id @default(cuid())
+  branchId         String
+  storeId          String
+  itemId           String
+  quantityOnHand   Decimal   @default(0) @db.Decimal(12, 2)
+  quantityReserved Decimal   @default(0) @db.Decimal(12, 2)
+  lastStocktakeAt  DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  branch Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  store  InventoryStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  item   InventoryItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, itemId])
+  @@index([branchId, storeId])
+}
+
+model InventorySupplier {
+  id           String   @id @default(cuid())
+  branchId     String
+  supplierCode String   // e.g. "SUP-001"
+  name         String   // e.g. "Mukwano Industries"
+  contactName  String?
+  phone        String
+  email        String?
+  address      String?
+  taxIdNumber  String?  // URA TIN
+  paymentTerms String?  // e.g. "Net 30"
+  isActive     Boolean  @default(true)
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  branch Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  pos    PurchaseOrder[]
+  grns   GoodsReceivedNote[]
+
+  @@unique([branchId, supplierCode])
+  @@index([branchId, isActive])
+}
+
+model PurchaseOrder {
+  id                 String              @id @default(cuid())
+  branchId           String
+  poNumber           String              // PO-2026-00001
+  supplierId         String
+  academicYearId     String
+  termId             String?
+  orderDate          DateTime            @default(now())
+  expectedDate       DateTime?
+  status             PurchaseOrderStatus @default(DRAFT)
+  totalAmount        Decimal             @default(0) @db.Decimal(12, 2)
+  notes              String?
+  cancellationReason String?
+  rejectionReason    String?
+  createdById        String
+  approvedById       String?
+  approvedAt         DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier     InventorySupplier   @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  academicYear AcademicYear        @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term         Term?               @relation(fields: [termId], references: [id], onDelete: Cascade)
+  createdBy    User                @relation("POCreator", fields: [createdById], references: [id])
+  approvedBy   User?               @relation("POApprover", fields: [approvedById], references: [id])
+  items        PurchaseOrderItem[]
+  grns         GoodsReceivedNote[]
+
+  @@unique([branchId, poNumber])
+  @@index([branchId, status])
+}
+
+model PurchaseOrderItem {
+  id               String  @id @default(cuid())
+  poId             String
+  itemId           String
+  itemNameSnapshot String
+  quantityOrdered  Decimal @db.Decimal(12, 2)
+  quantityReceived Decimal @default(0) @db.Decimal(12, 2)
+  unitCostPrice    Decimal @db.Decimal(12, 2)
+  lineTotalCost    Decimal @db.Decimal(12, 2)
+
+  po   PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  item InventoryItem @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([poId])
+}
+
+model GoodsReceivedNote {
+  id                   String    @id @default(cuid())
+  branchId             String
+  grnNumber            String    // GRN-2026-00001
+  poId                 String?
+  supplierId           String
+  storeId              String
+  expenseId            String?   // Linked Expense voucher in ExpenseDAO
+  academicYearId       String
+  termId               String?
+  deliveryDate         DateTime  @default(now())
+  supplierInvoiceRef   String?
+  supplierNameSnapshot String
+  totalAmount          Decimal   @db.Decimal(12, 2)
+  notes                String?
+  receivedById         String
+  isVoided             Boolean   @default(false)
+  voidReason           String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  po           PurchaseOrder?      @relation(fields: [poId], references: [id], onDelete: SetNull)
+  supplier     InventorySupplier   @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  store        InventoryStore      @relation(fields: [storeId], references: [id], onDelete: Restrict)
+  expense      Expense?            @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  academicYear AcademicYear        @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term         Term?               @relation(fields: [termId], references: [id], onDelete: Cascade)
+  receivedBy   User                @relation("GRNReceiver", fields: [receivedById], references: [id])
+  items        GoodsReceivedItem[]
+
+  @@unique([branchId, grnNumber])
+  @@index([branchId, supplierId, deliveryDate])
+}
+
+model GoodsReceivedItem {
+  id               String    @id @default(cuid())
+  grnId            String
+  itemId           String
+  itemNameSnapshot String
+  quantityReceived Decimal   @db.Decimal(12, 2)
+  unitCostPrice    Decimal   @db.Decimal(12, 2)
+  lineTotalCost    Decimal   @db.Decimal(12, 2)
+  batchNumber      String?
+  expiryDate       DateTime?
+  notes            String?
+
+  grn  GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
+  item InventoryItem     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([grnId])
+}
+
+model StoreRequisition {
+  id              String            @id @default(cuid())
+  branchId        String
+  requisitionNo   String            // REQ-2026-00001
+  storeId         String
+  departmentId    String?
+  requestedById   String
+  approvedById    String?
+  status          RequisitionStatus @default(PENDING_APPROVAL)
+  purpose         String
+  requestDate     DateTime          @default(now())
+  issuedDate      DateTime?
+  rejectionReason String?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  branch      Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  store       InventoryStore    @relation(fields: [storeId], references: [id], onDelete: Restrict)
+  department  Department?       @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  requestedBy Employee          @relation("RequisitionRequester", fields: [requestedById], references: [id])
+  approvedBy  User?             @relation("RequisitionApprover", fields: [approvedById], references: [id])
+  items       RequisitionItem[]
+
+  @@unique([branchId, requisitionNo])
+  @@index([branchId, status])
+}
+
+model RequisitionItem {
+  id                String  @id @default(cuid())
+  requisitionId     String
+  itemId            String
+  quantityRequested Decimal @db.Decimal(12, 2)
+  quantityIssued    Decimal @default(0) @db.Decimal(12, 2)
+  unitCostSnapshot  Decimal @db.Decimal(12, 2)
+
+  requisition StoreRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  item        InventoryItem    @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([requisitionId])
+}
+
+model StudentStoreSale {
+  id             String    @id @default(cuid())
+  branchId       String
+  saleReceiptNo  String    // STR-SALE-2026-00001
+  studentId      String
+  storeId        String
+  academicYearId String
+  termId         String?
+  saleDate       DateTime  @default(now())
+  totalAmount    Decimal   @db.Decimal(12, 2)
+  invoiceItemId  String?   // If billed on account (InvoiceItem link)
+  paymentId      String?   // If paid cash/MoMo (Payment link)
+  recordedById   String
+  isReturned     Boolean   @default(false)
+  returnReason   String?
+  returnedAt     DateTime?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  branch       Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student      Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  store        InventoryStore         @relation(fields: [storeId], references: [id], onDelete: Restrict)
+  academicYear AcademicYear           @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term         Term?                  @relation(fields: [termId], references: [id], onDelete: Cascade)
+  invoiceItem  InvoiceItem?           @relation(fields: [invoiceItemId], references: [id], onDelete: SetNull)
+  payment      Payment?               @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  recordedBy   User                   @relation("StoreSaleRecorder", fields: [recordedById], references: [id])
+  items        StudentStoreSaleItem[]
+
+  @@unique([branchId, saleReceiptNo])
+  @@index([branchId, studentId, saleDate])
+}
+
+model StudentStoreSaleItem {
+  id               String  @id @default(cuid())
+  saleId           String
+  itemId           String
+  itemNameSnapshot String
+  quantity         Decimal @db.Decimal(10, 2)
+  unitPrice        Decimal @db.Decimal(12, 2)
+  totalPrice       Decimal @db.Decimal(12, 2)
+
+  sale StudentStoreSale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  item InventoryItem    @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([saleId])
+}
+
+model StockMovement {
+  id                 String            @id @default(cuid())
+  branchId           String
+  storeId            String
+  itemId             String
+  movementType       StockMovementType
+  quantityDelta      Decimal           @db.Decimal(12, 2)
+  balanceAfter       Decimal           @db.Decimal(12, 2)
+  unitCostAtMovement Decimal           @db.Decimal(12, 2)
+  totalValuation     Decimal           @db.Decimal(14, 2)
+  referenceType      String            // "GRN", "PO", "REQUISITION", "SALE", "TRANSFER", "STOCKTAKE", "REQUIREMENT"
+  referenceId        String?
+  reason             String?
+  performedById      String
+  createdAt          DateTime          @default(now())
+
+  branch      Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  store       InventoryStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  item        InventoryItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  performedBy User           @relation("StockMovementPerformer", fields: [performedById], references: [id])
+
+  @@index([branchId, storeId, itemId, createdAt])
+  @@index([branchId, movementType])
+}
+
+model InventorySequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  type      String   // "PO", "GRN", "REQ", "SALE"
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, type, year])
+}
+
 
