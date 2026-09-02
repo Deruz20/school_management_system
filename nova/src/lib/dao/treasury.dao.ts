@@ -870,15 +870,28 @@ export class TreasuryDAO {
     this.checkPermission(ctx, "treasury:transfers:approve");
 
     return db.$transaction(async (tx) => {
+      const lockedTransfers = await tx.$queryRaw<
+        Array<{ id: string; status: TransferStatus; initiatedById: string }>
+      >`
+        SELECT "id", "status", "initiatedById"
+        FROM "TreasuryTransfer"
+        WHERE "id" = ${transferId} AND "branchId" = ${ctx.branchId}
+        FOR UPDATE;
+      `;
+      const lockedTransfer = lockedTransfers[0];
+      if (!lockedTransfer) {
+        throw new Error("Transfer not found or access denied.");
+      }
+      if (lockedTransfer.status !== TransferStatus.PENDING_APPROVAL) {
+        throw new Error(`Transfer cannot be approved in its current status: ${lockedTransfer.status}`);
+      }
+
       const transfer = await tx.treasuryTransfer.findFirst({
         where: { id: transferId, branchId: ctx.branchId },
         include: { fromAccount: true, toAccount: true },
       });
       if (!transfer) {
         throw new Error("Transfer not found or access denied.");
-      }
-      if (transfer.status !== TransferStatus.PENDING_APPROVAL) {
-        throw new Error(`Transfer cannot be approved in its current status: ${transfer.status}`);
       }
 
       // Anti-self-approval rule (Four-Eye principle)
@@ -940,15 +953,28 @@ export class TreasuryDAO {
     }
 
     return db.$transaction(async (tx) => {
+      const lockedTransfers = await tx.$queryRaw<
+        Array<{ id: string; status: TransferStatus }>
+      >`
+        SELECT "id", "status"
+        FROM "TreasuryTransfer"
+        WHERE "id" = ${transferId} AND "branchId" = ${ctx.branchId}
+        FOR UPDATE;
+      `;
+      const lockedTransfer = lockedTransfers[0];
+      if (!lockedTransfer) {
+        throw new Error("Bank deposit transfer not found or access denied.");
+      }
+      if (lockedTransfer.status !== TransferStatus.IN_TRANSIT) {
+        throw new Error(`Deposit transfer is not in transit (current status: ${lockedTransfer.status}).`);
+      }
+
       const transfer = await tx.treasuryTransfer.findFirst({
         where: { id: transferId, branchId: ctx.branchId },
         include: { fromAccount: true, toAccount: true },
       });
       if (!transfer) {
         throw new Error("Bank deposit transfer not found or access denied.");
-      }
-      if (transfer.status !== TransferStatus.IN_TRANSIT) {
-        throw new Error(`Deposit transfer is not in transit (current status: ${transfer.status}).`);
       }
 
       // Credit Bank Account
@@ -1097,15 +1123,28 @@ export class TreasuryDAO {
     this.checkPermission(ctx, "treasury:petty:disburse");
 
     return db.$transaction(async (tx) => {
+      const lockedVouchers = await tx.$queryRaw<
+        Array<{ id: string; status: PettyVoucherStatus }>
+      >`
+        SELECT "id", "status"
+        FROM "PettyCashVoucher"
+        WHERE "id" = ${voucherId} AND "branchId" = ${ctx.branchId}
+        FOR UPDATE;
+      `;
+      const lockedVoucher = lockedVouchers[0];
+      if (!lockedVoucher) {
+        throw new Error("Petty cash voucher not found or access denied.");
+      }
+      if (lockedVoucher.status !== PettyVoucherStatus.APPROVED) {
+        throw new Error(`Voucher cannot be disbursed in current status: ${lockedVoucher.status}.`);
+      }
+
       const voucher = await tx.pettyCashVoucher.findFirst({
         where: { id: voucherId, branchId: ctx.branchId },
         include: { imprest: { include: { account: true } } },
       });
       if (!voucher) {
         throw new Error("Petty cash voucher not found or access denied.");
-      }
-      if (voucher.status !== PettyVoucherStatus.APPROVED) {
-        throw new Error(`Voucher cannot be disbursed in current status: ${voucher.status}.`);
       }
 
       const amountToDisburse = voucher.approvedAmount || voucher.requestedAmount;
@@ -1146,15 +1185,28 @@ export class TreasuryDAO {
     const change = new Prisma.Decimal(input.changeReturned);
 
     return db.$transaction(async (tx) => {
+      const lockedVouchers = await tx.$queryRaw<
+        Array<{ id: string; status: PettyVoucherStatus }>
+      >`
+        SELECT "id", "status"
+        FROM "PettyCashVoucher"
+        WHERE "id" = ${voucherId} AND "branchId" = ${ctx.branchId}
+        FOR UPDATE;
+      `;
+      const lockedVoucher = lockedVouchers[0];
+      if (!lockedVoucher) {
+        throw new Error("Petty cash voucher not found or access denied.");
+      }
+      if (lockedVoucher.status !== PettyVoucherStatus.DISBURSED) {
+        throw new Error(`Voucher cannot be retired in current status: ${lockedVoucher.status}.`);
+      }
+
       const voucher = await tx.pettyCashVoucher.findFirst({
         where: { id: voucherId, branchId: ctx.branchId },
         include: { imprest: true },
       });
       if (!voucher) {
         throw new Error("Petty cash voucher not found or access denied.");
-      }
-      if (voucher.status !== PettyVoucherStatus.DISBURSED) {
-        throw new Error(`Voucher cannot be retired in current status: ${voucher.status}.`);
       }
 
       const disbursed = voucher.disbursedAmount || new Prisma.Decimal(0);

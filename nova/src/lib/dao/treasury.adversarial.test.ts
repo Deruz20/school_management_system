@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TreasuryDAO } from './treasury.dao';
 import { PaymentDAO } from './payment.dao';
+import { ExpenseDAO } from './expense.dao';
 import { InvoiceDAO } from './invoice.dao';
 import { db } from '../db';
 import { TenantContext } from './tenant-context';
@@ -10,10 +11,11 @@ import {
   CashDirection,
   TransferMethod,
   TransferStatus,
+  SessionStatus,
   PaymentMethod,
 } from '@prisma/client';
 
-describe('TreasuryDAO & Adversarial Invariant Matrix (ADV-TR-01 .. ADV-TR-10)', () => {
+describe('TreasuryDAO & Adversarial Invariant Matrix (ADV-TR-01 .. ADV-TR-18)', () => {
   let ctx1: TenantContext;
   let ctx2: TenantContext;
   let branchId1: string;
@@ -474,5 +476,300 @@ describe('TreasuryDAO & Adversarial Invariant Matrix (ADV-TR-01 .. ADV-TR-10)', 
         transferMethod: TransferMethod.BANK_TO_BANK_EFT,
       })
     ).rejects.toThrow(/not found in this branch/i);
+  });
+
+  // ADV-TR-11: Concurrent Payment Posting
+  it('ADV-TR-11: should serialize concurrent PaymentDAO payments and maintain exact balance integrity', async () => {
+    const bank = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-BNK-11-${Date.now()}`,
+      name: 'Concurrent Payments Bank',
+      accountType: TreasuryAccountType.COMMERCIAL_BANK,
+      isDefaultFeeCollection: true,
+      openingBalance: 0,
+    });
+
+    const promises = Array.from({ length: 4 }).map(async (_, i) => {
+      const st = await db.student.create({
+        data: {
+          branchId: branchId1,
+          admissionNo: `ADV-C-ST-${Date.now()}-${i}`,
+          firstName: `Student${i}`,
+          lastName: 'Concurrent',
+          dateOfBirth: new Date('2010-01-01'),
+          gender: 'MALE',
+          status: 'ACTIVE',
+        },
+      });
+      return PaymentDAO.recordPayment(ctx1, {
+        studentId: st.id,
+        amount: 200000,
+        paymentMethod: PaymentMethod.BANK_TRANSFER,
+      });
+    });
+
+    const results = await Promise.all(promises);
+    expect(results).toHaveLength(4);
+
+    const bankAfter = await TreasuryDAO.getTreasuryAccountById(ctx1, bank.id);
+    expect(bankAfter.currentBalance.toNumber()).toBe(800000);
+
+    const integrity = await TreasuryDAO.assertLedgerIntegrity(ctx1, bank.id);
+    expect(integrity.isExactMatch).toBe(true);
+  });
+
+  // ADV-TR-12: Concurrent Expense Posting
+  it('ADV-TR-12: should serialize concurrent ExpenseDAO expense outflows without lost updates', async () => {
+    const bank = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-BNK-12-${Date.now()}`,
+      name: 'Concurrent Expenses Bank',
+      accountType: TreasuryAccountType.COMMERCIAL_BANK,
+      isDefaultOperations: true,
+      openingBalance: 5000000,
+    });
+
+    const expCat = await db.expenseCategory.create({
+      data: { branchId: branchId1, name: `Concurrent Cat ${Date.now()}`, code: `CC_${Date.now()}` },
+    });
+
+    const promises = Array.from({ length: 5 }).map((_, i) =>
+      ExpenseDAO.createExpense(ctx1, {
+        categoryId: expCat.id,
+        title: `Concurrent Disbursement #${i}`,
+        amount: 250000,
+        paymentMethod: PaymentMethod.BANK_TRANSFER,
+      })
+    );
+
+    const results = await Promise.all(promises);
+    expect(results).toHaveLength(5);
+
+    const bankAfter = await TreasuryDAO.getTreasuryAccountById(ctx1, bank.id);
+    expect(bankAfter.currentBalance.toNumber()).toBe(3750000);
+
+    const integrity = await TreasuryDAO.assertLedgerIntegrity(ctx1, bank.id);
+    expect(integrity.isExactMatch).toBe(true);
+  });
+
+  // ADV-TR-13: Concurrent Transfer Overdraft Guard
+  it('ADV-TR-13: should prevent physical cash overdraft under concurrent transfer requests', async () => {
+    const safe = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-SAFE-13-${Date.now()}`,
+      name: 'Limited Vault',
+      accountType: TreasuryAccountType.CASH_OFFICE_SAFE,
+      openingBalance: 600000,
+    });
+
+    const bank = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-BNK-13-${Date.now()}`,
+      name: 'Deposit Bank 13',
+      accountType: TreasuryAccountType.COMMERCIAL_BANK,
+      openingBalance: 0,
+    });
+
+    const req1 = TreasuryDAO.createTreasuryTransfer(ctx1, {
+      fromAccountId: safe.id,
+      toAccountId: bank.id,
+      amount: 400000,
+      transferMethod: TransferMethod.CASH_BANKING_DEPOSIT,
+    });
+    const req2 = TreasuryDAO.createTreasuryTransfer(ctx1, {
+      fromAccountId: safe.id,
+      toAccountId: bank.id,
+      amount: 400000,
+      transferMethod: TransferMethod.CASH_BANKING_DEPOSIT,
+    });
+
+    const settled = await Promise.allSettled([req1, req2]);
+    const fulfilled = settled.filter((s) => s.status === 'fulfilled');
+    const rejected = settled.filter((s) => s.status === 'rejected');
+
+    expect(fulfilled.length).toBe(1);
+    expect(rejected.length).toBe(1);
+
+    const safeAfter = await TreasuryDAO.getTreasuryAccountById(ctx1, safe.id);
+    expect(safeAfter.currentBalance.toNumber()).toBe(200000);
+  });
+
+  // ADV-TR-14: Concurrent Cashier Shift Close
+  it('ADV-TR-14: should reject concurrent duplicate cashier shift close attempts', async () => {
+    const till = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-TILL-14-${Date.now()}`,
+      name: 'Shift Till 14',
+      accountType: TreasuryAccountType.CASHIER_TILL,
+      openingBalance: 0,
+    });
+
+    const session = await TreasuryDAO.openShiftSession(ctx1, {
+      tillAccountId: till.id,
+      openingFloat: 50000,
+    });
+
+    const close1 = TreasuryDAO.recordShiftCashCountAndClose(ctx1, {
+      sessionId: session.id,
+      actualCashCounted: 50000,
+    });
+    const close2 = TreasuryDAO.recordShiftCashCountAndClose(ctx1, {
+      sessionId: session.id,
+      actualCashCounted: 50000,
+    });
+
+    const settled = await Promise.allSettled([close1, close2]);
+    const fulfilled = settled.filter((s) => s.status === 'fulfilled');
+    const rejected = settled.filter((s) => s.status === 'rejected');
+
+    expect(fulfilled.length).toBe(1);
+    expect(rejected.length).toBe(1);
+
+    const sessionAfter = await db.cashierShiftSession.findUnique({ where: { id: session.id } });
+    expect(sessionAfter?.status).toBe(SessionStatus.CLOSED);
+  });
+
+  // ADV-TR-15: Duplicate Deposit Confirmation Guard
+  it('ADV-TR-15: should reject duplicate confirmation of Cash Banking deposit without double-crediting bank', async () => {
+    const safe = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-SAFE-15-${Date.now()}`,
+      name: 'Cash Safe 15',
+      accountType: TreasuryAccountType.CASH_OFFICE_SAFE,
+      openingBalance: 2000000,
+    });
+
+    const bank = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-BNK-15-${Date.now()}`,
+      name: 'Commercial Bank 15',
+      accountType: TreasuryAccountType.COMMERCIAL_BANK,
+      openingBalance: 10000000,
+    });
+
+    const transferResult = await TreasuryDAO.createTreasuryTransfer(ctx1, {
+      fromAccountId: safe.id,
+      toAccountId: bank.id,
+      amount: 1000000,
+      transferMethod: TransferMethod.CASH_BANKING_DEPOSIT,
+    });
+
+    const conf1 = TreasuryDAO.confirmCashBankingDeposit(ctx1, transferResult.transfer.id, {
+      depositSlipNumber: 'SLIP-99001',
+    });
+    const conf2 = TreasuryDAO.confirmCashBankingDeposit(ctx1, transferResult.transfer.id, {
+      depositSlipNumber: 'SLIP-99001',
+    });
+
+    const settled = await Promise.allSettled([conf1, conf2]);
+    const fulfilled = settled.filter((s) => s.status === 'fulfilled');
+    const rejected = settled.filter((s) => s.status === 'rejected');
+
+    expect(fulfilled.length).toBe(1);
+    expect(rejected.length).toBe(1);
+
+    const bankAfter = await TreasuryDAO.getTreasuryAccountById(ctx1, bank.id);
+    expect(bankAfter.currentBalance.toNumber()).toBe(11000000);
+  });
+
+  // ADV-TR-16: Concurrent Petty Cash Operations
+  it('ADV-TR-16: should serialize petty cash voucher disbursements and prevent float overdraft', async () => {
+    const floatAcc = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-PETTY-16-${Date.now()}`,
+      name: 'Float 16',
+      accountType: TreasuryAccountType.PETTY_CASH_FLOAT,
+      openingBalance: 150000,
+    });
+
+    const imprest = await TreasuryDAO.createPettyCashImprest(ctx1, {
+      accountId: floatAcc.id,
+      custodianId: user1Id,
+      name: 'Float 16 Imprest',
+      floatCeiling: 150000,
+      replenishmentThreshold: 50000,
+    });
+
+    const expCategory = await db.expenseCategory.create({
+      data: { branchId: branchId1, name: `Petty Cat ${Date.now()}`, code: `PC_${Date.now()}` },
+    });
+
+    const v1 = await TreasuryDAO.createPettyCashVoucher(ctx1, {
+      imprestId: imprest.id,
+      purpose: 'Voucher 1',
+      categoryId: expCategory.id,
+      requestedAmount: 100000,
+    });
+    await TreasuryDAO.approvePettyCashVoucher(ctx1, v1.id, { approvedAmount: 100000 });
+
+    const v2 = await TreasuryDAO.createPettyCashVoucher(ctx1, {
+      imprestId: imprest.id,
+      purpose: 'Voucher 2',
+      categoryId: expCategory.id,
+      requestedAmount: 100000,
+    });
+    await TreasuryDAO.approvePettyCashVoucher(ctx1, v2.id, { approvedAmount: 100000 });
+
+    const disb1 = TreasuryDAO.disbursePettyCashVoucher(ctx1, v1.id);
+    const disb2 = TreasuryDAO.disbursePettyCashVoucher(ctx1, v2.id);
+
+    const settled = await Promise.allSettled([disb1, disb2]);
+    const fulfilled = settled.filter((s) => s.status === 'fulfilled');
+    const rejected = settled.filter((s) => s.status === 'rejected');
+
+    expect(fulfilled.length).toBe(1);
+    expect(rejected.length).toBe(1);
+
+    const floatAfter = await TreasuryDAO.getTreasuryAccountById(ctx1, floatAcc.id);
+    expect(floatAfter.currentBalance.toNumber()).toBe(50000);
+  });
+
+  // ADV-TR-17: Cross-Phase Operational Expense Integration
+  it('ADV-TR-17: should route operational expenses from subsystems into single treasury outflow without duplicate', async () => {
+    const bank = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-OPS-17-${Date.now()}`,
+      name: 'Subsystem Ops Bank',
+      accountType: TreasuryAccountType.COMMERCIAL_BANK,
+      isDefaultOperations: true,
+      openingBalance: 10000000,
+    });
+
+    const category = await db.expenseCategory.create({
+      data: { branchId: branchId1, name: `Transport Ops ${Date.now()}`, code: `TR_OPS_${Date.now()}` },
+    });
+
+    const expResult = await ExpenseDAO.createExpense(ctx1, {
+      categoryId: category.id,
+      title: 'Bus Diesel Refueling (Fleet #UBA-123)',
+      amount: 650000,
+      paymentMethod: PaymentMethod.BANK_TRANSFER,
+    });
+
+    const bankAfter = await TreasuryDAO.getTreasuryAccountById(ctx1, bank.id);
+    expect(bankAfter.currentBalance.toNumber()).toBe(9350000);
+
+    const movements = await TreasuryDAO.getCashbookMovements(ctx1, bank.id);
+    const opMovements = movements.filter((m) => m.expenseId === expResult.expense.id);
+    expect(opMovements).toHaveLength(1);
+    expect(opMovements[0].movementType).toBe(CashbookMovementType.OPERATIONAL_EXPENSE);
+    expect(opMovements[0].amount.toNumber()).toBe(650000);
+  });
+
+  // ADV-TR-18: Cross-Phase Payment Subsystem Integration
+  it('ADV-TR-18: should route SchoolPay/fee payments to designated fee bank without duplicate ledger or cashbook impact', async () => {
+    const feeBank = await TreasuryDAO.createTreasuryAccount(ctx1, {
+      code: `ADV-FEE-18-${Date.now()}`,
+      name: 'SchoolPay Settlement Bank',
+      accountType: TreasuryAccountType.COMMERCIAL_BANK,
+      isDefaultFeeCollection: true,
+      openingBalance: 20000000,
+    });
+
+    const paymentResult = await PaymentDAO.recordPayment(ctx1, {
+      studentId: student1Id,
+      amount: 500000,
+      paymentMethod: PaymentMethod.SCHOOLPAY,
+      externalReference: `SPAY-EXT-${Date.now()}`,
+    });
+
+    const bankAfter = await TreasuryDAO.getTreasuryAccountById(ctx1, feeBank.id);
+    expect(bankAfter.currentBalance.toNumber()).toBe(20500000);
+
+    const movements = await TreasuryDAO.getCashbookMovements(ctx1, feeBank.id);
+    const feeMovements = movements.filter((m) => m.paymentId === paymentResult.payment.id);
+    expect(feeMovements).toHaveLength(1);
+    expect(feeMovements[0].movementType).toBe(CashbookMovementType.FEE_PAYMENT_RECEIPT);
   });
 });
