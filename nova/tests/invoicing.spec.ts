@@ -38,8 +38,13 @@ test.describe('NOVA E2E Tests - Finance Invoicing & Billing Engine (Phase 3.1B)'
   });
 
   test.afterAll(async () => {
-    await prisma.user.deleteMany({ where: { email: adminEmail } });
-    await prisma.$disconnect();
+    try {
+      await prisma.user.deleteMany({ where: { email: adminEmail } });
+    } catch {
+      // Best-effort test cleanup
+    } finally {
+      await prisma.$disconnect();
+    }
   });
 
   test('Invoicing & Billing Workflow: Bursaries, Bulk Billing, Invoices, Detail View & Voiding', async ({ page }) => {

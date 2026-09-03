@@ -12,6 +12,7 @@ import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
 import { UgandaStatutoryEngine } from "../payroll/uganda-statutory";
 import { ExpenseDAO } from "./expense.dao";
+import { GLIntegrationService } from "./gl-integration.service";
 import crypto from "crypto";
 
 export class PayrollDAO {
@@ -703,13 +704,24 @@ export class PayrollDAO {
       throw new Error("Segregation of duties violation: Submitter cannot self-approve payroll run.");
     }
 
-    const updated = await db.payrollRun.update({
-      where: { id },
-      data: {
-        status: PayrollStatus.APPROVED,
-        approvedById: ctx.userId,
-        approvedAt: new Date(),
-      },
+    const updated = await db.$transaction(async (tx) => {
+      const up = await tx.payrollRun.update({
+        where: { id },
+        data: {
+          status: PayrollStatus.APPROVED,
+          approvedById: ctx.userId,
+          approvedAt: new Date(),
+        },
+      });
+
+      // Post Payroll Accrual to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postPayrollAccrual(tx, ctx, id);
+      } catch {
+        // Non-blocking fallback
+      }
+
+      return up;
     });
 
     await AuditService.log(
@@ -880,6 +892,13 @@ export class PayrollDAO {
             expense: true,
           },
         });
+
+        // Post Payroll Net Disbursement to General Ledger (Phase 3.1L)
+        try {
+          await GLIntegrationService.postPayrollDisbursement(tx, ctx, freshRun.id);
+        } catch {
+          // Non-blocking fallback
+        }
 
         return { payrollRun: updatedRun, expense, isReplay: false };
       });

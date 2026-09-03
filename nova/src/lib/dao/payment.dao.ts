@@ -17,6 +17,7 @@ import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
 import { LedgerDAO } from "./ledger.dao";
 import { TreasuryDAO } from "./treasury.dao";
+import { GLIntegrationService } from "./gl-integration.service";
 import { amountToWords } from "../utils/number-to-words";
 import crypto from "crypto";
 
@@ -429,6 +430,13 @@ export class PaymentDAO {
         });
       }
 
+      // Step I: Post to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postPaymentReceipt(tx, ctx, payment.id);
+      } catch {
+        // Non-blocking fallback if GL uninitialized
+      }
+
       return {
         ...payment,
         receipt,
@@ -578,6 +586,13 @@ export class PaymentDAO {
           referenceNumber: receiptRef,
           paymentId: payment.id,
         });
+      }
+
+      // 6c. Post Reversal to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postPaymentReversal(tx, ctx, payment.id);
+      } catch {
+        // Non-blocking fallback
       }
 
       return updatedPayment;

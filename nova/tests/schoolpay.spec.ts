@@ -38,8 +38,13 @@ test.describe('NOVA E2E Tests — SchoolPay Gateway & Reconciliation (Phase 3.1E
   });
 
   test.afterAll(async () => {
-    await prisma.user.deleteMany({ where: { email: adminEmail } });
-    await prisma.$disconnect();
+    try {
+      await prisma.user.deleteMany({ where: { email: adminEmail } });
+    } catch {
+      // Best-effort test cleanup
+    } finally {
+      await prisma.$disconnect();
+    }
   });
 
   test('SchoolPay Uganda Reconciliation Dashboard & Workflows', async ({ page }) => {

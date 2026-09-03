@@ -15,6 +15,7 @@ import { ExpenseDAO } from "./expense.dao";
 import { PaymentDAO } from "./payment.dao";
 import { LedgerDAO } from "./ledger.dao";
 import { TenantContext } from "./tenant-context";
+import { GLIntegrationService } from "./gl-integration.service";
 
 export interface Context {
   branchId: string;
@@ -1202,6 +1203,13 @@ export class InventoryDAO {
         })
       );
 
+      // Post GRN Receipt to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postGRNReceipt(tx, toTenantContext(ctx), grn.id);
+      } catch {
+        // Non-blocking fallback
+      }
+
       return grn;
     });
   }
@@ -1793,6 +1801,13 @@ export class InventoryDAO {
         JSON.stringify({ requisitionNo: updated.requisitionNo, status: updated.status })
       );
 
+      // Post Requisition Issue to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postStoreRequisition(tx, toTenantContext(ctx), updated.id);
+      } catch {
+        // Non-blocking fallback
+      }
+
       return updated;
     });
   }
@@ -2127,6 +2142,13 @@ export class InventoryDAO {
           isInvoiceCharge: input.isInvoiceCharge,
         })
       );
+
+      // Post Store Sale to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postStoreSale(tx, toTenantContext(ctx), sale.id);
+      } catch {
+        // Non-blocking fallback
+      }
 
       return sale;
     });

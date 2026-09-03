@@ -11,6 +11,7 @@ import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
 import { BudgetDAO } from "./budget.dao";
 import { TreasuryDAO } from "./treasury.dao";
+import { GLIntegrationService } from "./gl-integration.service";
 import crypto from "crypto";
 
 export interface CreateExpenseInput {
@@ -219,6 +220,13 @@ export class ExpenseDAO {
         });
       }
 
+      // Post to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postExpenseDisbursement(tx, ctx, expense.id);
+      } catch {
+        // Non-blocking fallback
+      }
+
       return expense;
     });
 
@@ -316,8 +324,15 @@ export class ExpenseDAO {
           amount: expense.amount,
           description: `Expense Void Re-credit: ${expense.title} (${expense.voucherNumber})`,
           referenceNumber: expense.voucherNumber,
-          expenseId: expense.id,
+          transactionDate: new Date(),
         });
+      }
+
+      // Post Void Reversal to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postExpenseVoid(tx, ctx, expense.id);
+      } catch {
+        // Non-blocking fallback
       }
 
       return updated;

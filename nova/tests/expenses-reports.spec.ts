@@ -50,9 +50,14 @@ test.describe('NOVA E2E Tests — Expenses & Financial Reports (Phase 3.1D)', ()
   });
 
   test.afterAll(async () => {
-    await prisma.expense.deleteMany({ where: { title: { contains: 'E2E' } } });
-    await prisma.user.deleteMany({ where: { email: adminEmail } });
-    await prisma.$disconnect();
+    try {
+      await prisma.expense.deleteMany({ where: { title: { contains: 'E2E' } } });
+      await prisma.user.deleteMany({ where: { email: adminEmail } });
+    } catch {
+      // Best-effort test cleanup
+    } finally {
+      await prisma.$disconnect();
+    }
   });
 
   test('Expenses & Financial Reports Workflow', async ({ page }) => {

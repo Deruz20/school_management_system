@@ -40,8 +40,13 @@ test.describe('NOVA E2E Tests - Staff & HR Core', () => {
 
   test.afterAll(async () => {
     // Cleanup
-    await prisma.user.deleteMany({ where: { email: adminEmail } });
-    await prisma.$disconnect();
+    try {
+      await prisma.user.deleteMany({ where: { email: adminEmail } });
+    } catch {
+      // Best-effort test cleanup
+    } finally {
+      await prisma.$disconnect();
+    }
   });
 
   test('Staff/HR Core Workflow: Employee, Department, EmployeeType', async ({ page }) => {

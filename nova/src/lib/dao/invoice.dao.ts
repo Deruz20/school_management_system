@@ -3,6 +3,7 @@ import { Prisma, DiscountType, InvoiceStatus, Invoice } from "@prisma/client";
 import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
 import { LedgerDAO } from "./ledger.dao";
+import { GLIntegrationService } from "./gl-integration.service";
 import crypto from "crypto";
 
 export interface EvaluatedLineItem {
@@ -450,6 +451,13 @@ export class InvoiceDAO {
 
       await LedgerDAO.syncInvoiceIssued(tx, ctx.branchId, createdInvoice, ctx.userId);
 
+      // Post to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postInvoiceBilling(tx, ctx, createdInvoice.id);
+      } catch {
+        // Non-blocking fallback
+      }
+
       return createdInvoice;
     });
 
@@ -641,6 +649,13 @@ export class InvoiceDAO {
         totalDiscountDecimal = totalDiscountDecimal.add(created.discountAmount);
 
         await LedgerDAO.syncInvoiceIssued(tx, ctx.branchId, created, ctx.userId);
+
+        // Post to General Ledger (Phase 3.1L)
+        try {
+          await GLIntegrationService.postInvoiceBilling(tx, ctx, created.id);
+        } catch {
+          // Non-blocking fallback
+        }
       }
     });
 
@@ -715,6 +730,13 @@ export class InvoiceDAO {
       });
 
       await LedgerDAO.syncInvoiceVoided(tx, ctx.branchId, invoice, voidReason, ctx.userId);
+
+      // Post to General Ledger Void (Phase 3.1L)
+      try {
+        await GLIntegrationService.postInvoiceVoid(tx, ctx, invoice.id);
+      } catch {
+        // Non-blocking fallback
+      }
 
       return updatedInvoice;
     });

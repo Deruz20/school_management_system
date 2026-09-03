@@ -111,6 +111,13 @@ model Branch {
   bankReconciliations       BankReconciliation[]
   treasurySequences         TreasurySequence[]
   StockMovement             StockMovement[]
+  glAccounts                GLAccount[]
+  fiscalYears               FiscalYear[]
+  fiscalPeriods             FiscalPeriod[]
+  journalEntries            JournalEntry[]
+  journalLines              JournalLine[]
+  glAccountMappings         GLAccountMapping[]
+  glSequences               GLSequence[]
 }
 
 model BranchSettings {
@@ -184,6 +191,8 @@ model User {
   approvedPettyVouchers     PettyCashVoucher[]       @relation("VoucherApprover")
   importedBankStatements    BankStatement[]          @relation("StatementImporter")
   certifiedReconciliations  BankReconciliation[]     @relation("ReconcileCertifier")
+  postedJournals            JournalEntry[]           @relation("JournalPostedBy")
+  closedFiscalPeriods       FiscalPeriod[]           @relation("PeriodClosedBy")
 }
 
 enum UserType {
@@ -263,6 +272,7 @@ model AcademicYear {
   purchaseOrders            PurchaseOrder[]
   goodsReceivedNotes        GoodsReceivedNote[]
   studentStoreSales         StudentStoreSale[]
+  journalLines              JournalLine[]
 }
 
 model Term {
@@ -290,6 +300,7 @@ model Term {
   purchaseOrders            PurchaseOrder[]
   goodsReceivedNotes        GoodsReceivedNote[]
   studentStoreSales         StudentStoreSale[]
+  journalLines              JournalLine[]
 }
 
 model Class {
@@ -655,6 +666,7 @@ model Department {
   employees         Employee[]
   storeRequisitions StoreRequisition[]
   pettyCashImprests PettyCashImprest[]
+  journalLines      JournalLine[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -734,6 +746,8 @@ model FeeType {
   invoiceItems     InvoiceItem[]
   budgetItems      BudgetItem[]
   requirementItems ClassRequirementItem[]
+  glAccountId      String?
+  glAccount        GLAccount?             @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, name])
   @@unique([branchId, code])
@@ -1099,6 +1113,8 @@ model ExpenseCategory {
   expenses          Expense[]
   budgetItems       BudgetItem[]
   pettyCashVouchers PettyCashVoucher[]
+  glAccountId       String?
+  glAccount         GLAccount?         @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, name])
   @@unique([branchId, code])
@@ -2693,6 +2709,8 @@ model TreasuryAccount {
   reconciliations   BankReconciliation[]
   payments          Payment[]
   expenses          Expense[]
+  glAccountId       String?
+  glAccount         GLAccount?            @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, code])
   @@index([branchId, accountType])
@@ -2941,4 +2959,230 @@ model TreasurySequence {
   branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, prefix, year])
+}
+
+// ==========================================
+// FINANCE: GENERAL LEDGER & DOUBLE ENTRY (PHASE 3.1L)
+// ==========================================
+
+enum GLAccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  DIRECT_COST
+  EXPENSE
+}
+
+enum NormalBalance {
+  DEBIT
+  CREDIT
+}
+
+enum SystemControlRole {
+  NONE
+  AR_STUDENT_CONTROL
+  AR_PREPAID_ADVANCES
+  AP_SUPPLIER_CONTROL
+  AP_GRN_ACCRUAL
+  CASH_BANK_CONTROL
+  INVENTORY_STORES_ASSET
+  INVENTORY_COGS_DEFAULT
+  INVENTORY_SHRINKAGE_EXPENSE
+  INVENTORY_SURPLUS_INCOME
+  PAYROLL_WAGES_EXPENSE
+  PAYROLL_EMPLOYER_NSSF_EXPENSE
+  PAYROLL_NET_PAY_PAYABLE
+  PAYROLL_PAYE_PAYABLE
+  PAYROLL_NSSF_PAYABLE
+  CASH_IN_TRANSIT
+  BANK_CHARGES_EXPENSE
+  BANK_INTEREST_INCOME
+  RETAINED_EARNINGS
+  OPENING_BALANCE_EQUITY
+}
+
+enum JournalType {
+  STANDARD_MANUAL
+  AR_BILLING
+  PAYMENT_RECEIPT
+  EXPENSE_DISBURSEMENT
+  PAYROLL_ACCRUAL
+  PAYROLL_PAYOUT
+  STATUTORY_REMITTANCE
+  INVENTORY_PURCHASE
+  INVENTORY_COGS
+  INVENTORY_ISSUE
+  INVENTORY_WRITEOFF
+  TREASURY_TRANSFER
+  TREASURY_RECONCILIATION
+  YEAR_END_CLOSE
+  REVERSAL
+  OPENING_BALANCE
+}
+
+enum JournalStatus {
+  DRAFT
+  POSTED
+  REVERSED
+}
+
+enum PeriodStatus {
+  OPEN
+  CLOSED
+  LOCKED
+}
+
+model GLAccount {
+  id            String            @id @default(cuid())
+  branchId      String
+  code          String            // e.g. "1120"
+  name          String            // e.g. "Stanbic Collection Bank"
+  accountType   GLAccountType
+  normalBalance NormalBalance
+  controlRole   SystemControlRole @default(NONE)
+  isHeader      Boolean           @default(false)
+  parentId      String?
+  description   String?
+  isActive      Boolean           @default(true)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  branch            Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  parent            GLAccount?         @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children          GLAccount[]        @relation("AccountHierarchy")
+  journalLines      JournalLine[]
+  accountMappings   GLAccountMapping[]
+  treasuryAccounts  TreasuryAccount[]
+  feeTypes          FeeType[]
+  expenseCategories ExpenseCategory[]
+
+  @@unique([branchId, code])
+  @@index([branchId, accountType])
+  @@index([branchId, controlRole])
+}
+
+model FiscalYear {
+  id        String         @id @default(cuid())
+  branchId  String
+  name      String         // e.g. "FY 2026"
+  startDate DateTime
+  endDate   DateTime
+  status    PeriodStatus   @default(OPEN)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  branch    Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  periods   FiscalPeriod[]
+
+  @@unique([branchId, name])
+  @@index([branchId, status])
+}
+
+model FiscalPeriod {
+  id           String         @id @default(cuid())
+  branchId     String
+  fiscalYearId String
+  periodNumber Int            // 1 to 12
+  name         String         // e.g. "January 2026"
+  startDate    DateTime
+  endDate      DateTime
+  status       PeriodStatus   @default(OPEN)
+  closedAt     DateTime?
+  closedById   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  branch         Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  fiscalYear     FiscalYear     @relation(fields: [fiscalYearId], references: [id], onDelete: Cascade)
+  closedBy       User?          @relation("PeriodClosedBy", fields: [closedById], references: [id])
+  journalEntries JournalEntry[]
+
+  @@unique([fiscalYearId, periodNumber])
+  @@unique([branchId, name])
+  @@index([branchId, status])
+}
+
+model JournalEntry {
+  id             String        @id @default(cuid())
+  branchId       String
+  journalNumber  String        // JNL-2026-00001
+  fiscalPeriodId String
+  journalType    JournalType
+  status         JournalStatus @default(POSTED)
+  entryDate      DateTime
+  postingDate    DateTime      @default(now())
+  description    String
+  referenceType  String?       // "INVOICE", "PAYMENT", "EXPENSE", "PAYROLL_RUN", "GRN", "SALE", "TRANSFER", "CASHBOOK_MOVEMENT", "MANUAL", "BOOTSTRAP"
+  referenceId    String?
+  idempotencyKey String?
+  isReversal     Boolean       @default(false)
+  reversalOfId   String?       @unique
+  reversedById   String?
+  postedById     String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  fiscalPeriod   FiscalPeriod  @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
+  reversalOf     JournalEntry? @relation("JournalReversal", fields: [reversalOfId], references: [id])
+  reversedBy     JournalEntry? @relation("JournalReversal")
+  postedBy       User          @relation("JournalPostedBy", fields: [postedById], references: [id])
+  lines          JournalLine[]
+
+  @@unique([branchId, journalNumber])
+  @@unique([branchId, idempotencyKey])
+  @@unique([branchId, referenceType, referenceId, journalType])
+  @@index([branchId, entryDate])
+  @@index([branchId, status])
+}
+
+model JournalLine {
+  id             String        @id @default(cuid())
+  journalEntryId String
+  branchId       String
+  accountId      String
+  lineNumber     Int
+  description    String?
+  debit          Decimal       @default(0.00) @db.Decimal(12, 2)
+  credit         Decimal       @default(0.00) @db.Decimal(12, 2)
+  departmentId   String?
+  academicYearId String?
+  termId         String?
+
+  journalEntry   JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account        GLAccount     @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  department     Department?   @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  term           Term?         @relation(fields: [termId], references: [id], onDelete: SetNull)
+
+  @@unique([journalEntryId, lineNumber])
+  @@index([branchId, accountId])
+}
+
+model GLAccountMapping {
+  id          String            @id @default(cuid())
+  branchId    String
+  mappingKey  SystemControlRole // Target system role
+  accountId   String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  branch      Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account     GLAccount         @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, mappingKey])
+}
+
+model GLSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, year])
 }

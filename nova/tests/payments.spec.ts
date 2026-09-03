@@ -38,8 +38,13 @@ test.describe('NOVA E2E Tests - Finance Payments, Receipts & Subledger (Phase 3.
   });
 
   test.afterAll(async () => {
-    await prisma.user.deleteMany({ where: { email: adminEmail } });
-    await prisma.$disconnect();
+    try {
+      await prisma.user.deleteMany({ where: { email: adminEmail } });
+    } catch {
+      // Best-effort test cleanup
+    } finally {
+      await prisma.$disconnect();
+    }
   });
 
   test('Payment Capture, Receipt Issuance, and Subledger Inspection Workflow', async ({ page }) => {

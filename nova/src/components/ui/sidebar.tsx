@@ -70,6 +70,10 @@ export function Sidebar() {
             <BarChart3 size={20} />
             <span>Financial Reports</span>
           </Link>
+          <Link href="/finance/general-ledger" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <BookOpen size={20} />
+            <span>General Ledger</span>
+          </Link>
           <Link href="/finance/schoolpay" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <Wifi size={20} />
             <span>SchoolPay</span>

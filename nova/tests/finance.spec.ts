@@ -46,9 +46,13 @@ test.describe('NOVA E2E Tests - Finance Fee Configuration (Phase 3.1A)', () => {
       await prisma.feeStructureItem.deleteMany({ where: { feeStructureId: s.id } });
       await prisma.feeStructure.delete({ where: { id: s.id } });
     }
-    await prisma.feeType.deleteMany({ where: { name: { contains: 'E2E' } } });
-    await prisma.user.deleteMany({ where: { email: adminEmail } });
-    await prisma.$disconnect();
+    try {
+      await prisma.user.deleteMany({ where: { email: adminEmail } });
+    } catch {
+      // Best-effort test cleanup
+    } finally {
+      await prisma.$disconnect();
+    }
   });
 
   test('Fee Configuration Workflow: FeeType CRUD & FeeStructure creation', async ({ page }) => {

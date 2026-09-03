@@ -1,5 +1,6 @@
 import { PrismaClient, Prisma, SalaryComponentType, CalculationType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { GLAccountDAO, FiscalPeriodDAO } from '../src/lib/dao/gl.dao';
 
 const prisma = new PrismaClient();
 
@@ -793,6 +794,21 @@ async function main() {
         isActive: true
       }
     });
+  }
+
+  // Seed Chart of Accounts and Fiscal Year 2026 for branches
+  console.log("Seeding Chart of Accounts and Fiscal Periods...");
+  for (const br of [branch1, branch2]) {
+    await GLAccountDAO.initBranchChartOfAccounts(br.id);
+    const mockCtx = {
+      branchId: br.id,
+      userId: adminUser1.id,
+      organizationId: org1.id,
+      schoolId: school1.id,
+      role: 'ADMIN',
+      permissions: ['all']
+    };
+    await FiscalPeriodDAO.initFiscalYear(mockCtx, 2026);
   }
 
   console.log("Seeding complete!");

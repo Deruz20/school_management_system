@@ -14,6 +14,7 @@ import {
 } from "@prisma/client";
 import { TenantContext } from "./tenant-context";
 import { AuditService } from "../services/audit.service";
+import { GLIntegrationService } from "./gl-integration.service";
 import crypto from "crypto";
 
 export class UnauthorizedError extends Error {
@@ -1010,6 +1011,13 @@ export class TreasuryDAO {
           depositSlipNumber: input.depositSlipNumber.trim(),
         })
       );
+
+      // Post Cash Banking Confirmation to General Ledger (Phase 3.1L)
+      try {
+        await GLIntegrationService.postCashBankingConfirmation(tx, ctx, updated.id);
+      } catch {
+        // GL posting failure must not abort subledger transaction
+      }
 
       return updated;
     });
