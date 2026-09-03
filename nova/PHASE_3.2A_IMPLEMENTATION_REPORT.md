@@ -4,8 +4,8 @@
 **Phase Code:** PHASE-3.2A  
 **Status:** COMPLETED & VERIFIED  
 **Authoritative Design:** [PHASE_3.2A_DESIGN.md](file:///c:/Users/USER/Desktop/school_management_system/nova/PHASE_3.2A_DESIGN.md)  
-**Git Commit HEAD:** `f869affe8aa02ca768849724496db81e50bee94d`  
-**Branch:** `main` (clean working tree)  
+**Git Commit HEAD:** `e54027266568b4d32248b4d379b010065a166249`  
+**Branch:** `main` (synchronized with `origin/main`, clean working tree)  
 
 ---
 
@@ -23,10 +23,10 @@ Phase 3.2A delivers the complete Admissions, Applicant Lifecycle, Student 360 Pr
 | **Playwright E2E Suite (Step Q)** | Full end-to-end browser workflows | **17 spec files passed, 20 / 20 tests passed (100% green)** | **PASS** |
 | **TypeScript Typecheck** | `npx tsc --noEmit` with zero errors | **0 errors, clean emit** | **PASS** |
 | **ESLint Quality Gate** | `npm run lint` with zero errors | **0 errors, clean linting** | **PASS** |
-| **Prisma Migrations** | `npx prisma migrate status` | **22 migrations applied, schema up-to-date** | **PASS** |
+| **Prisma Migrations** | `npx prisma migrate status` | **23 migrations applied, schema up-to-date** | **PASS** |
 | **Seed Idempotency** | `npx prisma db seed` run twice | **Executed twice consecutively with zero error** | **PASS** |
 | **Next.js Production Build** | `npm run build` (Turbopack) | **Compiled successfully, all routes valid** | **PASS** |
-| **Git Working Tree** | Clean, commit recorded | **Commit `f869affe8aa02ca768849724496db81e50bee94d`, clean tree** | **PASS** |
+| **Git Working Tree** | Clean, synchronized with origin/main | **Commit `e54027266568b4d32248b4d379b010065a166249`, 100% synchronized** | **PASS** |
 
 ---
 
@@ -72,7 +72,9 @@ Phase 3.2A delivers the complete Admissions, Applicant Lifecycle, Student 360 Pr
 - Cross-branch access attempts are rejected with `UnauthorizedError` (`ADV-ADM-07`, `ADV-ADM-08`).
 
 ### Rule 13 & 14: Lifecycle State Machine & Audit Trails
-- Formal state machine transitions (`ACTIVE`, `SUSPENDED`, `TRANSFERRED_OUT`, `EXPELLED`, `GRADUATED`, `DECEASED`, `WITHDRAWN`) strictly validated against the approved transition matrix.
+- Formal state machine transitions (`PROSPECTIVE`, `ENROLLED`, `ACTIVE`, `SUSPENDED`, `DEFERRED`, `TRANSFERRED_OUT`, `EXPELLED`, `GRADUATED`, `DECEASED`) strictly validated against the approved transition matrix.
+- Single-click onboarding sets `Student` master record to `lifecycleStatus: StudentLifecycleStatus.ENROLLED` with initial `StudentLifecycleLog` (`fromStatus: ENROLLED, toStatus: ENROLLED`).
+- Term induction / active attendance transitions `ENROLLED -> ACTIVE` via `StudentLifecycleDAO.transitionStatus`, recording a distinct audit log with action `student.inducted`.
 - Invalid state transitions (e.g. `EXPELLED -> ACTIVE`, `GRADUATED -> SUSPENDED`) are rejected (`ADV-ADM-15`, `ADV-ADM-16`).
 - Transition to `TRANSFERRED_OUT` is blocked if outstanding fee debt exists (`ADM-31`, `ADV-ADM-17`), and allowed once cleared (`ADM-32`).
 - Every transition is logged immutably in `StudentLifecycleLog` and published to `AuditService`.
@@ -85,7 +87,9 @@ Phase 3.2A delivers the complete Admissions, Applicant Lifecycle, Student 360 Pr
 ## 3. Implementation Details
 
 ### A. Database Migration & Schema
-- Migration: `20260909000000_admissions_student_lifecycle_and_guardian_kyc`
+- Migrations:
+  - `20260909000000_admissions_student_lifecycle_and_guardian_kyc`
+  - `20260909010000_add_enrolled_to_student_lifecycle_status`
 - New Models & Enums:
   - `Applicant`, `ApplicantDocument`, `Guardian`, `StudentGuardian`, `FamilyGroup`, `EnrollmentProvisioning`, `StudentLifecycleLog`, `AdmissionSequence`
   - Enums: `ApplicantStatus`, `StudentLifecycleStatus`, `GuardianRelationship`, `ProvisioningTaskStatus`, `DocumentVerificationStatus`
