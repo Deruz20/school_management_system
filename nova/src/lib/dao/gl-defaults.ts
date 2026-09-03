@@ -40,7 +40,9 @@ export const STANDARD_COA_TEMPLATE: StandardAccountDef[] = [
   { code: '1530', name: 'School Fleet & Transport Buses', accountType: 'ASSET', normalBalance: 'DEBIT', parentCode: '1500' },
   { code: '1540', name: 'Furniture, Desks & Fixtures', accountType: 'ASSET', normalBalance: 'DEBIT', parentCode: '1500' },
   { code: '1550', name: 'Computers & ICT Equipment', accountType: 'ASSET', normalBalance: 'DEBIT', parentCode: '1500' },
-  { code: '1600', name: 'Accumulated Depreciation', accountType: 'ASSET', normalBalance: 'CREDIT', parentCode: '1500', description: 'Contra-asset account tracking cumulative fixed asset depreciation' },
+  { code: '1560', name: 'Heavy Machinery & Generators', accountType: 'ASSET', normalBalance: 'DEBIT', parentCode: '1500' },
+  { code: '1580', name: 'Capital Work in Progress (CIP)', accountType: 'ASSET', normalBalance: 'DEBIT', parentCode: '1500' },
+  { code: '1600', name: 'Accumulated Depreciation', accountType: 'ASSET', normalBalance: 'CREDIT', controlRole: 'ACCUMULATED_DEPRECIATION_CONTROL', parentCode: '1500', description: 'Contra-asset account tracking cumulative fixed asset depreciation' },
 
   // 2000 LIABILITIES (Header)
   { code: '2000', name: 'Liabilities', accountType: 'LIABILITY', normalBalance: 'CREDIT', isHeader: true, description: 'All institutional debts and obligations owed to external parties' },
@@ -63,15 +65,17 @@ export const STANDARD_COA_TEMPLATE: StandardAccountDef[] = [
 
   // 3000 EQUITY & RESERVES (Header)
   { code: '3000', name: 'Equity & Reserves', accountType: 'EQUITY', normalBalance: 'CREDIT', isHeader: true, description: 'Institutional net worth and capital reserves' },
-  { code: '3100', name: 'Accumulated School Fund / Retained Surplus', accountType: 'EQUITY', normalBalance: 'CREDIT', controlRole: 'RETAINED_EARNINGS', parentCode: '3000', description: 'Cumulative historical operating surplus from past fiscal periods' },
-  { code: '3200', name: 'Capital Development Reserve', accountType: 'EQUITY', normalBalance: 'CREDIT', parentCode: '3000', description: 'Restricted capital grants and building levies' },
-  { code: '3500', name: 'Opening Balance Equity', accountType: 'EQUITY', normalBalance: 'CREDIT', controlRole: 'OPENING_BALANCE_EQUITY', parentCode: '3000', description: 'Bootstrap balancing account used during initial system GL migration' },
+  { code: '3100', name: 'Capital Fund / Initial Endowment', accountType: 'EQUITY', normalBalance: 'CREDIT', parentCode: '3000' },
+  { code: '3200', name: 'Accumulated Surplus / Retained Earnings', accountType: 'EQUITY', normalBalance: 'CREDIT', controlRole: 'RETAINED_EARNINGS', parentCode: '3000', description: 'Cumulative historical operating surpluses retained in the school' },
+  { code: '3300', name: 'Development & Infrastructure Reserve', accountType: 'EQUITY', normalBalance: 'CREDIT', parentCode: '3000' },
+  { code: '3500', name: 'Opening Balance Equity', accountType: 'EQUITY', normalBalance: 'CREDIT', controlRole: 'OPENING_BALANCE_EQUITY', parentCode: '3000', description: 'Balancing equity account for migrated subledger opening balances' },
+  { code: '3600', name: 'Donated Capital & Grants Reserve', accountType: 'EQUITY', normalBalance: 'CREDIT', parentCode: '3000', description: 'Capital grants and donated fixed assets equity reserve' },
 
-  // 4000 REVENUES (Header)
-  { code: '4000', name: 'Operating Revenues', accountType: 'REVENUE', normalBalance: 'CREDIT', isHeader: true, description: 'All school academic, boarding and auxiliary earned revenues' },
-  { code: '4100', name: 'Tuition & Instruction Fees', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
+  // 4000 REVENUE (Header)
+  { code: '4000', name: 'Operating Revenues', accountType: 'REVENUE', normalBalance: 'CREDIT', isHeader: true, description: 'Educational fee billings and ancillary institutional income' },
+  { code: '4100', name: 'Tuition Fee Revenues', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
   { code: '4200', name: 'Boarding & Accommodation Fees', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
-  { code: '4300', name: 'Student Transport Bus Fees', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
+  { code: '4300', name: 'Transport & Route Service Fees', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
   { code: '4400', name: 'Development & Infrastructure Levies', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
   { code: '4500', name: 'School Bookstore & Uniform Sales', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
   { code: '4600', name: 'In-Kind Requirements Monetization Fees', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
@@ -79,6 +83,7 @@ export const STANDARD_COA_TEMPLATE: StandardAccountDef[] = [
   { code: '4800', name: 'Bursary & Scholarship Fee Reductions', accountType: 'REVENUE', normalBalance: 'DEBIT', parentCode: '4000', description: 'Contra-revenue account tracking student discounts and bursary awards' },
   { code: '4910', name: 'Bank Interest Income', accountType: 'REVENUE', normalBalance: 'CREDIT', controlRole: 'BANK_INTEREST_INCOME', parentCode: '4000' },
   { code: '4950', name: 'Inventory Stocktake Surplus Income', accountType: 'REVENUE', normalBalance: 'CREDIT', controlRole: 'INVENTORY_SURPLUS_INCOME', parentCode: '4000' },
+  { code: '4960', name: 'Gain on Asset Disposal', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000', description: 'Net gain realized on fixed asset sales above net book value' },
 
   // 5000 DIRECT COSTS OF EDUCATION (Header)
   { code: '5000', name: 'Direct Costs of Educational Services', accountType: 'DIRECT_COST', normalBalance: 'DEBIT', isHeader: true, description: 'Direct academic, boarding and transport operational costs' },
@@ -97,5 +102,6 @@ export const STANDARD_COA_TEMPLATE: StandardAccountDef[] = [
   { code: '6600', name: 'Building & Facilities Maintenance', accountType: 'EXPENSE', normalBalance: 'DEBIT', parentCode: '6000' },
   { code: '6710', name: 'Bank Charges & Merchant Processing Fees', accountType: 'EXPENSE', normalBalance: 'DEBIT', controlRole: 'BANK_CHARGES_EXPENSE', parentCode: '6000' },
   { code: '6800', name: 'Inventory Shrinkage & Write-Off Losses', accountType: 'EXPENSE', normalBalance: 'DEBIT', controlRole: 'INVENTORY_SHRINKAGE_EXPENSE', parentCode: '6000' },
-  { code: '6900', name: 'Depreciation & Amortization Expense', accountType: 'EXPENSE', normalBalance: 'DEBIT', parentCode: '6000' }
+  { code: '6900', name: 'Depreciation & Amortization Expense', accountType: 'EXPENSE', normalBalance: 'DEBIT', controlRole: 'DEPRECIATION_EXPENSE_CONTROL', parentCode: '6000', description: 'Periodic depreciation charge on property, plant and equipment' },
+  { code: '6950', name: 'Loss on Asset Disposal & Write-Off', accountType: 'EXPENSE', normalBalance: 'DEBIT', parentCode: '6000', description: 'Net loss recognized on capital asset scrap, damage or under-recovery disposal' }
 ];

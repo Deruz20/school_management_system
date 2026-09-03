@@ -1,6 +1,7 @@
 import { PrismaClient, Prisma, SalaryComponentType, CalculationType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { GLAccountDAO, FiscalPeriodDAO } from '../src/lib/dao/gl.dao';
+import { AssetCategoryDAO } from '../src/lib/dao/asset.dao';
 
 const prisma = new PrismaClient();
 
@@ -796,8 +797,8 @@ async function main() {
     });
   }
 
-  // Seed Chart of Accounts and Fiscal Year 2026 for branches
-  console.log("Seeding Chart of Accounts and Fiscal Periods...");
+  // Seed Chart of Accounts, Fiscal Year 2026, Asset Categories & Locations for branches
+  console.log("Seeding Chart of Accounts, Fiscal Periods and Fixed Assets...");
   for (const br of [branch1, branch2]) {
     await GLAccountDAO.initBranchChartOfAccounts(br.id);
     const mockCtx = {
@@ -809,6 +810,23 @@ async function main() {
       permissions: ['all']
     };
     await FiscalPeriodDAO.initFiscalYear(mockCtx, 2026);
+    await AssetCategoryDAO.initDefaultCategories(mockCtx);
+
+    // Create default locations if not existing
+    const defaultLocs = [
+      { code: 'LOC-ADM-01', name: 'Administration Complex', building: 'Block A', roomNumber: '101' },
+      { code: 'LOC-ICT-LAB1', name: 'Main ICT Computer Laboratory', building: 'Block B', roomNumber: '201' },
+      { code: 'LOC-SCI-LAB1', name: 'Physics & Chemistry Laboratory', building: 'Block C', roomNumber: '301' },
+      { code: 'LOC-LIB-01', name: 'Main Campus Library', building: 'Block D', roomNumber: '102' }
+    ];
+
+    for (const loc of defaultLocs) {
+      await prisma.assetLocation.upsert({
+        where: { branchId_code: { branchId: br.id, code: loc.code } },
+        update: { name: loc.name, building: loc.building, roomNumber: loc.roomNumber },
+        create: { branchId: br.id, code: loc.code, name: loc.name, building: loc.building, roomNumber: loc.roomNumber }
+      });
+    }
   }
 
   console.log("Seeding complete!");
