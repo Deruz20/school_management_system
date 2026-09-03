@@ -126,6 +126,16 @@ model Branch {
   assetVerificationLogs     AssetVerificationLog[]
   assetMovementLogs         AssetMovementLog[]
   assetSequences            AssetSequence[]
+  taxPolicies               TaxPolicy[]
+  supplierInvoices          SupplierInvoice[]
+  supplierInvoiceLines      SupplierInvoiceLine[]
+  supplierCreditNotes       SupplierCreditNote[]
+  supplierCreditNoteLines   SupplierCreditNoteLine[]
+  supplierPayments          SupplierPayment[]
+  supplierPaymentAllocations SupplierPaymentAllocation[]
+  supplierStatementImports  SupplierStatementImport[]
+  supplierStatementLines    SupplierStatementLine[]
+  supplierSequences         SupplierSequence[]
 }
 
 model BranchSettings {
@@ -206,6 +216,12 @@ model User {
   approvedDisposals         AssetDisposal[]          @relation("DisposalApprovedBy")
   verifiedAssets            AssetVerificationLog[]   @relation("AssetVerifiedBy")
   transferredAssets         AssetMovementLog[]       @relation("AssetTransferredBy")
+  createdSupplierInvoices     SupplierInvoice[]        @relation("SupplierInvoiceCreator")
+  approvedSupplierInvoices    SupplierInvoice[]        @relation("SupplierInvoiceApprover")
+  createdSupplierCreditNotes  SupplierCreditNote[]     @relation("SupplierCreditNoteCreator")
+  approvedSupplierCreditNotes SupplierCreditNote[]     @relation("SupplierCreditNoteApprover")
+  createdSupplierPayments     SupplierPayment[]        @relation("SupplierPaymentCreator")
+  importedSupplierStatements  SupplierStatementImport[] @relation("StatementImportedBy")
 }
 
 enum UserType {
@@ -1130,6 +1146,7 @@ model ExpenseCategory {
   expenses          Expense[]
   budgetItems       BudgetItem[]
   pettyCashVouchers PettyCashVoucher[]
+  supplierInvoiceLines SupplierInvoiceLine[]
   glAccountId       String?
   glAccount         GLAccount?         @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
@@ -2332,6 +2349,8 @@ model InventoryItem {
   grnItems         GoodsReceivedItem[]
   requisitionItems RequisitionItem[]
   saleItems        StudentStoreSaleItem[]
+  supplierInvoiceLines SupplierInvoiceLine[]
+  supplierCreditNoteLines SupplierCreditNoteLine[]
 
   @@unique([branchId, code])
   @@index([branchId, category, isActive])
@@ -2357,28 +2376,47 @@ model InventoryStoreStock {
 }
 
 model InventorySupplier {
-  id           String   @id @default(cuid())
-  branchId     String
-  supplierCode String // e.g. "SUP-001"
-  name         String // e.g. "Mukwano Industries"
-  contactName  String?
-  phone        String
-  email        String?
-  address      String?
-  taxIdNumber  String? // URA TIN
-  paymentTerms String? // e.g. "Net 30"
-  isActive     Boolean  @default(true)
-  notes        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                     String    @id @default(cuid())
+  branchId               String
+  supplierCode           String    // e.g. "SUP-001"
+  name                   String    // e.g. "Mukwano Industries"
+  tradeName              String?
+  contactName            String?
+  phone                  String
+  email                  String?
+  address                String?
+  taxIdNumber            String?   // URA TIN
+  paymentTerms           String?   // e.g. "Net 30"
+  paymentTermsDays       Int       @default(30)
+  creditLimitUGX         Decimal   @default(0) @db.Decimal(14, 2)
+  isCreditBlocked        Boolean   @default(false)
+  currentBalanceUGX      Decimal   @default(0) @db.Decimal(14, 2)
+  vatRegistered          Boolean   @default(false)
+  whtExempt              Boolean   @default(false)
+  whtExemptionCertRef    String?
+  whtExemptionExpiry     DateTime?
+  bankName               String?
+  bankAccountNumber      String?
+  bankBranch             String?
+  mobileMoneyNumber      String?
+  preferredPaymentMethod PaymentMethod @default(BANK_TRANSFER)
+  isActive               Boolean   @default(true)
+  notes                  String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
-  branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  pos          PurchaseOrder[]
-  grns         GoodsReceivedNote[]
-  capitalizedAssets AssetItem[]
+  branch                 Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  pos                    PurchaseOrder[]
+  grns                   GoodsReceivedNote[]
+  capitalizedAssets      AssetItem[]
+  invoices               SupplierInvoice[]
+  creditNotes            SupplierCreditNote[]
+  payments               SupplierPayment[]
+  statementImports       SupplierStatementImport[]
 
   @@unique([branchId, supplierCode])
   @@index([branchId, isActive])
+  @@index([branchId, name])
 }
 
 model PurchaseOrder {
@@ -2409,6 +2447,7 @@ model PurchaseOrder {
   approvedBy   User?               @relation("POApprover", fields: [approvedById], references: [id])
   items        PurchaseOrderItem[]
   grns         GoodsReceivedNote[]
+  invoices     SupplierInvoice[]
 
   @@unique([branchId, poNumber])
   @@index([branchId, status])
@@ -2461,26 +2500,30 @@ model GoodsReceivedNote {
   receivedBy   User                @relation("GRNReceiver", fields: [receivedById], references: [id])
   items        GoodsReceivedItem[]
   capitalizedAssets AssetItem[]
+  invoices     SupplierInvoice[]
 
   @@unique([branchId, grnNumber])
   @@index([branchId, supplierId, deliveryDate])
 }
 
 model GoodsReceivedItem {
-  id               String    @id @default(cuid())
-  grnId            String
-  itemId           String
-  itemNameSnapshot String
-  quantityReceived Decimal   @db.Decimal(12, 2)
-  unitCostPrice    Decimal   @db.Decimal(12, 2)
-  lineTotalCost    Decimal   @db.Decimal(12, 2)
-  batchNumber      String?
-  expiryDate       DateTime?
-  notes            String?
+  id                 String    @id @default(cuid())
+  grnId              String
+  itemId             String
+  itemNameSnapshot   String
+  quantityReceived   Decimal   @db.Decimal(12, 2)
+  invoicedQuantity   Decimal   @default(0) @db.Decimal(12, 2)
+  uninvoicedQuantity Decimal   @default(0) @db.Decimal(12, 2)
+  unitCostPrice      Decimal   @db.Decimal(12, 2)
+  lineTotalCost      Decimal   @db.Decimal(12, 2)
+  batchNumber        String?
+  expiryDate         DateTime?
+  notes              String?
 
-  grn  GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
-  item InventoryItem     @relation(fields: [itemId], references: [id], onDelete: Restrict)
-  capitalizedAssets AssetItem[]
+  grn                GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
+  item               InventoryItem     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  capitalizedAssets  AssetItem[]
+  supplierInvoiceLines SupplierInvoiceLine[]
 
   @@index([grnId])
 }
@@ -2647,6 +2690,8 @@ enum CashbookMovementType {
   AUDIT_ADJUSTMENT
   CAPITAL_EXPENDITURE
   ASSET_SALE_PROCEEDS
+  SUPPLIER_SETTLEMENT
+  SUPPLIER_REFUND_IN
 }
 
 enum CashDirection {
@@ -2734,6 +2779,7 @@ model TreasuryAccount {
   expenses          Expense[]
   capitalPurchases  AssetItem[]
   disposalReceipts  AssetDisposal[]
+  supplierPayments  SupplierPayment[]
   glAccountId       String?
   glAccount         GLAccount?            @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
@@ -2742,44 +2788,47 @@ model TreasuryAccount {
 }
 
 model CashbookMovement {
-  id              String               @id @default(cuid())
-  branchId        String
-  accountId       String
-  movementNumber  String
-  movementType    CashbookMovementType
-  direction       CashDirection
-  amount          Decimal              @db.Decimal(12, 2)
-  balanceBefore   Decimal              @db.Decimal(12, 2)
-  balanceAfter    Decimal              @db.Decimal(12, 2)
-  transactionDate DateTime             @default(now())
-  referenceNumber String?
-  description     String
-  paymentId       String?
-  expenseId       String?
-  transferId      String?
-  payrollRunId    String?
-  storeSaleId     String?
-  pettyVoucherId  String?
-  isReconciled    Boolean              @default(false)
-  reconciledAt    DateTime?
-  statementLineId String?
-  createdById     String
-  createdAt       DateTime             @default(now())
+  id                String               @id @default(cuid())
+  branchId          String
+  accountId         String
+  movementNumber    String
+  movementType      CashbookMovementType
+  direction         CashDirection
+  amount            Decimal              @db.Decimal(12, 2)
+  balanceBefore     Decimal              @db.Decimal(12, 2)
+  balanceAfter      Decimal              @db.Decimal(12, 2)
+  transactionDate   DateTime             @default(now())
+  referenceNumber   String?
+  description       String
+  paymentId         String?
+  expenseId         String?
+  transferId        String?
+  payrollRunId      String?
+  storeSaleId       String?
+  pettyVoucherId    String?
+  supplierPaymentId String?              @unique
+  isReconciled      Boolean              @default(false)
+  reconciledAt      DateTime?
+  statementLineId   String?
+  createdById       String
+  createdAt         DateTime             @default(now())
 
-  branch         Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  account        TreasuryAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
-  payment        Payment?           @relation(fields: [paymentId], references: [id], onDelete: SetNull)
-  expense        Expense?           @relation(fields: [expenseId], references: [id], onDelete: SetNull)
-  transfer       TreasuryTransfer?  @relation(fields: [transferId], references: [id], onDelete: SetNull)
-  pettyVoucher   PettyCashVoucher?  @relation(fields: [pettyVoucherId], references: [id], onDelete: SetNull)
-  statementLine  BankStatementLine? @relation(fields: [statementLineId], references: [id], onDelete: SetNull)
-  disposalRecord AssetDisposal?
-  createdBy      User               @relation("CashbookMovementCreatedBy", fields: [createdById], references: [id])
+  branch          Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account         TreasuryAccount    @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  payment         Payment?           @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  expense         Expense?           @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  transfer        TreasuryTransfer?  @relation(fields: [transferId], references: [id], onDelete: SetNull)
+  pettyVoucher    PettyCashVoucher?  @relation(fields: [pettyVoucherId], references: [id], onDelete: SetNull)
+  statementLine   BankStatementLine? @relation(fields: [statementLineId], references: [id], onDelete: SetNull)
+  disposalRecord  AssetDisposal?
+  supplierPayment SupplierPayment?   @relation(fields: [supplierPaymentId], references: [id], onDelete: SetNull)
+  createdBy       User               @relation("CashbookMovementCreatedBy", fields: [createdById], references: [id])
 
   @@unique([branchId, movementNumber])
   @@index([branchId, accountId, transactionDate])
   @@index([branchId, paymentId])
   @@index([branchId, expenseId])
+  @@index([branchId, supplierPaymentId])
 }
 
 model TreasuryTransfer {
@@ -3029,6 +3078,9 @@ enum SystemControlRole {
   FIXED_ASSET_PPE_CONTROL
   ACCUMULATED_DEPRECIATION_CONTROL
   DEPRECIATION_EXPENSE_CONTROL
+  AP_WHT_PAYABLE
+  AP_VAT_INPUT_CONTROL
+  AP_PURCHASE_PRICE_VARIANCE
 }
 
 enum JournalType {
@@ -3051,6 +3103,11 @@ enum JournalType {
   CAPITAL_PURCHASE
   DEPRECIATION
   ASSET_DISPOSAL
+  AP_INVOICE_BILLING
+  AP_PAYMENT_DISBURSEMENT
+  AP_CREDIT_NOTE
+  AP_PRICE_VARIANCE
+  AP_SETTLEMENT_DISCOUNT
 }
 
 enum JournalStatus {
@@ -3080,17 +3137,19 @@ model GLAccount {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
-  branch            Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  parent            GLAccount?         @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
-  children          GLAccount[]        @relation("AccountHierarchy")
-  journalLines      JournalLine[]
-  accountMappings   GLAccountMapping[]
-  treasuryAccounts  TreasuryAccount[]
-  feeTypes          FeeType[]
-  expenseCategories ExpenseCategory[]
+  branch              Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  parent              GLAccount?         @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children            GLAccount[]        @relation("AccountHierarchy")
+  journalLines        JournalLine[]
+  accountMappings     GLAccountMapping[]
+  treasuryAccounts    TreasuryAccount[]
+  feeTypes            FeeType[]
+  expenseCategories   ExpenseCategory[]
   assetCategoryAssets AssetCategory[] @relation("CategoryAssetAccount")
   assetCategoryDeprec AssetCategory[] @relation("CategoryDeprecAccount")
   assetCategoryAccum  AssetCategory[] @relation("CategoryAccumDeprecAccount")
+  supplierInvoiceLines SupplierInvoiceLine[]
+  supplierCreditNoteLines SupplierCreditNoteLine[]
 
   @@unique([branchId, code])
   @@index([branchId, accountType])
@@ -3133,6 +3192,8 @@ model FiscalPeriod {
   closedBy       User?          @relation("PeriodClosedBy", fields: [closedById], references: [id])
   journalEntries JournalEntry[]
   depreciationRuns AssetDepreciationRun[]
+  supplierInvoices SupplierInvoice[]
+  supplierCreditNotes SupplierCreditNote[]
 
   @@unique([fiscalYearId, periodNumber])
   @@unique([branchId, name])
@@ -3168,6 +3229,9 @@ model JournalEntry {
   capitalizedAssets AssetItem[] @relation("AssetCapitalizationJournal")
   depreciationRun   AssetDepreciationRun?
   assetDisposal     AssetDisposal?
+  supplierInvoice   SupplierInvoice?
+  supplierCreditNote SupplierCreditNote?
+  supplierPayment   SupplierPayment?
 
   @@unique([branchId, journalNumber])
   @@unique([branchId, idempotencyKey])
@@ -3549,6 +3613,340 @@ model AssetSequence {
   id        String   @id @default(cuid())
   branchId  String
   type      String
+  year      Int
+  nextVal   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, type, year])
+  @@index([branchId])
+}
+
+// ==========================================
+// PHASE 3.1N: ACCOUNTS PAYABLE, SUPPLIER CREDIT MANAGEMENT & 3-WAY MATCHING
+// ==========================================
+
+enum SupplierInvoiceStatus {
+  DRAFT
+  MATCHED
+  APPROVED
+  PARTIALLY_PAID
+  PAID
+  DISPUTED
+  ON_HOLD
+  VOIDED
+}
+
+enum SupplierCreditNoteStatus {
+  DRAFT
+  APPROVED
+  POSTED
+  ALLOCATED
+  VOIDED
+}
+
+enum SupplierPaymentStatus {
+  COMPLETED
+  REVERSED
+  VOIDED
+}
+
+enum SupplyCategory {
+  GOODS
+  STANDARD_SERVICES
+  MANAGEMENT_PROFESSIONAL_SERVICES
+  CONSTRUCTION_WORKS
+  RENT_PREMISES
+}
+
+enum InputVatTreatment {
+  RECOVERABLE_INPUT_TAX
+  NON_RECOVERABLE_EXPENSED
+  NON_RECOVERABLE_CAPITALIZED
+  EXEMPT
+}
+
+enum ThreeWayMatchStatus {
+  PERFECT_MATCH
+  PRICE_VARIANCE_PASS
+  PRICE_VARIANCE_FAIL
+  QUANTITY_VARIANCE_FAIL
+  MANUAL_OVERRIDE
+}
+
+enum StatementMatchStatus {
+  UNMATCHED
+  EXACT_MATCH
+  VARIANCE_REVIEW
+  DISPUTED
+}
+
+model TaxPolicy {
+  id                    String            @id @default(cuid())
+  branchId              String
+  name                  String
+  supplyCategory        SupplyCategory
+  isWhtApplicable       Boolean           @default(true)
+  whtRatePercent        Decimal           @default(6.00) @db.Decimal(5, 2)
+  whtThresholdAmount    Decimal           @default(1000000.00) @db.Decimal(14, 2)
+  whtTaxableBaseRule    String            @default("GROSS_EXCLUDING_VAT")
+  isVatApplicable       Boolean           @default(true)
+  vatRatePercent        Decimal           @default(18.00) @db.Decimal(5, 2)
+  inputVatTreatment     InputVatTreatment @default(NON_RECOVERABLE_EXPENSED)
+  efrisEvidenceRequired Boolean           @default(true)
+  effectiveFrom         DateTime
+  effectiveTo           DateTime?
+  isActive              Boolean           @default(true)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  branch                Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, supplyCategory, effectiveFrom, effectiveTo])
+  @@index([branchId, isActive])
+}
+
+model SupplierInvoice {
+  id                     String                @id @default(cuid())
+  branchId               String
+  invoiceNumber          String                // Sequence: PINV-2026-00001
+  vendorInvoiceNumber    String                // Vendor's legal invoice ref
+  supplierId             String
+  poId                   String?
+  grnId                  String?
+  fiscalPeriodId         String
+  invoiceDate            DateTime
+  dueDate                DateTime
+  supplyCategory         SupplyCategory        @default(GOODS)
+  grossAmount            Decimal               @db.Decimal(14, 2)
+  taxAmount              Decimal               @default(0) @db.Decimal(14, 2)
+  discountAmount         Decimal               @default(0) @db.Decimal(14, 2)
+  netPayableAmount       Decimal               @db.Decimal(14, 2)
+  amountPaid             Decimal               @default(0) @db.Decimal(14, 2)
+  amountOutstanding      Decimal               @db.Decimal(14, 2)
+  ppvAmount              Decimal               @default(0) @db.Decimal(14, 2)
+  status                 SupplierInvoiceStatus @default(DRAFT)
+  matchStatus            ThreeWayMatchStatus?
+  disputeReason          String?
+  holdReason             String?
+  efrisFiscalDocNumber   String?
+  efrisVerificationCode  String?
+  isOpeningBalance       Boolean               @default(false)
+  notes                  String?
+  createdById            String
+  approvedById           String?
+  approvedAt             DateTime?
+  journalEntryId         String?               @unique
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  branch                 Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier               InventorySupplier     @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  po                     PurchaseOrder?        @relation(fields: [poId], references: [id], onDelete: SetNull)
+  grn                    GoodsReceivedNote?    @relation(fields: [grnId], references: [id], onDelete: SetNull)
+  fiscalPeriod           FiscalPeriod          @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
+  createdBy              User                  @relation("SupplierInvoiceCreator", fields: [createdById], references: [id])
+  approvedBy             User?                 @relation("SupplierInvoiceApprover", fields: [approvedById], references: [id])
+  journalEntry           JournalEntry?         @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  lines                  SupplierInvoiceLine[]
+  allocations            SupplierPaymentAllocation[]
+  creditNotes            SupplierCreditNote[]
+
+  @@unique([branchId, invoiceNumber])
+  @@unique([branchId, supplierId, vendorInvoiceNumber])
+  @@index([branchId, status, dueDate])
+  @@index([branchId, supplierId])
+}
+
+model SupplierInvoiceLine {
+  id                 String          @id @default(cuid())
+  invoiceId          String
+  branchId           String
+  poItemId           String?
+  grnItemId          String?
+  itemId             String?
+  expenseCategoryId  String?
+  description        String
+  quantityInvoiced   Decimal         @db.Decimal(12, 2)
+  unitPriceInvoiced  Decimal         @db.Decimal(12, 2)
+  unitCostSnapshot   Decimal         @default(0) @db.Decimal(12, 2)
+  lineTotalCost      Decimal         @db.Decimal(14, 2)
+  ppvAmount          Decimal         @default(0) @db.Decimal(14, 2)
+  taxRate            Decimal         @default(0) @db.Decimal(5, 2)
+  taxAmount          Decimal         @default(0) @db.Decimal(14, 2)
+  glAccountId        String?
+  createdAt          DateTime        @default(now())
+
+  invoice            SupplierInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  branch             Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  grnItem            GoodsReceivedItem? @relation(fields: [grnItemId], references: [id], onDelete: SetNull)
+  item               InventoryItem?  @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  expenseCategory    ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id], onDelete: SetNull)
+  glAccount          GLAccount?      @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+  @@index([branchId, grnItemId])
+}
+
+model SupplierCreditNote {
+  id                 String                   @id @default(cuid())
+  branchId           String
+  creditNoteNumber   String                   // Sequence: SCRN-2026-00001
+  vendorCreditNoteRef String?
+  supplierId         String
+  originalInvoiceId  String?
+  fiscalPeriodId     String
+  creditNoteDate     DateTime
+  grossAmount        Decimal                  @db.Decimal(14, 2)
+  taxAmount          Decimal                  @default(0) @db.Decimal(14, 2)
+  netCreditAmount    Decimal                  @db.Decimal(14, 2)
+  unallocatedAmount  Decimal                  @db.Decimal(14, 2)
+  reason             String
+  status             SupplierCreditNoteStatus @default(DRAFT)
+  journalEntryId     String?                  @unique
+  createdById        String
+  approvedById       String?
+  approvedAt         DateTime?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+
+  branch             Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier           InventorySupplier        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  originalInvoice    SupplierInvoice?         @relation(fields: [originalInvoiceId], references: [id], onDelete: SetNull)
+  fiscalPeriod       FiscalPeriod             @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
+  createdBy          User                     @relation("SupplierCreditNoteCreator", fields: [createdById], references: [id])
+  approvedBy         User?                    @relation("SupplierCreditNoteApprover", fields: [approvedById], references: [id])
+  journalEntry       JournalEntry?            @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  lines              SupplierCreditNoteLine[]
+
+  @@unique([branchId, creditNoteNumber])
+  @@index([branchId, supplierId])
+  @@index([branchId, status])
+}
+
+model SupplierCreditNoteLine {
+  id                 String             @id @default(cuid())
+  creditNoteId       String
+  branchId           String
+  itemId             String?
+  description        String
+  quantityReturned   Decimal            @default(0) @db.Decimal(12, 2)
+  unitPrice          Decimal            @db.Decimal(12, 2)
+  lineTotal          Decimal            @db.Decimal(14, 2)
+  glAccountId        String?
+  createdAt          DateTime           @default(now())
+
+  creditNote         SupplierCreditNote @relation(fields: [creditNoteId], references: [id], onDelete: Cascade)
+  branch             Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  item               InventoryItem?     @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  glAccount          GLAccount?         @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
+
+  @@index([creditNoteId])
+}
+
+model SupplierPayment {
+  id                  String                     @id @default(cuid())
+  branchId            String
+  paymentNumber       String                     // Sequence: SPAY-2026-00001
+  supplierId          String
+  treasuryAccountId   String
+  paymentDate         DateTime
+  totalAmountPaid     Decimal                    @db.Decimal(14, 2)
+  whtDeductedAmount   Decimal                    @default(0) @db.Decimal(14, 2)
+  discountTakenAmount Decimal                    @default(0) @db.Decimal(14, 2)
+  unallocatedAmount   Decimal                    @default(0) @db.Decimal(14, 2)
+  paymentMethod       PaymentMethod
+  referenceNumber     String?                    // Bank Cheque / EFT Ref
+  notes               String?
+  status              SupplierPaymentStatus      @default(COMPLETED)
+  journalEntryId      String?                    @unique
+  cashbookMovementId  String?                    @unique
+  createdById         String
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+
+  branch              Branch                     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier            InventorySupplier          @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  treasuryAccount     TreasuryAccount            @relation(fields: [treasuryAccountId], references: [id], onDelete: Restrict)
+  createdBy           User                       @relation("SupplierPaymentCreator", fields: [createdById], references: [id])
+  journalEntry        JournalEntry?              @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  cashbookMovement    CashbookMovement?
+  allocations         SupplierPaymentAllocation[]
+
+  @@unique([branchId, paymentNumber])
+  @@index([branchId, supplierId, paymentDate])
+  @@index([branchId, status])
+}
+
+model SupplierPaymentAllocation {
+  id                 String          @id @default(cuid())
+  branchId           String
+  paymentId          String
+  invoiceId          String
+  allocatedAmount    Decimal         @db.Decimal(14, 2)
+  discountAmount     Decimal         @default(0) @db.Decimal(14, 2)
+  createdAt          DateTime        @default(now())
+
+  payment            SupplierPayment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice            SupplierInvoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  branch             Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@index([invoiceId])
+}
+
+model SupplierStatementImport {
+  id                 String                  @id @default(cuid())
+  branchId           String
+  supplierId         String
+  statementDate      DateTime
+  statementRef       String?
+  openingBalance     Decimal                 @db.Decimal(14, 2)
+  closingBalance     Decimal                 @db.Decimal(14, 2)
+  totalDebits        Decimal                 @default(0) @db.Decimal(14, 2)
+  totalCredits       Decimal                 @default(0) @db.Decimal(14, 2)
+  importedById       String
+  notes              String?
+  createdAt          DateTime                @default(now())
+
+  branch             Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier           InventorySupplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  importedBy         User                    @relation("StatementImportedBy", fields: [importedById], references: [id])
+  lines              SupplierStatementLine[]
+
+  @@index([branchId, supplierId, statementDate])
+}
+
+model SupplierStatementLine {
+  id                 String                  @id @default(cuid())
+  statementImportId  String
+  branchId           String
+  transactionDate    DateTime
+  referenceNumber    String
+  description        String?
+  debitAmount        Decimal                 @default(0) @db.Decimal(14, 2)
+  creditAmount       Decimal                 @default(0) @db.Decimal(14, 2)
+  balance            Decimal                 @db.Decimal(14, 2)
+  matchStatus        StatementMatchStatus    @default(UNMATCHED)
+  matchedInvoiceId   String?
+  matchedPaymentId   String?
+  matchedCreditNoteId String?
+  notes              String?
+  createdAt          DateTime                @default(now())
+
+  statementImport    SupplierStatementImport @relation(fields: [statementImportId], references: [id], onDelete: Cascade)
+  branch             Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([statementImportId])
+  @@index([branchId, matchStatus])
+}
+
+model SupplierSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  type      String   // PINV, SCRN, SPAY
   year      Int
   nextVal   Int      @default(1)
   createdAt DateTime @default(now())

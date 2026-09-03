@@ -2,6 +2,7 @@ import { PrismaClient, Prisma, SalaryComponentType, CalculationType } from '@pri
 import bcrypt from 'bcryptjs';
 import { GLAccountDAO, FiscalPeriodDAO } from '../src/lib/dao/gl.dao';
 import { AssetCategoryDAO } from '../src/lib/dao/asset.dao';
+import { TaxPolicyEngine } from '../src/lib/dao/tax-policy.engine';
 
 const prisma = new PrismaClient();
 
@@ -811,6 +812,7 @@ async function main() {
     };
     await FiscalPeriodDAO.initFiscalYear(mockCtx, 2026);
     await AssetCategoryDAO.initDefaultCategories(mockCtx);
+    await TaxPolicyEngine.initBranchDefaultTaxPolicies(mockCtx);
 
     // Create default locations if not existing
     const defaultLocs = [

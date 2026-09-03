@@ -51,6 +51,8 @@ export const STANDARD_COA_TEMPLATE: StandardAccountDef[] = [
   { code: '2100', name: 'Accounts Payable', accountType: 'LIABILITY', normalBalance: 'CREDIT', isHeader: true, parentCode: '2000', description: 'Vendor and supplier liabilities' },
   { code: '2110', name: 'Accounts Payable - Suppliers', accountType: 'LIABILITY', normalBalance: 'CREDIT', controlRole: 'AP_SUPPLIER_CONTROL', parentCode: '2100', description: 'Supplier bill liabilities' },
   { code: '2120', name: 'Accrued Goods Received (GRN Accrual)', accountType: 'LIABILITY', normalBalance: 'CREDIT', controlRole: 'AP_GRN_ACCRUAL', parentCode: '2100', description: 'Physical store goods received via GRN pending voucher payment settlement' },
+  { code: '2140', name: 'URA Withholding Tax (WHT) Payable', accountType: 'LIABILITY', normalBalance: 'CREDIT', controlRole: 'AP_WHT_PAYABLE', parentCode: '2100', description: 'Withholding tax deducted on supplier payments awaiting URA remittance' },
+  { code: '2150', name: 'VAT Input Recoverable Control', accountType: 'LIABILITY', normalBalance: 'DEBIT', controlRole: 'AP_VAT_INPUT_CONTROL', parentCode: '2100', description: 'Input VAT claims on qualifying commercial purchases' },
 
   // 2200 Payroll Liabilities
   { code: '2200', name: 'Payroll & Statutory Liabilities', accountType: 'LIABILITY', normalBalance: 'CREDIT', isHeader: true, parentCode: '2000', description: 'Staff payroll liabilities and government tax withholdings' },
@@ -82,6 +84,7 @@ export const STANDARD_COA_TEMPLATE: StandardAccountDef[] = [
   { code: '4700', name: 'Examination, Registration & Medical Fees', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000' },
   { code: '4800', name: 'Bursary & Scholarship Fee Reductions', accountType: 'REVENUE', normalBalance: 'DEBIT', parentCode: '4000', description: 'Contra-revenue account tracking student discounts and bursary awards' },
   { code: '4910', name: 'Bank Interest Income', accountType: 'REVENUE', normalBalance: 'CREDIT', controlRole: 'BANK_INTEREST_INCOME', parentCode: '4000' },
+  { code: '4920', name: 'Prompt Settlement Discounts Earned', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000', description: 'Discounts realized from early supplier settlements' },
   { code: '4950', name: 'Inventory Stocktake Surplus Income', accountType: 'REVENUE', normalBalance: 'CREDIT', controlRole: 'INVENTORY_SURPLUS_INCOME', parentCode: '4000' },
   { code: '4960', name: 'Gain on Asset Disposal', accountType: 'REVENUE', normalBalance: 'CREDIT', parentCode: '4000', description: 'Net gain realized on fixed asset sales above net book value' },
 
@@ -91,6 +94,7 @@ export const STANDARD_COA_TEMPLATE: StandardAccountDef[] = [
   { code: '5200', name: 'Boarding Food & Kitchen Supplies', accountType: 'DIRECT_COST', normalBalance: 'DEBIT', parentCode: '5000' },
   { code: '5300', name: 'Cost of Goods Sold - Uniforms & Books', accountType: 'DIRECT_COST', normalBalance: 'DEBIT', controlRole: 'INVENTORY_COGS_DEFAULT', parentCode: '5000' },
   { code: '5400', name: 'Fleet Transport Fuel & Lubricants', accountType: 'DIRECT_COST', normalBalance: 'DEBIT', parentCode: '5000' },
+  { code: '5900', name: 'Purchase Price Variance (PPV)', accountType: 'DIRECT_COST', normalBalance: 'DEBIT', controlRole: 'AP_PURCHASE_PRICE_VARIANCE', parentCode: '5000', description: 'Price variance between purchase orders/GRNs and approved supplier invoices' },
 
   // 6000 OPERATIONAL & ADMINISTRATIVE EXPENSES (Header)
   { code: '6000', name: 'Operational & Administrative Expenses', accountType: 'EXPENSE', normalBalance: 'DEBIT', isHeader: true, description: 'Administrative staff salaries, overheads and campus running expenses' },

@@ -78,6 +78,10 @@ export function Sidebar() {
             <Building2 size={20} />
             <span>Fixed Assets</span>
           </Link>
+          <Link href="/finance/accounts-payable" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <CreditCard size={20} />
+            <span>Accounts Payable</span>
+          </Link>
           <Link href="/finance/schoolpay" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <Wifi size={20} />
             <span>SchoolPay</span>
