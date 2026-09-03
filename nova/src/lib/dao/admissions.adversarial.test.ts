@@ -555,7 +555,7 @@ describe("Phase 3.2A: Admissions & Student Lifecycle Concurrency, Adversarial & 
 
     expect(studentInDb).toBeTruthy();
     expect(enrollmentInDb).toBeTruthy();
-    expect(studentInDb?.lifecycleStatus).toBe(StudentLifecycleStatus.ACTIVE);
+    expect(studentInDb?.lifecycleStatus).toBe(StudentLifecycleStatus.ENROLLED);
   });
 
   it("ADV-ADM-22: Migrated guardian record cannot be verified by unauthorized user", async () => {

@@ -390,6 +390,7 @@ export class AdmissionsDAO {
     options?: ProvisioningOptions & {
       targetClassId?: string;
       targetStreamId?: string | null;
+      activateImmediately?: boolean;
     }
   ) {
     this.checkEnrollPermission(ctx);
@@ -432,6 +433,11 @@ export class AdmissionsDAO {
       where: { id: classId, branchId: ctx.branchId }
     });
     if (!classRef) throw new Error("Target class not found in this branch.");
+
+    // Determine initial operational lifecycle status: ENROLLED upon confirmation, ACTIVE if immediate activation requested
+    const initialLifecycleStatus = options?.activateImmediately
+      ? StudentLifecycleStatus.ACTIVE
+      : StudentLifecycleStatus.ENROLLED;
 
     // ==========================================
     // LOCAL ATOMIC DATABASE TRANSACTION
@@ -476,7 +482,7 @@ export class AdmissionsDAO {
           classId,
           streamId,
           schoolPayCode: admissionNo, // Deterministic local default
-          lifecycleStatus: StudentLifecycleStatus.ACTIVE,
+          lifecycleStatus: initialLifecycleStatus,
           admissionDate: new Date(),
           applicantId: applicant.id
         }
@@ -570,9 +576,11 @@ export class AdmissionsDAO {
         data: {
           branchId: ctx.branchId,
           studentId: student.id,
-          fromStatus: StudentLifecycleStatus.PROSPECTIVE,
-          toStatus: StudentLifecycleStatus.ACTIVE,
-          reason: `Initial enrollment from application ${applicant.applicationNumber}`,
+          fromStatus: StudentLifecycleStatus.ENROLLED,
+          toStatus: initialLifecycleStatus,
+          reason: initialLifecycleStatus === StudentLifecycleStatus.ACTIVE
+            ? `Initial enrollment and immediate term activation from application ${applicant.applicationNumber}`
+            : `Initial enrollment confirmation from application ${applicant.applicationNumber}`,
           effectiveDate: new Date(),
           authorizedById: ctx.userId
         }

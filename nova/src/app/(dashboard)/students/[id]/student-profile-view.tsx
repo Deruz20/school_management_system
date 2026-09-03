@@ -136,12 +136,13 @@ export function StudentProfileView({ student }: StudentProfileViewProps) {
 
   const lifecycleColors: Record<StudentLifecycleStatus, string> = {
     PROSPECTIVE: "bg-slate-100 text-slate-700 border-slate-200",
+    ENROLLED: "bg-blue-100 text-blue-800 border-blue-300 font-semibold",
     ACTIVE: "bg-emerald-100 text-emerald-800 border-emerald-300 font-semibold",
     SUSPENDED: "bg-amber-100 text-amber-800 border-amber-300",
-    DEFERRED: "bg-blue-100 text-blue-800 border-blue-300",
-    TRANSFERRED_OUT: "bg-purple-100 text-purple-800 border-purple-300",
+    DEFERRED: "bg-purple-100 text-purple-800 border-purple-300",
+    TRANSFERRED_OUT: "bg-indigo-100 text-indigo-800 border-indigo-300",
     EXPELLED: "bg-rose-100 text-rose-800 border-rose-300",
-    GRADUATED: "bg-indigo-100 text-indigo-800 border-indigo-300 font-semibold",
+    GRADUATED: "bg-teal-100 text-teal-800 border-teal-300 font-semibold",
     DECEASED: "bg-zinc-100 text-zinc-700 border-zinc-300"
   };
 

@@ -472,6 +472,7 @@ enum BoardingStatus {
 
 enum StudentLifecycleStatus {
   PROSPECTIVE
+  ENROLLED
   ACTIVE
   SUSPENDED
   DEFERRED

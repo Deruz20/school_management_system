@@ -194,7 +194,17 @@ export class StudentLifecycleDAO {
 
     switch (from) {
       case StudentLifecycleStatus.PROSPECTIVE:
-        return to === StudentLifecycleStatus.ACTIVE;
+        return to === StudentLifecycleStatus.ENROLLED || to === StudentLifecycleStatus.ACTIVE;
+
+      case StudentLifecycleStatus.ENROLLED: {
+        const allowed: StudentLifecycleStatus[] = [
+          StudentLifecycleStatus.ACTIVE,
+          StudentLifecycleStatus.DEFERRED,
+          StudentLifecycleStatus.TRANSFERRED_OUT,
+          StudentLifecycleStatus.EXPELLED
+        ];
+        return allowed.includes(to);
+      }
 
       case StudentLifecycleStatus.ACTIVE: {
         const allowed: StudentLifecycleStatus[] = [
@@ -231,6 +241,7 @@ export class StudentLifecycleDAO {
   }
 
   private static getAuditAction(from: StudentLifecycleStatus, to: StudentLifecycleStatus): string {
+    if (from === StudentLifecycleStatus.ENROLLED && to === StudentLifecycleStatus.ACTIVE) return 'student.inducted';
     if (to === StudentLifecycleStatus.SUSPENDED) return 'student.suspended';
     if (from === StudentLifecycleStatus.SUSPENDED && to === StudentLifecycleStatus.ACTIVE) return 'student.reinstated';
     if (to === StudentLifecycleStatus.DEFERRED) return 'student.deferred';

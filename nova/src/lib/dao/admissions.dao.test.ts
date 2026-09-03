@@ -417,7 +417,7 @@ describe("Phase 3.2A: Admissions, Student Lifecycle, Applicant Pipeline & Guardi
 
     const year = new Date().getFullYear();
     expect(result.student.admissionNo).toMatch(new RegExp(`^ADM-${year}-\\d{5}$`));
-    expect(result.student.lifecycleStatus).toBe(StudentLifecycleStatus.ACTIVE);
+    expect(result.student.lifecycleStatus).toBe(StudentLifecycleStatus.ENROLLED);
     expect(result.applicant.status).toBe(ApplicantStatus.ENROLLED);
     expect(result.applicant.enrolledStudentId).toBe(result.student.id);
   });
@@ -876,24 +876,24 @@ describe("Phase 3.2A: Admissions, Student Lifecycle, Applicant Pipeline & Guardi
   // STUDENT LIFECYCLE STATE MACHINE (ADM-30..ADM-32)
   // ============================================================================
 
-  it("ADM-30: Student lifecycle transition from PROSPECTIVE to ACTIVE", async () => {
+  it("ADM-30: Student lifecycle transition from ENROLLED to ACTIVE (Term Induction)", async () => {
     const student = await db.student.create({
       data: {
         branchId,
-        admissionNo: `ADM_PROS_${Date.now()}`,
-        firstName: "Prospective",
+        admissionNo: `ADM_ENR_${Date.now()}`,
+        firstName: "Enrolled",
         lastName: "Student",
-        lifecycleStatus: StudentLifecycleStatus.PROSPECTIVE
+        lifecycleStatus: StudentLifecycleStatus.ENROLLED
       }
     });
 
     const log = await StudentLifecycleDAO.transitionStatus(checkerCtx, {
       studentId: student.id,
       targetStatus: StudentLifecycleStatus.ACTIVE,
-      reason: "Formal enrollment verified"
+      reason: "Term induction and active attendance verified"
     });
 
-    expect(log.fromStatus).toBe(StudentLifecycleStatus.PROSPECTIVE);
+    expect(log.fromStatus).toBe(StudentLifecycleStatus.ENROLLED);
     expect(log.toStatus).toBe(StudentLifecycleStatus.ACTIVE);
 
     const updated = await db.student.findUnique({ where: { id: student.id } });
