@@ -16,12 +16,17 @@ export default async function StudentsPage() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Students</h1>
           <p className="text-slate-500 mt-1">Manage student records, enrollments, and profiles.</p>
         </div>
-        <Link href="/students/new">
-          <Button className="gap-2">
-            <Plus size={16} />
-            <span>New Student</span>
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/admissions">
+            <Button variant="outline">Admissions Pipeline</Button>
+          </Link>
+          <Link href="/students/new">
+            <Button className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+              <Plus size={16} />
+              <span>New Student</span>
+            </Button>
+          </Link>
+        </div>
       </div>
       
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
@@ -73,8 +78,8 @@ export default async function StudentsPage() {
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Link href={`/students/${s.id}/subjects`}>
-                    <Button variant="ghost" size="sm">View</Button>
+                  <Link href={`/students/${s.id}`}>
+                    <Button variant="ghost" size="sm">Profile</Button>
                   </Link>
                 </TableCell>
               </TableRow>

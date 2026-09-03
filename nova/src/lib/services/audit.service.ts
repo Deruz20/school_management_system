@@ -40,15 +40,9 @@ export class AuditService {
       return [];
     }
     
-    // Admins see all org logs; branch managers might only see branch logs.
-    // Since Phase 1 focuses on branch context but roles are org-wide, we'll scope it
-    // to the branch if they aren't org admins, or the whole org if they are.
-    // For simplicity in Phase 1, we just return logs for the current branch, unless they have 'all', then maybe org.
-    // Actually, let's keep it simple: return logs for the current branch.
-    
     const where: import('@prisma/client').Prisma.AuditLogWhereInput = { 
       organizationId: ctx.organizationId,
-      branchId: ctx.branchId // Scoping to branch level for now to maintain tenancy consistency
+      branchId: ctx.branchId
     };
 
     if (options?.resourceType) where.resourceType = options.resourceType;

@@ -136,6 +136,15 @@ model Branch {
   supplierStatementImports  SupplierStatementImport[]
   supplierStatementLines    SupplierStatementLine[]
   supplierSequences         SupplierSequence[]
+  admissionSequences        AdmissionSequence[]
+  applicants                Applicant[]
+  guardians                 Guardian[]
+  studentGuardians          StudentGuardian[]
+  familyGroups              FamilyGroup[]
+  studentDocuments          StudentDocument[]
+  applicantDocuments        ApplicantDocument[]
+  studentLifecycleLogs      StudentLifecycleLog[]
+  enrollmentProvisionings   EnrollmentProvisioning[]
 }
 
 model BranchSettings {
@@ -222,6 +231,13 @@ model User {
   approvedSupplierCreditNotes SupplierCreditNote[]     @relation("SupplierCreditNoteApprover")
   createdSupplierPayments     SupplierPayment[]        @relation("SupplierPaymentCreator")
   importedSupplierStatements  SupplierStatementImport[] @relation("StatementImportedBy")
+  reviewedApplicants          Applicant[]               @relation("ApplicantReviewer")
+  assessedApplicants          Applicant[]               @relation("ApplicantAssessor")
+  decidedApplicants           Applicant[]               @relation("ApplicantDecider")
+  authorizedLifecycles        StudentLifecycleLog[]     @relation("LifecycleAuthorizer")
+  verifiedGuardians           Guardian[]                @relation("GuardianVerifier")
+  verifiedStudentDocuments    StudentDocument[]         @relation("StudentDocVerifier")
+  verifiedApplicantDocuments  ApplicantDocument[]       @relation("ApplicantDocVerifier")
 }
 
 enum UserType {
@@ -302,6 +318,7 @@ model AcademicYear {
   goodsReceivedNotes        GoodsReceivedNote[]
   studentStoreSales         StudentStoreSale[]
   journalLines              JournalLine[]
+  applicants                Applicant[]
 }
 
 model Term {
@@ -348,6 +365,7 @@ model Class {
   classSubjects     ClassSubject[]
   feeStructures     FeeStructure[]
   classRequirements ClassRequirement[]
+  targetApplicants  Applicant[]
 }
 
 model Stream {
@@ -355,9 +373,10 @@ model Stream {
   classId String
   name    String // e.g., "North", "South"
 
-  classRef    Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
-  students    Student[]
-  enrollments Enrollment[]
+  classRef               Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  students               Student[]
+  enrollments            Enrollment[]
+  targetStreamApplicants Applicant[]
 }
 
 // ==========================================
@@ -370,6 +389,7 @@ model Student {
   admissionNo String        @unique
   firstName   String
   lastName    String
+  middleName  String?
   dateOfBirth DateTime?
   gender      String?
   status      StudentStatus @default(ACTIVE)
@@ -381,9 +401,42 @@ model Student {
   // SchoolPay Uganda Integration
   schoolPayCode String?
 
-  branch    Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  classRef  Class?  @relation(fields: [classId], references: [id])
-  streamRef Stream? @relation(fields: [streamId], references: [id])
+  // Phase 3.2A: Extended Demographics & Identity
+  nationality            String                 @default("Ugandan")
+  nin                    String?                // AES-256-GCM encrypted NIN
+  ninLookupHash          String?                // HMAC-SHA256 blind index
+  linEmisNo              String?                // Learner Identification Number
+  birthCertNo            String?
+  passportNo             String?                // AES-256-GCM encrypted passport
+  dayOrBoarding          BoardingStatus         @default(DAY)
+  residentialAddress     String?
+  villageLCI             String?
+  parish                 String?
+  subCounty              String?
+  district               String?
+  medicalEmergencyNotes  String?                // AES-256-GCM encrypted medical notes
+  allergies              String?
+  bloodGroup             String?
+  specialNeeds           String?
+  previousSchoolName     String?
+  previousClass          String?
+  pleIndexNo             String?
+  pleAggregate           Int?
+  pleDivision            String?
+  uceIndexNo             String?
+  uceAggregate           Int?
+  familyGroupId          String?
+  lifecycleStatus        StudentLifecycleStatus @default(ACTIVE)
+  admissionDate          DateTime               @default(now())
+  graduatedDate          DateTime?
+  withdrawnDate          DateTime?
+  applicantId            String?                @unique
+
+  branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  classRef    Class?       @relation(fields: [classId], references: [id])
+  streamRef   Stream?      @relation(fields: [streamId], references: [id])
+  familyGroup FamilyGroup? @relation(fields: [familyGroupId], references: [id], onDelete: SetNull)
+  applicant   Applicant?   @relation("EnrolledStudentApplicant", fields: [applicantId], references: [id], onDelete: SetNull)
 
   attendance             DailyAttendanceRecord[]
   enrollments            Enrollment[]
@@ -398,11 +451,377 @@ model Student {
   clearances             StudentClearance[]
   transportSubscriptions StudentTransportSubscription[]
   studentStoreSales      StudentStoreSale[]
+  guardians              StudentGuardian[]
+  documents              StudentDocument[]
+  lifecycleLogs          StudentLifecycleLog[]
+  provisionings          EnrollmentProvisioning[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([branchId, schoolPayCode])
+  @@index([branchId, lifecycleStatus])
+  @@index([branchId, ninLookupHash])
+  @@index([branchId, linEmisNo])
+}
+
+enum BoardingStatus {
+  DAY
+  BOARDING
+}
+
+enum StudentLifecycleStatus {
+  PROSPECTIVE
+  ACTIVE
+  SUSPENDED
+  DEFERRED
+  TRANSFERRED_OUT
+  EXPELLED
+  GRADUATED
+  DECEASED
+}
+
+enum ApplicantStatus {
+  INQUIRY
+  SUBMITTED
+  UNDER_REVIEW
+  ASSESSMENT_SCHEDULED
+  ADMISSION_OFFERED
+  OFFER_ACCEPTED
+  OFFER_REJECTED
+  ENROLLED
+  WAITLISTED
+  WITHDRAWN
+}
+
+enum GuardianRelationship {
+  FATHER
+  MOTHER
+  LEGAL_GUARDIAN
+  SPONSOR
+  NEXT_OF_KIN
+  FOSTER_PARENT
+  OTHER
+}
+
+enum DocumentType {
+  BIRTH_CERTIFICATE
+  PLE_RESULT_SLIP
+  UCE_RESULT_SLIP
+  UACE_RESULT_SLIP
+  TRANSFER_LETTER_EMIS
+  PASSPORT_PHOTO
+  IMMUNIZATION_CARD
+  NATIONAL_ID_NIN
+  LEGAL_GUARDIANSHIP_DOC
+  OTHER
+}
+
+enum DocVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+enum ProvisioningTaskStatus {
+  PENDING
+  SKIPPED
+  COMPLETED
+  FAILED_RETRYABLE
+  FAILED_FATAL
+}
+
+model AdmissionSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  type      String   // "APP", "ADM", "GRD", "FAM"
+  year      Int
+  lastValue Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, type, year])
+}
+
+model FamilyGroup {
+  id               String   @id @default(cuid())
+  branchId         String
+  familyCode       String
+  familyName       String
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  branch    Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  students  Student[]
+  guardians Guardian[]
+
+  @@unique([branchId, familyCode])
+}
+
+model Guardian {
+  id               String               @id @default(cuid())
+  branchId         String
+  guardianCode     String
+  firstName        String
+  lastName         String
+  middleName       String?
+  title            String?              // Mr., Mrs., Dr., etc.
+  relationshipType GuardianRelationship @default(LEGAL_GUARDIAN)
+  phonePrimary     String
+  phoneSecondary   String?
+  email            String?
+  nationalId       String?              // Encrypted NIN
+  ninLookupHash    String?              // HMAC blind index
+  passportNo       String?              // Encrypted passport
+  occupation       String?
+  employer         String?
+  workplaceAddress String?
+  residentialAddress String?
+  provenance       String               @default("MANUAL_INTAKE") // "MANUAL_INTAKE", "LEGACY_USER_MIGRATION"
+  isVerified       Boolean              @default(false)
+  verifiedById     String?
+  verifiedAt       DateTime?
+  familyGroupId    String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  branch      Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  familyGroup FamilyGroup?        @relation(fields: [familyGroupId], references: [id], onDelete: SetNull)
+  verifiedBy  User?               @relation("GuardianVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  students    StudentGuardian[]
+  applicants  ApplicantGuardian[]
+
+  @@unique([branchId, guardianCode])
+  @@index([branchId, phonePrimary])
+  @@index([branchId, ninLookupHash])
+}
+
+model StudentGuardian {
+  id                     String               @id @default(cuid())
+  branchId               String
+  studentId              String
+  guardianId             String
+  relationship           GuardianRelationship
+  isPrimaryContact       Boolean              @default(false)
+  isFinancialSponsor     Boolean              @default(false)
+  isEmergencyContact     Boolean              @default(false)
+  hasPickupAuthorization Boolean              @default(false)
+  receivesAcademicReports Boolean             @default(true)
+  receivesSmsAlerts      Boolean              @default(true)
+  accessPriority         Int                  @default(1)
+  notes                  String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, guardianId])
+  @@index([branchId, studentId])
+  @@index([branchId, guardianId])
+}
+
+model Applicant {
+  id                     String          @id @default(cuid())
+  branchId               String
+  applicationNumber      String
+  academicYearId         String
+  targetClassId          String
+  targetStreamId         String?
+  firstName              String
+  lastName               String
+  middleName             String?
+  gender                 String?
+  dateOfBirth            DateTime?
+  nationality            String          @default("Ugandan")
+  nin                    String?         // Encrypted NIN
+  ninLookupHash          String?         // Blind index
+  linEmisNo              String?
+  birthCertNo            String?
+  passportNo             String?
+  dayOrBoarding          BoardingStatus  @default(DAY)
+  residentialAddress     String?
+  villageLCI             String?
+  parish                 String?
+  subCounty              String?
+  district               String?
+  previousSchoolName     String?
+  previousClass          String?
+  pleIndexNo             String?
+  pleAggregate           Int?
+  pleDivision            String?
+  uceIndexNo             String?
+  uceAggregate           Int?
+  medicalEmergencyNotes  String?         // Encrypted
+  allergies              String?
+  bloodGroup             String?
+  specialNeeds           String?
+  intendedTransportRouteId String?
+  status                 ApplicantStatus @default(INQUIRY)
+  applicationFeePaid     Boolean         @default(false)
+  applicationPaymentId   String?
+  assessmentScore        Float?
+  assessmentNotes        String?
+  assessedById           String?
+  assessedAt             DateTime?
+  reviewedById           String?
+  reviewedAt             DateTime?
+  decisionReason         String?
+  decisionById           String?
+  decisionDate           DateTime?
+  offerValidUntil        DateTime?
+  enrolledStudentId      String?         @unique
+  createdById            String?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  branch          Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  academicYear    AcademicYear        @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  targetClass     Class               @relation(fields: [targetClassId], references: [id], onDelete: Cascade)
+  targetStream    Stream?             @relation(fields: [targetStreamId], references: [id], onDelete: SetNull)
+  assessedBy      User?               @relation("ApplicantAssessor", fields: [assessedById], references: [id], onDelete: SetNull)
+  reviewedBy      User?               @relation("ApplicantReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  decisionBy      User?               @relation("ApplicantDecider", fields: [decisionById], references: [id], onDelete: SetNull)
+  enrolledStudent Student?            @relation("EnrolledStudentApplicant")
+  documents       ApplicantDocument[]
+  guardians       ApplicantGuardian[]
+
+  @@unique([branchId, applicationNumber])
+  @@index([branchId, status])
+  @@index([branchId, ninLookupHash])
+  @@index([branchId, targetClassId])
+}
+
+model ApplicantGuardian {
+  id                     String               @id @default(cuid())
+  applicantId            String
+  guardianId             String
+  relationship           GuardianRelationship
+  isPrimaryContact       Boolean              @default(false)
+  isFinancialSponsor     Boolean              @default(false)
+  isEmergencyContact     Boolean              @default(false)
+  hasPickupAuthorization Boolean              @default(false)
+  createdAt              DateTime             @default(now())
+
+  applicant Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  guardian  Guardian  @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+
+  @@unique([applicantId, guardianId])
+}
+
+model StudentDocument {
+  id                 String                @id @default(cuid())
+  branchId           String
+  studentId          String
+  documentType       DocumentType
+  documentTitle      String
+  storageKey         String
+  fileSizeBytes      Int?
+  mimeType           String?
+  sha256Checksum     String?
+  verificationStatus DocVerificationStatus @default(PENDING)
+  verificationNotes  String?
+  verifiedById       String?
+  verifiedAt         DateTime?
+  uploadedById       String?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  branch     Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  verifiedBy User?   @relation("StudentDocVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+
+  @@index([branchId, studentId])
+  @@index([branchId, verificationStatus])
+}
+
+model ApplicantDocument {
+  id                 String                @id @default(cuid())
+  branchId           String
+  applicantId        String
+  documentType       DocumentType
+  documentTitle      String
+  storageKey         String
+  fileSizeBytes      Int?
+  mimeType           String?
+  sha256Checksum     String?
+  verificationStatus DocVerificationStatus @default(PENDING)
+  verificationNotes  String?
+  verifiedById       String?
+  verifiedAt         DateTime?
+  uploadedById       String?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  branch     Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  applicant  Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  verifiedBy User?     @relation("ApplicantDocVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+
+  @@index([branchId, applicantId])
+}
+
+model StudentLifecycleLog {
+  id             String                 @id @default(cuid())
+  branchId       String
+  studentId      String
+  fromStatus     StudentLifecycleStatus
+  toStatus       StudentLifecycleStatus
+  reason         String
+  notes          String?
+  effectiveDate  DateTime               @default(now())
+  authorizedById String?
+  clearanceId    String?
+  createdAt      DateTime               @default(now())
+
+  branch       Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  authorizedBy User?    @relation("LifecycleAuthorizer", fields: [authorizedById], references: [id], onDelete: SetNull)
+
+  @@index([branchId, studentId])
+  @@index([branchId, effectiveDate])
+}
+
+model EnrollmentProvisioning {
+  id                 String                 @id @default(cuid())
+  branchId           String
+  studentId          String
+  enrollmentId       String                 @unique
+  overallStatus      ProvisioningTaskStatus @default(PENDING)
+  
+  billingStatus      ProvisioningTaskStatus @default(PENDING)
+  billingInvoiceId   String?
+  billingError       String?
+  
+  requirementsStatus ProvisioningTaskStatus @default(PENDING)
+  requirementsError  String?
+  
+  transportStatus    ProvisioningTaskStatus @default(PENDING)
+  transportError     String?
+  
+  storeOrderStatus   ProvisioningTaskStatus @default(PENDING)
+  storeOrderError    String?
+  
+  schoolPayStatus    ProvisioningTaskStatus @default(PENDING)
+  schoolPayError     String?
+  
+  retryCount         Int                    @default(0)
+  maxRetries         Int                    @default(5)
+  nextRetryAt        DateTime?
+  lastAttemptAt      DateTime?
+  
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  branch     Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student    Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, overallStatus])
+  @@index([nextRetryAt])
 }
 
 enum StudentStatus {
@@ -476,6 +895,7 @@ model Enrollment {
   termResults        TermResult[]
   invoices           Invoice[]
   requirementRecords StudentRequirementRecord[]
+  provisioning       EnrollmentProvisioning?
 
   @@unique([studentId, academicYearId])
 }
