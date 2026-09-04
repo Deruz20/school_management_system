@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, BookOpen, CreditCard, Settings, LayoutDashboard, Receipt, BarChart3, TrendingDown, Wifi, Banknote, Building2 } from "lucide-react";
+import { Users, BookOpen, CreditCard, Settings, LayoutDashboard, Receipt, BarChart3, TrendingDown, Wifi, Banknote, Building2, Bed, HeartPulse, ShieldAlert, Ticket, UserPlus } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -14,15 +14,43 @@ export function Sidebar() {
             <span>Dashboard</span>
           </Link>
           <div className="pt-4 pb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Academics
+            Academics & Admissions
           </div>
+          <Link href="/admissions" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <UserPlus size={20} />
+            <span>Admissions</span>
+          </Link>
           <Link href="/students" className="flex items-center gap-3 px-3 py-2 rounded-md bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition-colors">
             <Users size={20} />
             <span>Students</span>
           </Link>
+          <Link href="/guardians" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <Users size={20} />
+            <span>Guardians KYC</span>
+          </Link>
           <Link href="/attendance" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <BookOpen size={20} />
             <span>Attendance</span>
+          </Link>
+
+          <div className="pt-4 pb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Student Welfare & Boarding
+          </div>
+          <Link href="/welfare/boarding" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <Bed size={20} />
+            <span>Hostel & Boarding</span>
+          </Link>
+          <Link href="/welfare/clinic" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <HeartPulse size={20} />
+            <span>Clinic & Infirmary</span>
+          </Link>
+          <Link href="/welfare/discipline" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <ShieldAlert size={20} />
+            <span>Student Discipline</span>
+          </Link>
+          <Link href="/welfare/exeat" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <Ticket size={20} />
+            <span>Exeat & Gate Passes</span>
           </Link>
           <div className="pt-4 pb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Curriculum

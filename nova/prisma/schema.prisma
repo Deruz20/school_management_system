@@ -145,6 +145,23 @@ model Branch {
   applicantDocuments        ApplicantDocument[]
   studentLifecycleLogs      StudentLifecycleLog[]
   enrollmentProvisionings   EnrollmentProvisioning[]
+  hostels                   Hostel[]
+  hostelRooms               HostelRoom[]
+  hostelBeds                HostelBed[]
+  bedAllocations            BedAllocation[]
+  hostelRollCalls           HostelRollCall[]
+  hostelClearanceRecords    HostelClearanceRecord[]
+  clinicEncounters          ClinicEncounter[]
+  sickbayAdmissions         SickbayAdmission[]
+  medicalReferrals          MedicalReferral[]
+  clinicDispensations       ClinicDispensingRecord[]
+  disciplinaryIncidents     DisciplinaryIncident[]
+  incidentStudents          IncidentStudent[]
+  disciplinaryHearings      DisciplinaryHearing[]
+  disciplinarySanctions     DisciplinarySanction[]
+  exeatPasses               ExeatPass[]
+  emergencyNotifications    EmergencyNotificationLog[]
+  welfareSequences          WelfareSequence[]
 }
 
 model BranchSettings {
@@ -238,6 +255,23 @@ model User {
   verifiedGuardians           Guardian[]                @relation("GuardianVerifier")
   verifiedStudentDocuments    StudentDocument[]         @relation("StudentDocVerifier")
   verifiedApplicantDocuments  ApplicantDocument[]       @relation("ApplicantDocVerifier")
+  wardenHostels               Hostel[]                  @relation("HostelWarden")
+  matronHostels               Hostel[]                  @relation("HostelMatron")
+  allocatedBeds               BedAllocation[]           @relation("BedAllocator")
+  releasedBeds                BedAllocation[]           @relation("BedReleaser")
+  takenRollCalls              HostelRollCall[]          @relation("RollCallTaker")
+  inspectedHostelClearances   HostelClearanceRecord[]   @relation("HostelInspector")
+  attendedClinicEncounters    ClinicEncounter[]         @relation("ClinicAttendant")
+  attendedSickbays            SickbayAdmission[]        @relation("SickbayNurse")
+  escortedReferrals           MedicalReferral[]         @relation("ReferralEscort")
+  dispensedMedicines          ClinicDispensingRecord[]  @relation("MedicineDispenser")
+  reportedIncidents           DisciplinaryIncident[]    @relation("IncidentReporter")
+  chairedHearings             DisciplinaryHearing[]     @relation("HearingChair")
+  approvedSanctions           DisciplinarySanction[]    @relation("SanctionApprover")
+  approvedExeatPasses         ExeatPass[]               @relation("ExeatApprover")
+  departedExeatPasses         ExeatPass[]               @relation("GateOfficerDepart")
+  returnedExeatPasses         ExeatPass[]               @relation("GateOfficerReturn")
+  dialedEmergencyNotifications EmergencyNotificationLog[] @relation("EmergencyCaller")
 }
 
 enum UserType {
@@ -319,6 +353,10 @@ model AcademicYear {
   studentStoreSales         StudentStoreSale[]
   journalLines              JournalLine[]
   applicants                Applicant[]
+  bedAllocations            BedAllocation[]
+  hostelClearanceRecords    HostelClearanceRecord[]
+  clinicEncounters          ClinicEncounter[]
+  exeatPasses               ExeatPass[]
 }
 
 model Term {
@@ -347,6 +385,10 @@ model Term {
   goodsReceivedNotes        GoodsReceivedNote[]
   studentStoreSales         StudentStoreSale[]
   journalLines              JournalLine[]
+  bedAllocations            BedAllocation[]
+  hostelClearanceRecords    HostelClearanceRecord[]
+  clinicEncounters          ClinicEncounter[]
+  exeatPasses               ExeatPass[]
 }
 
 model Class {
@@ -455,6 +497,17 @@ model Student {
   documents              StudentDocument[]
   lifecycleLogs          StudentLifecycleLog[]
   provisionings          EnrollmentProvisioning[]
+  bedAllocations         BedAllocation[]
+  hostelRollCalls        HostelRollCall[]
+  hostelClearanceRecords HostelClearanceRecord[]
+  clinicEncounters       ClinicEncounter[]
+  sickbayAdmissions      SickbayAdmission[]
+  medicalReferrals       MedicalReferral[]
+  clinicDispensations    ClinicDispensingRecord[]
+  incidentStudents       IncidentStudent[]
+  disciplinarySanctions  DisciplinarySanction[]
+  exeatPasses            ExeatPass[]
+  emergencyNotifications EmergencyNotificationLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -592,8 +645,11 @@ model Guardian {
   branch      Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
   familyGroup FamilyGroup?        @relation(fields: [familyGroupId], references: [id], onDelete: SetNull)
   verifiedBy  User?               @relation("GuardianVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
-  students    StudentGuardian[]
-  applicants  ApplicantGuardian[]
+  students               StudentGuardian[]
+  applicants             ApplicantGuardian[]
+  hearingsAttended       DisciplinaryHearing[]
+  exeatPasses            ExeatPass[]
+  emergencyNotifications EmergencyNotificationLog[]
 
   @@unique([branchId, guardianCode])
   @@index([branchId, phonePrimary])
@@ -2743,6 +2799,7 @@ model InventoryStore {
   grns         GoodsReceivedNote[]
   requisitions StoreRequisition[]
   sales        StudentStoreSale[]
+  clinicDispensations ClinicDispensingRecord[]
 
   @@unique([branchId, code])
   @@index([branchId, storeType, isActive])
@@ -2772,6 +2829,7 @@ model InventoryItem {
   saleItems        StudentStoreSaleItem[]
   supplierInvoiceLines SupplierInvoiceLine[]
   supplierCreditNoteLines SupplierCreditNoteLine[]
+  clinicDispensations ClinicDispensingRecord[]
 
   @@unique([branchId, code])
   @@index([branchId, category, isActive])
@@ -4368,6 +4426,554 @@ model SupplierSequence {
   id        String   @id @default(cuid())
   branchId  String
   type      String   // PINV, SCRN, SPAY
+  year      Int
+  nextVal   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, type, year])
+  @@index([branchId])
+}
+
+// ==========================================
+// PHASE 3.2B: STUDENT WELFARE, BOARDING, CLINIC & DISCIPLINE
+// ==========================================
+
+enum HostelGender {
+  MALE
+  FEMALE
+  MIXED
+}
+
+enum RoomType {
+  STANDARD_DORM
+  CUBICLE
+  PREFECT_ROOM
+  SPECIAL_NEEDS
+  SICK_BAY_RESERVE
+}
+
+enum BedType {
+  SINGLE
+  BUNK_LOWER
+  BUNK_UPPER
+}
+
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  RESERVED
+}
+
+enum BedAllocationStatus {
+  ACTIVE
+  TRANSFERRED
+  RELEASED
+  CANCELLED
+}
+
+enum RollCallStatus {
+  PRESENT
+  ABSENT
+  SICKBAY
+  AUTHORIZED_ABSENCE
+}
+
+enum TriagePriority {
+  ROUTINE
+  URGENT
+  EMERGENCY
+}
+
+enum DiagnosticCategory {
+  MALARIA
+  RESPIRATORY
+  GASTROINTESTINAL
+  DENTAL
+  TRAUMA
+  DERMATOLOGY
+  OTHER
+}
+
+enum DisciplineCategory {
+  BULLYING
+  SUBSTANCE_ABUSE
+  VANDALISM
+  THEFT
+  TRUANCY
+  INSUBORDINATION
+  FIGHTING
+  ACADEMIC_DISHONESTY
+  OTHER
+}
+
+enum IncidentSeverity {
+  MINOR
+  MODERATE
+  MAJOR
+  SEVERE
+}
+
+enum IncidentStatus {
+  REPORTED
+  INVESTIGATING
+  HEARING_SCHEDULED
+  RESOLVED
+  DISMISSED
+}
+
+enum HearingPlea {
+  GUILTY
+  NOT_GUILTY
+  NO_CONTEST
+}
+
+enum SanctionType {
+  VERBAL_WARNING
+  WRITTEN_WARNING
+  DETENTION
+  COMMUNITY_SERVICE
+  LOSS_OF_PRIVILEGE
+  SUSPENSION
+  EXPULSION
+}
+
+enum SanctionStatus {
+  ACTIVE
+  SERVED
+  APPEALED
+  OVERTURNED
+}
+
+enum ExeatType {
+  MEDICAL
+  FAMILY_EMERGENCY
+  OFFICIAL_SCHOOL_EVENT
+  WEEKEND_EXEAT
+}
+
+enum ExeatStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DEPARTED
+  COMPLETED
+  CANCELLED
+}
+
+model Hostel {
+  id          String       @id @default(cuid())
+  branchId    String
+  code        String
+  name        String
+  gender      HostelGender @default(MIXED)
+  capacity    Int          @default(0)
+  wardenId    String?
+  matronId    String?
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  warden      User?        @relation("HostelWarden", fields: [wardenId], references: [id], onDelete: SetNull)
+  matron      User?        @relation("HostelMatron", fields: [matronId], references: [id], onDelete: SetNull)
+  rooms       HostelRoom[]
+  rollCalls   HostelRollCall[]
+
+  @@unique([branchId, code])
+  @@index([branchId, gender, isActive])
+}
+
+model HostelRoom {
+  id          String     @id @default(cuid())
+  branchId    String
+  hostelId    String
+  roomNumber  String
+  floorNumber Int        @default(0)
+  wing        String?
+  roomType    RoomType   @default(STANDARD_DORM)
+  capacity    Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  branch      Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  hostel      Hostel     @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  beds        HostelBed[]
+
+  @@unique([hostelId, roomNumber])
+  @@index([branchId, hostelId])
+}
+
+model HostelBed {
+  id          String          @id @default(cuid())
+  branchId    String
+  roomId      String
+  bedNumber   String
+  bedCode     String
+  bedType     BedType         @default(BUNK_LOWER)
+  status      BedStatus       @default(AVAILABLE)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  room        HostelRoom      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  allocations BedAllocation[]
+
+  @@unique([roomId, bedNumber])
+  @@unique([branchId, bedCode])
+  @@index([branchId, status])
+}
+
+model BedAllocation {
+  id             String           @id @default(cuid())
+  branchId       String
+  studentId      String
+  bedId          String
+  academicYearId String
+  termId         String?
+  allocatedAt    DateTime         @default(now())
+  releasedAt     DateTime?
+  status         BedAllocationStatus @default(ACTIVE)
+  allocatedById  String?
+  releasedById   String?
+  notes          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  bed          HostelBed    @relation(fields: [bedId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term         Term?        @relation(fields: [termId], references: [id], onDelete: SetNull)
+  allocatedBy  User?        @relation("BedAllocator", fields: [allocatedById], references: [id], onDelete: SetNull)
+  releasedBy   User?        @relation("BedReleaser", fields: [releasedById], references: [id], onDelete: SetNull)
+
+  @@index([branchId, studentId, status])
+  @@index([branchId, bedId, status])
+}
+
+model HostelRollCall {
+  id          String         @id @default(cuid())
+  branchId    String
+  hostelId    String
+  studentId   String
+  date        DateTime       @default(now())
+  status      RollCallStatus @default(PRESENT)
+  remarks     String?
+  takenById   String
+  createdAt   DateTime       @default(now())
+
+  branch      Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  hostel      Hostel         @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  student     Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  takenBy     User           @relation("RollCallTaker", fields: [takenById], references: [id], onDelete: Cascade)
+
+  @@unique([hostelId, studentId, date])
+  @@index([branchId, date])
+}
+
+model HostelClearanceRecord {
+  id                  String    @id @default(cuid())
+  branchId            String
+  studentId           String
+  academicYearId      String
+  termId              String?
+  mattressReturned    Boolean   @default(true)
+  roomKeysReturned    Boolean   @default(true)
+  lockerKeysReturned  Boolean   @default(true)
+  bunkConditionIntact Boolean   @default(true)
+  damagesNoted        Boolean   @default(false)
+  damageCostUGX       Decimal?  @db.Decimal(12, 2)
+  damageDescription   String?
+  invoiceId           String?
+  status              String    @default("PENDING")
+  inspectorStaffId    String?
+  inspectedAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term           Term?        @relation(fields: [termId], references: [id], onDelete: SetNull)
+  inspectorStaff User?        @relation("HostelInspector", fields: [inspectorStaffId], references: [id], onDelete: SetNull)
+
+  @@unique([studentId, academicYearId, termId])
+  @@index([branchId, status])
+}
+
+model ClinicEncounter {
+  id                     String             @id @default(cuid())
+  branchId               String
+  studentId              String
+  academicYearId         String
+  termId                 String?
+  encounterNumber        String
+  attendingStaffId       String
+  checkInAt              DateTime           @default(now())
+  checkOutAt             DateTime?
+  triagePriority         TriagePriority     @default(ROUTINE)
+  temperature            Decimal?           @db.Decimal(4, 1)
+  pulseRate              Int?
+  bloodPressure          String?
+  respiratoryRate        Int?
+  weightKg               Decimal?           @db.Decimal(5, 2)
+  chiefComplaint         String
+  diagnosticCategory     DiagnosticCategory @default(OTHER)
+  symptomsEncrypted      String?
+  clinicalNotesEncrypted String?
+  diagnosisEncrypted     String?
+  outcome                String?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  branch           Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student          Student                  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear     AcademicYear             @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term             Term?                    @relation(fields: [termId], references: [id], onDelete: SetNull)
+  attendingStaff   User                     @relation("ClinicAttendant", fields: [attendingStaffId], references: [id], onDelete: Cascade)
+  sickbayAdmission SickbayAdmission?
+  referral         MedicalReferral?
+  dispensations    ClinicDispensingRecord[]
+
+  @@unique([branchId, encounterNumber])
+  @@index([branchId, studentId, checkInAt])
+}
+
+model SickbayAdmission {
+  id                 String    @id @default(cuid())
+  branchId           String
+  encounterId        String    @unique
+  studentId          String
+  bedNumber          String
+  admittedAt         DateTime  @default(now())
+  dischargedAt       DateTime?
+  dischargeCondition String?
+  attendingNurseId   String
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  encounter      ClinicEncounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  student        Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  attendingNurse User            @relation("SickbayNurse", fields: [attendingNurseId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, studentId])
+}
+
+model MedicalReferral {
+  id                         String    @id @default(cuid())
+  branchId                   String
+  encounterId                String    @unique
+  studentId                  String
+  externalFacilityName       String
+  referralReason             String
+  ambulanceDispatched        Boolean   @default(false)
+  escortStaffId              String?
+  guardianNotifiedAt         DateTime?
+  guardianNotificationNotes  String?
+  dispatchedAt               DateTime  @default(now())
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+
+  branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  encounter   ClinicEncounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  student     Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  escortStaff User?           @relation("ReferralEscort", fields: [escortStaffId], references: [id], onDelete: SetNull)
+
+  @@index([branchId, studentId])
+}
+
+model ClinicDispensingRecord {
+  id                  String   @id @default(cuid())
+  branchId            String
+  encounterId         String
+  studentId           String
+  itemId              String
+  storeId             String
+  quantity            Int      @default(1)
+  dosageInstructions  String
+  dispensedById       String
+  dispensedAt         DateTime @default(now())
+  stockMovementId     String?
+  createdAt           DateTime @default(now())
+
+  branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  encounter   ClinicEncounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  student     Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  item        InventoryItem   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  store       InventoryStore  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  dispensedBy User            @relation("MedicineDispenser", fields: [dispensedById], references: [id], onDelete: Cascade)
+
+  @@index([branchId, encounterId])
+  @@index([branchId, studentId])
+}
+
+model DisciplinaryIncident {
+  id             String             @id @default(cuid())
+  branchId       String
+  incidentNumber String
+  title          String
+  incidentDate   DateTime           @default(now())
+  location       String?
+  reportedById   String
+  category       DisciplineCategory @default(OTHER)
+  severity       IncidentSeverity   @default(MINOR)
+  description    String
+  witnessNotes   String?
+  status         IncidentStatus     @default(REPORTED)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  branch     Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  reportedBy User               @relation("IncidentReporter", fields: [reportedById], references: [id], onDelete: Cascade)
+  students   IncidentStudent[]
+  hearings   DisciplinaryHearing[]
+
+  @@unique([branchId, incidentNumber])
+  @@index([branchId, status])
+}
+
+model IncidentStudent {
+  id         String      @id @default(cuid())
+  branchId   String
+  incidentId String
+  studentId  String
+  role       String      @default("PRIMARY_OFFENDER")
+  plea       HearingPlea @default(NO_CONTEST)
+  statement  String?
+  createdAt  DateTime    @default(now())
+
+  branch   Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  incident DisciplinaryIncident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  student  Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([incidentId, studentId])
+  @@index([branchId, studentId])
+}
+
+model DisciplinaryHearing {
+  id              String      @id @default(cuid())
+  branchId        String
+  incidentId      String
+  hearingDate     DateTime
+  location        String?
+  panelChairId    String
+  panelMembers    String?
+  studentPlea     HearingPlea @default(NOT_GUILTY)
+  guardianPresent Boolean     @default(false)
+  guardianId      String?
+  hearingMinutes  String
+  findings        String
+  status          String      @default("COMPLETED")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  branch     Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  incident   DisciplinaryIncident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  panelChair User                 @relation("HearingChair", fields: [panelChairId], references: [id], onDelete: Cascade)
+  guardian   Guardian?            @relation(fields: [guardianId], references: [id], onDelete: SetNull)
+  sanctions  DisciplinarySanction[]
+
+  @@index([branchId, incidentId])
+}
+
+model DisciplinarySanction {
+  id             String         @id @default(cuid())
+  branchId       String
+  hearingId      String
+  studentId      String
+  sanctionType   SanctionType
+  startDate      DateTime       @default(now())
+  endDate        DateTime?
+  terms          String
+  demeritPoints  Int            @default(0)
+  approvedById   String
+  status         SanctionStatus @default(ACTIVE)
+  lifecycleLogId String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  branch     Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  hearing    DisciplinaryHearing @relation(fields: [hearingId], references: [id], onDelete: Cascade)
+  student    Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  approvedBy User                @relation("SanctionApprover", fields: [approvedById], references: [id], onDelete: Cascade)
+
+  @@index([branchId, studentId])
+  @@index([branchId, sanctionType])
+}
+
+model ExeatPass {
+  id                    String      @id @default(cuid())
+  branchId              String
+  exeatNumber           String
+  studentId             String
+  academicYearId        String
+  termId                String?
+  exeatType             ExeatType   @default(WEEKEND_EXEAT)
+  reason                String
+  intendedDeparture     DateTime
+  expectedReturn        DateTime
+  actualDeparture       DateTime?
+  actualReturn          DateTime?
+  guardianConsent       Boolean     @default(true)
+  guardianId            String?
+  guardianConsentMethod String?
+  approvedById          String?
+  approvedAt            DateTime?
+  gateOfficerDepartId   String?
+  gateOfficerReturnId   String?
+  accompanyingAdult     String?
+  status                ExeatStatus @default(PENDING)
+  isOverdue             Boolean     @default(false)
+  qrVerificationToken   String      @unique
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  branch            Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student           Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear      AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term              Term?        @relation(fields: [termId], references: [id], onDelete: SetNull)
+  guardian          Guardian?    @relation(fields: [guardianId], references: [id], onDelete: SetNull)
+  approvedBy        User?        @relation("ExeatApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  gateOfficerDepart User?        @relation("GateOfficerDepart", fields: [gateOfficerDepartId], references: [id], onDelete: SetNull)
+  gateOfficerReturn User?        @relation("GateOfficerReturn", fields: [gateOfficerReturnId], references: [id], onDelete: SetNull)
+
+  @@unique([branchId, exeatNumber])
+  @@index([branchId, studentId])
+  @@index([branchId, status])
+}
+
+model EmergencyNotificationLog {
+  id                     String   @id @default(cuid())
+  branchId               String
+  studentId              String
+  guardianId             String
+  notificationReason     String
+  phoneDialed            String
+  status                 String   @default("COMPLETED")
+  callerStaffId          String
+  guardianResponseNotes  String?
+  timestamp              DateTime @default(now())
+
+  branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  guardian    Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+  callerStaff User     @relation("EmergencyCaller", fields: [callerStaffId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, studentId])
+}
+
+model WelfareSequence {
+  id        String   @id @default(cuid())
+  branchId  String
+  type      String   // CLN, DISC, EXT, BED
   year      Int
   nextVal   Int      @default(1)
   createdAt DateTime @default(now())

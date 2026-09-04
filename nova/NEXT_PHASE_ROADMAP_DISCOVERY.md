@@ -1,303 +1,242 @@
-# NOVA School Management ERP — Next Phase Architecture & Product Discovery
-## Comprehensive Strategic Roadmap & Next Phase Selection
+# NOVA School Management ERP — Next Phase Roadmap Discovery
+## Architectural & Product Discovery: Post-Phase 3.2A Evaluation
 
-**Document Version:** 1.0.0-DISCOVERY  
-**Status:** COMPLETED & FROZEN (READ-ONLY)  
-**Author:** Antigravity / NOVA Engineering Team  
-**Date:** September 3, 2026  
-
----
-
-## A. Current System Maturity
-
-NOVA has successfully completed and sealed its complete core multi-tenant **Financial & Operational Infrastructure (Phases 3.1A through 3.1N)**, building on top of the foundational pilot academic and HR modules:
-
-```mermaid
-mindmap
-  root((NOVA System Architecture))
-    Finance Subsystem [Sealed Phases 3.1A-3.1N]
-      3.1A Fee Configuration
-      3.1B Billing & Bursaries
-      3.1C Student Subledger & Receipts
-      3.1D Expenses & Analytics
-      3.1E SchoolPay Uganda Gateway
-      3.1F Staff Payroll & Statutory Taxes
-      3.1G Budgeting & Vote Heads
-      3.1H Requirements & Financial Clearance
-      3.1I Transport & Fleet Operations
-      3.1J Stores Inventory & Procurement
-      3.1K Treasury & Bank Reconciliation
-      3.1L General Ledger & Double-Entry COA
-      3.1M Fixed Assets & Depreciation
-      3.1N Accounts Payable & 3-Way Match
-    Academic Core [Pilot Baseline]
-      Classes & Streams
-      Subjects & Combinations
-      Assessments & Marks
-      Grading Scales & Bands
-      Term Results & Finalization
-      Daily Student Attendance
-    Staff & HR Core [Pilot Baseline]
-      Employees & Profiles
-      Departments & HODs
-      Employee Types & Teaching Flags
-      User Branch Access & RBAC
-    Platform Infrastructure
-      Organization / School / Branch Multi-Tenancy
-      Immutable Audit Logging
-      PostgreSQL Strict Decimal Precision
-      Playwright E2E & Vitest Suites
-```
-
-### Established Architectural Invariants:
-1. **Multi-Tenant Branch Isolation:** Every operational record is scoped to `branchId` with strict tenant context assertions.
-2. **Double-Entry Financial Authority:** General Ledger (`#1xxx`–`#6xxx`) posts exclusively via balanced `GLEngineDAO.postJournalEntry` transactions with zero drift against subledgers (Student AR `#1210`, Inventory `#1310`, Fixed Assets `#15xx`, AP `#2110`, GRNI `#2120`, Treasury `#11xx`).
-3. **Maker-Checker Governance:** 4-Eye approval controls across Invoices, Credit Notes, Payroll, Budgeting, and Disposals.
-4. **Treasury Liquidity Authority:** `TreasuryAccount.currentBalance` acts as sole liquid cash authority with immutable `CashbookMovement` audit trails.
+**Document Version:** 1.0.0  
+**Date:** September 2026  
+**Status:** COMPLETED & SEALED  
+**Baseline Git HEAD:** `64ed61ee7e4310cea3e21f5595aa2c9a341983a0`  
+**Current Closed Modules:** Finance 3.1A–3.1N, Admissions / Student Lifecycle / Guardian KYC 3.2A  
 
 ---
 
-## B. Gap Analysis
+## A. Current NOVA Maturity
 
-With the finance, procurement, and asset backbone fully production-ready, the largest operational gaps in NOVA lie in the **front-of-house student lifecycle, academic operations, student welfare, and stakeholder communication**:
+NOVA has achieved an enterprise-grade, mathematically sealed foundation across two foundational operational pillars:
 
-```
-+---------------------------------------------------------------------------------------------------+
-|                                  CURRENT ERP GAP MATRIX                                           |
-+---------------------------------------------------------------------------------------------------+
-| Domain                       | Current State                | Missing Production Capabilities    |
-+------------------------------+------------------------------+------------------------------------+
-| 1. Admissions & Onboarding   | Minimal 2-field form         | Multi-stage applicant pipeline,    |
-|                              | (firstName, lastName, admNo) | inquiries, entrance assessment,    |
-|                              |                              | guardian KYC, document uploads,    |
-|                              |                              | auto-onboarding to billing/stores. |
-+------------------------------+------------------------------+------------------------------------+
-| 2. Student Welfare & Housing | Boarding fee exists in 3.1A, | Dormitories, houses, bed allocation|
-|                              | zero housing or clinic logic | infirmary clinic visits, medical   |
-|                              |                              | records, behavior/discipline logs. |
-+------------------------------+------------------------------+------------------------------------+
-| 3. Timetable & Scheduling    | ClassSubject links exist     | Timetable engine, period slots,    |
-|                              | without schedule engine      | collision detection, teacher load, |
-|                              |                              | room allocations, substitutions.   |
-+------------------------------+------------------------------+------------------------------------+
-| 4. Communication Gateway     | Parent enum exists, zero     | Africa's Talking SMS integration,  |
-|                              | portal or messaging engine   | automated fee/attendance SMS alerts|
-|                              |                              | parent mobile/web portal view.     |
-+------------------------------+------------------------------+------------------------------------+
-| 5. Advanced CBC Academics    | Basic pilot marks & ranking  | Formative AoI 20% + Summative 80%, |
-|                              |                              | competency descriptors, UNEB export|
-+------------------------------+------------------------------+------------------------------------+
-| 6. HR & Staff Lifecycle      | Basic Employee profile       | Leave management, appraisals,      |
-|                              | and payroll comp profile     | staff contracts, biometric logs.   |
-+------------------------------+------------------------------+------------------------------------+
-```
+### 1. Complete Double-Entry Financial Engine (Phases 3.1A–3.1N)
+- **Fee Configuration & Billing (3.1A, 3.1B):** Multi-component fee structures, class-based billing, individual student discounts, bulk billing, invoice voiding, and strict sub-millisecond atomic transactions.
+- **Subledger & Payments (3.1C, 3.1D):** FIFO invoice allocation, receipt issuance, student statement generation, cash flow and debtor reporting.
+- **SchoolPay Gateway (3.1E):** Real-time webhook ingestion, HMAC validation, automated payment allocation, unallocated payment staging, and multi-tenant reconciliation.
+- **Staff Payroll & Compensation (3.1F):** Salary structures, allowances, statutory deductions (NSSF, PAYE, LST), maker-checker payroll runs, payslip generation, and bank/mobile-money disbursement exports.
+- **Budgeting & Vote Heads (3.1G):** Departmental budget envelopes, vote heads, 4-eye approval workflows, and real-time expenditure variance telemetry.
+- **Requirements & Financial Clearance (3.1H):** Class requirements blueprints, physical item tracking, monetization, and automated cryptographic examination/term clearance permits with QR token verification.
+- **Transport Operations (3.1I):** Routes, stages/stops, vehicle fleet, driver assignments, fuel/maintenance expense tracking, and term subscription billing.
+- **Inventory & Stores (3.1J):** Multi-store stock tracking, purchasing (PO/GRN), weighted average costing (WAC), student uniform sales, stocktakes, and write-offs.
+- **Treasury & Cashbook (3.1K):** Multi-account cash/bank management, petty cash vouchers, shift handovers, bank statement reconciliation, and funds transfers.
+- **General Ledger (3.1L):** Authoritative double-entry engine, 5-digit Chart of Accounts, system control roles (including Student AR Control #1200), balanced journals, period close governance, trial balance, income statement, and balance sheet.
+- **Fixed Assets (3.1M):** Asset register, category lifecycle, straight-line and reducing-balance automated depreciation engine, and asset disposals.
+- **Accounts Payable (3.1N):** Supplier registry, AP invoices, 3-way matching against GRN/PO, credit notes, payment runs, aged creditor analysis, and GRNI reconciliation.
+
+### 2. Admissions, Student Lifecycle & Guardian KYC Engine (Phase 3.2A)
+- **Applicant Intake Funnel:** Inquiries, applications, entrance assessment rubrics, 4-eye offer issuance, and offer acceptance workflows.
+- **Single-Click Onboarding Pipeline:** Atomic database transaction creating Student, academic `Enrollment` (`status: ACTIVE`), `StudentGuardian` links, and initial `StudentLifecycleLog`, paired with an asynchronous retryable `ProvisioningRunner` with exponential backoff.
+- **Guardian Registry & KYC Security:** Multiple guardians, household family grouping, strict exactly-one primary contact invariant, AES-256-GCM authenticated encryption for national IDs and medical notes, HMAC-SHA256 blind indexing, and role-gated PII unmasking.
+- **Lifecycle Finite-State Machine:** Discrete lifecycle governance (`PROSPECTIVE` $\rightarrow$ `ENROLLED` $\rightarrow$ `ACTIVE` $\rightarrow$ `SUSPENDED` / `DEFERRED` / `TRANSFERRED_OUT` / `EXPELLED` / `GRADUATED` / `DECEASED`), blocking transfers when outstanding fee debt exists, with immutable transition audit trails.
+- **Student 360 Profile Dossier:** Full 360-degree student record unifying demographics, guardians, enrollments, billing ledgers, clearance permits, and lifecycle state.
+
+---
+
+## B. Remaining Product Gaps
+
+While Finance and Admissions/Lifecycle are world-class, several major functional areas remain unaddressed in the daily operational life of a primary/secondary boarding school in East Africa:
+
+1. **Boarding House & Hostel Management:**
+   - Phase 3.2A categorized students into `dayOrBoarding: DAY` or `BOARDING`.
+   - However, there are zero models for boarding blocks, hostels, houses, dormitories, rooms, or beds.
+   - Bed capacity tracking, room assignments, matrons/wardens, evening roll calls, and hostel property tracking are completely absent.
+2. **Infirmary & Clinic Operations:**
+   - Phase 3.2A encrypted student medical emergency notes, blood groups, and allergies with AES-256-GCM.
+   - However, there is no school clinic subsystem to log student health visits, nurse triage, bed-rest admissions, drug administration, doctor referrals, or contagious illness outbreaks.
+3. **Student Behavioral Discipline & Due-Process:**
+   - Phase 3.2A created lifecycle statuses for `SUSPENDED` and `EXPELLED`.
+   - However, suspensions currently have no formal due-process workflows: incident reporting, witness logging, demerit points, disciplinary committee hearings, or sanction terms.
+4. **Exeat Gate Passes & Visitor Management:**
+   - In boarding schools, students cannot leave campus without an official Exeat pass approved by Housemaster/Matron and authorized by a primary guardian. There is currently no exeat system.
+5. **Parent & Student Self-Service Portals:**
+   - Guardians are cataloged with normalized phone numbers, but have no web portal to check live fee balances, view SchoolPay codes, or download report cards.
+6. **Academic Timetable & Facility Scheduling:**
+   - The school has classes, subjects, and teachers, but no scheduling grid, periods, lab bookings, or teacher conflict-resolution engine.
+7. **National Examination Candidate Registration (UNEB/CBC):**
+   - No tracking of PLE, UCE, UACE examination centers, candidate index numbers, continuous assessment scores, or UNEB registration readiness.
 
 ---
 
 ## C. Candidate Next Phases
 
-We evaluate and rank the candidate domains across 6 core criteria:
-1. **Business Value (BV):** Immediate impact on daily school operations.
-2. **Architectural Importance (AI):** Position in the data flow hierarchy.
-3. **Dependencies (DEP):** Prerequisites already satisfied.
-4. **Implementation Complexity (IC):** Engineering scope and risk profile.
-5. **Risk (RSK):** Potential to regress existing closed modules.
-6. **Production Readiness Effect (PRE):** Impact on enabling real-world school deployment.
+We evaluate five high-impact candidate phases against strict business and architectural criteria:
 
-| Rank | Candidate Domain | BV | AI | DEP | IC | RSK | PRE | Overall Score |
-|:---:|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1** | **Admissions, Student Lifecycle, Applicant Pipeline & Guardian KYC** | **CRITICAL** | **FOUNDATIONAL** | **READY** | **MEDIUM** | **LOW** | **MAXIMAL** | **98/100** |
-| **2** | **Student Welfare, Boarding House, Health Clinic & Discipline Engine** | HIGH | MODERATE | DEPENDS ON #1 | MEDIUM | LOW | HIGH | **86/100** |
-| **3** | **Parent/Guardian Portal, Multi-Channel SMS/Email Communication Gateway** | HIGH | HORIZONTAL | DEPENDS ON #1 | MEDIUM | LOW | HIGH | **82/100** |
-| **4** | **Curriculum Timetable Scheduling, Period Slots & Room Collision Engine** | HIGH | ACADEMIC | READY | HIGH | LOW | MODERATE | **78/100** |
-| **5** | **Staff Leave Management, Performance Appraisals & HR Self-Service** | MEDIUM | OPERATIONAL | READY | LOW | LOW | MODERATE | **74/100** |
-| **6** | **Uganda CBC / Formative Competency Assessment & UNEB Academic Engine** | HIGH | ACADEMIC | JIDDAH BOUNDARY | HIGH | MEDIUM | MODERATE | **71/100** |
+| Candidate | Domain Focus | Business Value | Architectural Fit | Cross-Module Synergy | Complexity | Risk |
+|---|---|:---:|:---:|:---:|:---:|:---:|
+| **Candidate 1 (Phase 3.2B)** | **Student Welfare, Boarding House, Clinic Operations & Behavioral Discipline** | **CRITICAL** | **PERFECT** (Direct continuation of 3.2A) | **VERY HIGH** (3.1B, 3.1H, 3.1J, 3.2A) | **MEDIUM-HIGH** | **LOW** |
+| **Candidate 2 (Phase 3.2C)** | **Parent & Student Portal / Multichannel Communications Engine** | VERY HIGH | HIGH (Builds on Guardian KYC) | HIGH (Finance, Academics, Welfare) | MEDIUM-HIGH | MEDIUM |
+| **Candidate 3 (Phase 3.2D)** | **Timetable, Room Allocation & Teacher Collision Engine** | HIGH | MEDIUM (Curriculum & HR) | LOW (Isolated scheduling grid) | VERY HIGH (Constraint solver) | HIGH |
+| **Candidate 4 (Phase 3.2E)** | **Examination Governance, Mock / UNEB Registration & CBC Analytics** | MEDIUM-HIGH | MEDIUM (Curriculum Core) | MEDIUM (3.1H Clearance, Results) | MEDIUM | LOW |
+| **Candidate 5 (Phase 3.2F)** | **Library & Textbook Asset Management** | MEDIUM | LOW-MEDIUM | MEDIUM (3.1H, 3.1J) | LOW-MEDIUM | LOW |
 
 ---
 
 ## D. Recommended Next Phase
 
-### **Phase 3.2A: Admissions, Student Lifecycle, Applicant Pipeline & Guardian KYC Engine**
+### **RECOMMENDED: Phase 3.2B — Student Welfare, Boarding House Management, Infirmary/Clinic Operations & Behavioral Discipline**
+
+Select **Phase 3.2B** as the immediate next phase.
 
 ---
 
-## E. Why It Comes Next (Selection Rationale)
+## E. Why It Wins
 
-1. **Top of the Operational Funnel:**
-   In every school, the student lifecycle begins with inquiry and admissions. Currently, the `Student` entity in NOVA is a minimal stub created during the initial pilot phase. A real school cannot bill, clear, transport, house, or educate students without a structured admissions process.
-
-2. **Feeds All Existing Closed Subsystems (Zero Duplication, Maximum Synergy):**
-   When an applicant is admitted and enrolled through Phase 3.2A, the system automatically:
-   - Enrolls the student into Class/Stream (`Enrollment`).
-   - Generates the official admission number via configurable branch sequence (`ADM-2026-XXXX`).
-   - Triggers automated term fee billing via `InvoiceDAO.createInvoice` (Phase 3.1B).
-   - Generates the student's unique SchoolPay registration payment code (Phase 3.1E).
-   - Assigns standard class requirement packages via `RequirementDAO` (Phase 3.1H).
-   - Auto-subscribes to transport route if requested (Phase 3.1I).
-   - Generates uniform / store sales order (Phase 3.1J).
-
-3. **Eliminates Dirty Data in Financial Subledgers:**
-   Currently, students can be created with blank birthdates, missing parent contacts, and unverified data. Phase 3.2A ensures verified KYC data (NIN, LIN/EMIS number, parent contact verification, PLE/UCE index numbers, health emergency notes) before financial ledgers are initiated.
-
-4. **Zero Regressions on Closed Financial Modules:**
-   Phase 3.2A acts as a consumer of closed finance APIs (`InvoiceDAO`, `SchoolPayDAO`, `RequirementDAO`, `TransportDAO`), cleanly interacting through established public DAO interfaces without modifying financial ledger rules.
+1. **Immediate Operational Cohesion with Phase 3.2A:**
+   Phase 3.2A introduced `dayOrBoarding: DAY | BOARDING`, AES-256-GCM encrypted medical records, and lifecycle statuses `SUSPENDED` and `EXPELLED`. Leaving Boarding, Clinic, and Discipline unbuilt leaves these fields as "dead data" with no functional home in daily operations. Phase 3.2B immediately activates and operationalizes them.
+2. **Deepens Existing Closed Systems Without Bloat or Regression:**
+   - **Boarding $\rightarrow$ Invoicing (3.1B):** Bed allocation can directly link to boarding fee billing in `InvoiceDAO` without modifying closed invoicing logic.
+   - **Boarding $\rightarrow$ Clearance (3.1H):** Hostel checkout (keys returned, mattress inspected, locker intact) plugs directly into `ClearanceDAO` as an authoritative clearance dimension.
+   - **Clinic $\rightarrow$ Inventory (3.1J):** Dispensary medication dispensing decrements stock directly from a designated "Medical Dispensary Store" via `InventoryDAO.recordStockMovement`, maintaining strict WAC costing and stock accountability without duplicating inventory code.
+   - **Clinic $\rightarrow$ Medical Crypto (3.2A):** School nurses and medical officers with `kyc:decrypt` permission can unmask student allergies and emergency notes during triage.
+   - **Discipline $\rightarrow$ Student Lifecycle (3.2A):** Disciplinary board hearings resulting in suspension or expulsion invoke `StudentLifecycleDAO.transitionStatus` to move students to `SUSPENDED` or `EXPELLED` through a legally audited, verifiable chain of custody.
+3. **Prerequisite for a World-Class Parent Portal (Phase 3.2C):**
+   Building the Parent Portal *after* Welfare means that when parents log in, they will see a complete 360° overview of their child: fee ledger, SchoolPay code, report card, hostel room/bed, clinic triage visits, exeat approval history, and discipline merits/demerits.
 
 ---
 
-## F. Proposed Scope (Domain Boundary)
+## F. Proposed Scope for Phase 3.2B
 
-```mermaid
-stateDiagram-v2
-    [*] --> INQUIRY: Public / Walk-in Inquiry
-    INQUIRY --> APPLICATION_SUBMITTED: Form & Document Uploads
-    APPLICATION_SUBMITTED --> UNDER_REVIEW: Admissions Office Review
-    UNDER_REVIEW --> ASSESSMENT_SCHEDULED: Interview / Entrance Exam
-    ASSESSMENT_SCHEDULED --> ADMISSION_OFFERED: Offer Issued
-    ADMISSION_OFFERED --> OFFER_ACCEPTED: Acceptance & Reg Deposit Paid
-    ADMISSION_OFFERED --> OFFER_REJECTED: Offer Declined
-    OFFER_ACCEPTED --> FULLY_ENROLLED: Automated Onboarding Pipeline
-    FULLY_ENROLLED --> ACTIVE_STUDENT: Class & Stream Assigned
-    ACTIVE_STUDENT --> [*]
-```
+### 1. Boarding House & Hostel Operations
+- **Hostel Infrastructure:** Hostels/Blocks, Dormitories, Rooms, and Individual Beds with gender segregation, capacity limits, and status (`AVAILABLE`, `OCCUPIED`, `MAINTENANCE`, `RESERVED`).
+- **Bed Allocation Engine:** Assigning boarding students to specific beds, preventing over-allocation, and tracking boarding history across academic terms.
+- **Warden & Matron Custody:** Assigning staff members as Housemasters, Housemistresses, and Matrons to specific hostels.
+- **Nightly Roll Call & Curfew Attendance:** Daily evening hostel roll call tracking (`PRESENT`, `ABSENT`, `SICKBAY`, `AUTHORIZED_ABSENCE`).
+- **Exeat & Gate Pass Engine:** Exeat requests (Medical, Family/Emergency, Weekend), approval chain (Housemaster $\rightarrow$ Head Teacher), gate check-out and check-in timestamping, and primary guardian verification.
 
-### In-Scope Functional Modules:
-1. **Applicant Intake & Pipeline Management:**
-   - Multi-stage applicant states: `INQUIRY`, `APPLICATION_SUBMITTED`, `UNDER_REVIEW`, `ASSESSMENT_SCHEDULED`, `ADMISSION_OFFERED`, `OFFER_ACCEPTED`, `ENROLLED`, `REJECTED`, `WAITLISTED`.
-   - Application fee capture via Cashier Shift / Bank / Momo (integrated with Treasury Phase 3.1K).
-2. **Guardian KYC & Relationship Graph:**
-   - `Guardian` entity with national ID (NIN), verified primary phone, alternate contact, email, occupation, residential address.
-   - `StudentGuardian` junction supporting multiple relationships: `FATHER`, `MOTHER`, `LEGAL_GUARDIAN`, `SPONSOR`, `EMERGENCY_CONTACT`, with billing priority and SMS notification flags.
-   - Sibling linkage to detect multi-child families for automated family fee discounts (Phase 3.1B).
-3. **Digital Document Vault & Verification:**
-   - Attachments: Birth Certificate, PLE/UCE UNEB Pass Slips, Immunization/Health Card, Transfer Letter (EMIS), Passport Photo.
-   - Document verification status (`PENDING_VERIFICATION`, `VERIFIED`, `REJECTED`).
-4. **Entrance Exam / Interview Assessment Scoring:**
-   - Scoring of applicant interviews and entrance diagnostic tests.
-5. **Automated Admission & Onboarding Workflow (Single-Click Acceptance):**
-   - Generation of official admission letter with dynamic school header, student ID, and fee breakdown.
-   - Transitioning `Applicant` to `Student` and active `Enrollment`.
-   - Automatic emission of initial Term Invoice (`InvoiceDAO`) + SchoolPay Code (`SchoolPayDAO`) + Requirements Blueprint (`RequirementDAO`).
-6. **Student Lifecycle State Machine:**
-   - Formal status transitions: `PROSPECTIVE` $\rightarrow$ `ACTIVE` $\rightarrow$ `SUSPENDED` $\rightarrow$ `TRANSFERRED_OUT` $\rightarrow$ `ALUMNI_GRADUATED` $\rightarrow$ `DECEASED`.
-   - Transfer-out clearance check (calling Financial Clearance Engine Phase 3.1H).
+### 2. Infirmary & Clinic Operations
+- **Clinic Visits & Triage:** Student check-in, symptoms, vital signs (temperature, pulse, BP, weight), preliminary diagnosis, and nurse notes.
+- **Authorized Medical PII Viewing:** Secure unmasking of 3.2A medical emergency notes and allergies for medical officers with `clinic:write` permission.
+- **Dispensary & Drug Administration:** Prescription logging and dispensing connecting to a medical store in `InventoryDAO` (3.1J) to deduct stock.
+- **Bed-Rest / Sickbay Admissions:** Admitting sick students to the infirmary sickbay beds, monitoring discharge dates, and parental emergency notifications.
+- **Referrals & Serious Incident Alerts:** Medical referrals to external hospitals (e.g. Mulago, Case, Nakasero) with referral notes and incident logging.
+
+### 3. Behavioral Discipline & Due-Process
+- **Incident & Infraction Logging:** Disciplinary incidents with incident type, severity level (`MINOR`, `MODERATE`, `MAJOR`, `SEVERE`), location, witness statements, and accused students.
+- **Merits & Demerits System:** Student conduct point system tracking behavioral records across terms.
+- **Disciplinary Committee Hearings:** Scheduling hearings, recording panel findings, and logging student/guardian defenses.
+- **Sanctions & Corrective Actions:** Formal penalties (Warning, Detention, Community Service, Suspension, Expulsion Recommendation).
+- **Automated Lifecycle Integration:** Approved suspensions and expulsions invoke `StudentLifecycleDAO.transitionStatus` to transition student to `SUSPENDED` or `EXPELLED` with immutable audit history.
+
+### 4. Welfare Clearance Dimensions
+- **Hostel Clearance:** Housemaster inspection check (mattress, room keys, locker) feeding into `StudentClearance` (3.1H).
+- **Clinic Clearance:** Verification that no borrowed medical aids (crutches, braces) or outstanding external clinic bills remain.
 
 ---
 
-## G. Out of Scope
+## G. Out of Scope for Phase 3.2B
 
-To prevent scope creep, the following are strictly **OUT OF SCOPE** for Phase 3.2A:
-- **Parent Portal User Logins:** Parent login UI is reserved for the dedicated Stakeholder Communication & Portal Phase.
-- **Biometric Hardware Integrations:** Dedicated hardware SDK drivers belong to a subsequent IoT integration phase.
-- **Timetable Scheduling & Lesson Plans:** Belongs to dedicated Academics & Timetable Phase.
-- **Clinic Medical Treatment Logs:** Belongs to dedicated Student Welfare & Health Clinic Phase.
-- **Jiddah Smart Report Engine:** Strictly untouchable.
+To maintain high velocity and zero scope creep, the following are strictly deferred:
+- **Parent Self-Service Portal & Login:** Deferred to Phase 3.2C.
+- **SMS Gateway / Telecom Provider Aggregator:** Deferred to Phase 3.2C (Phase 3.2B will emit events/telemetry, but actual telecom dispatch belongs in Communications).
+- **Canteen & Meal Card POS:** Deferred to auxiliary operations.
+- **Timetable Scheduling Grid:** Deferred to Phase 3.2D.
+- **Jiddah Report Engine Modifications:** STRICTLY PROHIBITED. Jiddah remains completely untouched.
 
 ---
 
-## H. Architectural Dependencies & Module Interactions
+## H. Module Dependencies & Integration Boundary
 
 ```mermaid
 graph TD
-    ADM[Phase 3.2A: Admissions & Student Lifecycle] -->|Bills Admission & Tuition Fees| FIN_INV[Phase 3.1B: Invoicing Engine]
-    ADM -->|Receives Application / Registration Deposit| FIN_PAY[Phase 3.1C: Payment & Treasury]
-    ADM -->|Registers Student SchoolPay Code| FIN_SPAY[Phase 3.1E: SchoolPay Gateway]
-    ADM -->|Assigns Class Requirements Pack| FIN_REQ[Phase 3.1H: Requirements & Clearance]
-    ADM -->|Subscribes to Bus Route if requested| FIN_TRANS[Phase 3.1I: Transport Engine]
-    ADM -->|Sizes Uniforms & Supplies| FIN_INV_STORE[Phase 3.1J: Student Store Sales]
-    ADM -->|Enrolls in Class & Stream| ACAD[Academics & Enrollment]
-    ADM -->|Links Guardian Contacts| AUDIT[AuditService.log]
+    subgraph Phase 3.2B Welfare
+        HOSTEL[Hostel & Bed Allocation]
+        EXEAT[Exeat Gate Passes]
+        CLINIC[Infirmary Triage & Sickbay]
+        DISC[Disciplinary Due-Process]
+    end
+
+    subgraph Closed Foundations
+        STU[Student Master 3.2A]
+        LIFE[StudentLifecycleDAO 3.2A]
+        CRYPTO[KycCrypto / Medical PII 3.2A]
+        INV[InventoryDAO Stores 3.1J]
+        BILL[InvoiceDAO 3.1B]
+        CLEAR[ClearanceDAO 3.1H]
+        AUDIT[AuditService Core]
+    end
+
+    HOSTEL -->|Validates Boarding Status| STU
+    HOSTEL -->|Optional Boarding Fee| BILL
+    HOSTEL -->|Hostel Handover Check| CLEAR
+    
+    EXEAT -->|Verifies Primary Guardian| STU
+    
+    CLINIC -->|Decrypted Allergies & Vitals| CRYPTO
+    CLINIC -->|Drug Dispensing Stock Deduction| INV
+    CLINIC -->|Medical Clearance| CLEAR
+
+    DISC -->|Executes Suspension / Expulsion| LIFE
+    DISC -->|Emits Audit Events| AUDIT
 ```
 
-| Subsystem | Interaction Type | Integration Contract |
-|---|---|---|
-| **Phase 3.1B (Invoicing)** | Downstream Consumer | Calls `InvoiceDAO.createInvoice` upon admission acceptance. |
-| **Phase 3.1C (Payments)** | Downstream Consumer | Application fee payments post to `PaymentDAO` / Cashier Till. |
-| **Phase 3.1E (SchoolPay)** | Synchronization | Registers student with SchoolPay API / local code mapping. |
-| **Phase 3.1H (Requirements)** | Downstream Consumer | Calls `RequirementDAO.assignBlueprintToStudent` on intake. |
-| **Phase 3.1I (Transport)** | Downstream Consumer | Calls `TransportDAO.createSubscription` if transport chosen. |
-| **Phase 3.1J (Stores)** | Downstream Consumer | Emits uniform/stationery store sales record on enrollment. |
-| **Phase 3.1K (Treasury)** | Downstream Consumer | Application fees enter Cashier Till and Cashbook Outflow/Inflow. |
-| **Phase 3.1L (GL)** | Indirect via DAOs | GL journals are posted automatically by downstream finance DAOs. |
-| **Audit Service** | Security & Compliance | Every applicant status transition logged to `AuditLog`. |
-| **Jiddah Engine** | Zero Interaction | No modification to Jiddah boundary. |
+---
+
+## I. Migration & Data Risks
+
+1. **Hostel Bed Capacity Integrity:**
+   - Risk: Race conditions on concurrent bed assignment resulting in multiple students allocated to the same bed.
+   - Mitigation: Strict PostgreSQL `@@unique([bedId, academicYearId, termId])` constraint or database transaction row locking.
+2. **Medical Privacy & Regulatory Compliance:**
+   - Risk: Nurse notes containing sensitive diagnostic information exposed to unauthorized teachers.
+   - Mitigation: Enforce strict role-based access control (`clinic:read`, `clinic:write`) and encrypt sensitive clinic clinical notes using AES-256-GCM.
+3. **Disciplinary Due-Process Integrity:**
+   - Risk: A rogue staff member immediately expelling a student without a hearing.
+   - Mitigation: Expulsion and suspension require 4-Eye Disciplinary Committee sign-off, enforcing Maker-Checker rules prior to invoking `StudentLifecycleDAO`.
 
 ---
 
-## I. Data & Migration Concerns
+## J. RBAC, Security & Audit
 
-1. **Preserving Existing Pilot Students:**
-   - Existing `Student` records in `nova_dev` must be cleanly migrated to have default guardian links and `ACTIVE` status without losing historical invoices or marks.
-2. **Admission Number Sequence Generation:**
-   - Introduction of `AdmissionSequence` model per branch (`ADM-YYYY-XXXXX`) to prevent race conditions during bulk admissions.
-3. **Unique Constraints Integrity:**
-   - Maintain `@@unique([branchId, admissionNo])` and `@@unique([branchId, schoolPayCode])`.
-
----
-
-## J. Security, RBAC & Audit Requirements
-
-1. **Role-Based Access Control (RBAC):**
-   - `admissions:read`: View applicant pipelines, inquiries, and student profiles.
-   - `admissions:write`: Create inquiries, submit applications, upload KYC documents.
-   - `admissions:approve`: Issue admission offers, accept applicants, trigger formal enrollment (Admissions Officer / Head Teacher).
-   - `admissions:admin`: Configure admission criteria, entrance exam scoring rubrics, and delete draft inquiries.
-2. **Four-Eye Check on Admissions:**
-   - Maker who submits an application cannot unilaterally accept an offer without Head Teacher / Admissions Director approval.
-3. **Audit Logging:**
-   - Mandatory `AuditService.log` on applicant state transitions (`APPLICANT_STATUS_CHANGED`, `OFFER_ISSUED`, `STUDENT_ENROLLED`, `STUDENT_TRANSFERRED_OUT`).
+- **New Permissions:**
+  - `boarding:read`, `boarding:write`, `boarding:admin` (Matrons, Housemasters, Wardens)
+  - `exeat:request`, `exeat:approve`, `exeat:gate_verify` (Housemasters, Gate Security Guards)
+  - `clinic:read`, `clinic:write`, `clinic:admin` (School Nurses, Medical Doctors)
+  - `discipline:read`, `discipline:write`, `discipline:hearing`, `discipline:sanction` (Disciplinary Panel, Deputy Head Pastoral)
+- **Immutable Audit Logging:**
+  - Every bed assignment, roll call completion, exeat approval, clinic triage visit, drug dispensed, and disciplinary hearing decision logs to `AuditService.log`.
 
 ---
 
-## K. Reporting Requirements
+## K. Reporting & Analytics
 
-1. **Admissions Conversion Funnel Analytics:**
-   - Inquiries $\rightarrow$ Applications $\rightarrow$ Assessments $\rightarrow$ Offers $\rightarrow$ Enrolled rates.
-2. **Demographics & Feeder School Report:**
-   - Intake by gender, age, previous school, geographical district, nationality.
-3. **Student Directory & Master Register:**
-   - Official Ministry-compliant student register with LIN/EMIS numbers, PLE/UCE aggregate scores, guardian details.
-4. **Admissions Fee Collection Summary:**
-   - Application fees collected vs outstanding by payment method.
+1. **Boarding House Occupancy:** Real-time occupancy percentage by hostel, gender, and class.
+2. **Nightly Roll Call Discrepancy Report:** List of unexcused absent boarders flagged immediately for housemasters.
+3. **Exeat Gate Log:** Live roster of students currently off-campus on active exeats and overdue returns.
+4. **Clinic Morbidity & Epidemic Tracker:** Frequency of symptoms/diagnoses (e.g. malaria, flu, gastro) to detect contagious disease spikes.
+5. **Disciplinary Conduct Register:** Termly demerit tallies, recidivism rates, and sanction compliance tracking.
 
 ---
 
-## L. Testing & Acceptance Strategy
+## L. Test & Acceptance Strategy
 
-1. **Unit Test Matrix (`src/lib/dao/admissions.dao.test.ts`):**
-   - Test cases ADM-01 through ADM-25 covering all applicant states, guardian KYC relations, sibling auto-detection, and document uploads.
-2. **Adversarial & Concurrency Suite (`src/lib/dao/admissions.adversarial.test.ts`):**
-   - Concurrent admission numbering race conditions.
-   - Duplicate NIN / EMIS number detection.
-   - Maker-checker bypass prevention on admission offers.
-   - Self-contained branch multi-tenant isolation.
-3. **E2E Browser Workflow (`tests/admissions.spec.ts`):**
-   - Full Playwright E2E test verifying: Inquiry $\rightarrow$ Application $\rightarrow$ Assessment $\rightarrow$ Offer $\rightarrow$ Enrollment $\rightarrow$ Automated Invoice Emission.
-
----
-
-## M. Subsequent Roadmap (Post Phase 3.2A)
-
-Following the completion of Phase 3.2A, the recommended subsequent sequence is:
-
-```mermaid
-graph LR
-    P32A[Phase 3.2A: Admissions & Student Lifecycle] --> P32B[Phase 3.2B: Student Welfare, Boarding & Clinic]
-    P32B --> P32C[Phase 3.2C: Parent Portal & SMS Gateway]
-    P32C --> P32D[Phase 3.2D: Timetable & Scheduling]
-    P32D --> P32E[Phase 3.2E: Staff HR Lifecycle & Leave]
-```
-
-1. **Phase 3.2B: Student Welfare, Boarding Houses, Health Clinic & Discipline**
-   - Allocating enrolled boarding students to dorms/beds and tracking clinic visits consuming inventory medicines.
-2. **Phase 3.2C: Parent/Guardian Portal & Multi-Channel SMS Gateway**
-   - Providing verified guardians access to payment receipts, report cards, and automated SMS notifications.
-3. **Phase 3.2D: Master Timetable Scheduling & Classroom Allocation Engine**
-   - Generating collision-free timetable matrices for teachers, streams, and physical rooms.
-4. **Phase 3.2E: Staff HR Lifecycle, Leave Management & Biometric Attendance**
-   - Managing staff leave approvals that feed deductions directly into the closed Payroll Engine (Phase 3.1F).
+1. **Unit & Integration Test Suite (`welfare.dao.test.ts`):**
+   - Bed allocation, capacity verification, and release on checkout.
+   - Exeat request, approval, and gate checkout/checkin lifecycle.
+   - Clinic triage, allergy retrieval, and dispensary stock deduction.
+   - Incident reporting, hearing panel recording, and sanction execution.
+   - Transition of student to `SUSPENDED` upon sanction approval.
+2. **Adversarial & Concurrency Suite (`welfare.adversarial.test.ts`):**
+   - Concurrent bed assignment for same bed fails cleanly.
+   - Exeat check-out blocked if already checked out or exeat expired.
+   - Clinic drug dispensing fails gracefully if medical store stock is insufficient.
+   - Cross-branch access rejected with `UnauthorizedError`.
+   - Unauthorized user attempting to view clinic notes rejected.
+3. **Playwright E2E Suite (`tests/welfare-lifecycle.spec.ts`):**
+   - Hostel block view, bed allocation modal, and nightly roll call interface.
+   - Clinic workstation: student check-in, triage vitals, and prescription recording.
+   - Exeat issuance and gate pass verification screen.
+   - Disciplinary hearing docket and sanction issuance modal.
 
 ---
 
-## N. Conclusion & Summary
+## M. Follow-On Roadmap
 
-Phase 3.2A (**Admissions, Student Lifecycle, Applicant Pipeline & Guardian KYC Engine**) is the single highest-value, architecturally foundational, and lowest-risk domain to implement next. It transforms NOVA from a back-office financial ledger into a complete, end-to-end School Enterprise Resource Planning system.
+1. **Phase 3.2B:** Student Welfare, Boarding House Management, Infirmary/Clinic Operations & Behavioral Discipline.
+2. **Phase 3.2C:** Parent & Student Self-Service Portal and Multichannel Communications (SMS, WhatsApp, Email).
+3. **Phase 3.2D:** Academic Timetable, Room Allocation, and Teacher Collision Engine.
+4. **Phase 3.2E:** Examination Governance, Mock / UNEB Candidate Registration & CBC Analytics.
+5. **Phase 3.2F:** Library & Educational Asset Management.
