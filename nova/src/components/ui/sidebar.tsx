@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, BookOpen, CreditCard, Settings, LayoutDashboard, Receipt, BarChart3, TrendingDown, Wifi, Banknote, Building2, Bed, HeartPulse, ShieldAlert, Ticket, UserPlus } from "lucide-react";
+import { Users, BookOpen, CreditCard, Settings, LayoutDashboard, Receipt, BarChart3, TrendingDown, Wifi, Banknote, Building2, Bed, HeartPulse, ShieldAlert, Ticket, UserPlus, GraduationCap, ShieldCheck } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -51,6 +51,21 @@ export function Sidebar() {
           <Link href="/welfare/exeat" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <Ticket size={20} />
             <span>Exeat & Gate Passes</span>
+          </Link>
+          <div className="pt-4 pb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Portals & Access
+          </div>
+          <Link href="/portal/parent" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <Users size={20} />
+            <span>Parent Portal</span>
+          </Link>
+          <Link href="/portal/student" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <GraduationCap size={20} />
+            <span>Student Portal</span>
+          </Link>
+          <Link href="/settings/portal" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <ShieldCheck size={20} />
+            <span>Portal Policy</span>
           </Link>
           <div className="pt-4 pb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Curriculum

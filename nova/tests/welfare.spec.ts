@@ -6,13 +6,11 @@ test.describe('NOVA E2E Tests — Student Welfare, Boarding, Clinic, Discipline 
   const prisma = new PrismaClient();
   const adminEmail = `welfare_e2e_admin_${Date.now()}@test.com`;
   const adminPassword = 'password123';
-  let branchId: string;
-
   test.beforeAll(async () => {
     const org = await prisma.organization.findFirst();
     const school = await prisma.school.findFirst({ where: { organizationId: org?.id } });
     const branch = await prisma.branch.findFirst({ where: { schoolId: school?.id } });
-    branchId = branch!.id;
+    if (!branch) throw new Error("No branch found");
 
     let adminRole = await prisma.role.findFirst({ where: { name: 'Admin', organizationId: org?.id } });
     if (!adminRole) {

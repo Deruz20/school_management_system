@@ -42,126 +42,131 @@ model Branch {
 
   school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  users                     UserBranchAccess[]
-  students                  Student[]
-  classes                   Class[]
-  academicYears             AcademicYear[]
-  subjects                  Subject[]
-  subjectCombinations       SubjectCombination[]
-  gradeScales               GradeScale[]
-  settings                  BranchSettings?
-  departments               Department[]
-  employeeTypes             EmployeeType[]
-  employees                 Employee[]
-  feeTypes                  FeeType[]
-  feeStructures             FeeStructure[]
-  discounts                 StudentFeeDiscount[]
-  invoices                  Invoice[]
-  invoiceSequences          InvoiceSequence[]
-  ledgerEntries             StudentLedgerEntry[]
-  payments                  Payment[]
-  paymentAllocations        PaymentAllocation[]
-  receipts                  Receipt[]
-  paymentSequences          PaymentSequence[]
-  receiptSequences          ReceiptSequence[]
-  expenseCategories         ExpenseCategory[]
-  expenses                  Expense[]
-  expenseSequences          ExpenseSequence[]
-  schoolPayConfig           SchoolPayConfig?
-  schoolPayTransactions     SchoolPayTransaction[]
-  schoolPaySyncLogs         SchoolPaySyncLog[]
-  employeeCompensations     EmployeeCompensation[]
-  salaryComponents          SalaryComponent[]
-  payrollRuns               PayrollRun[]
-  payslips                  Payslip[]
-  payrollSequences          PayrollSequence[]
-  budgets                   Budget[]
-  budgetSequences           BudgetSequence[]
-  requirementCatalogs       RequirementCatalog[]
-  classRequirements         ClassRequirement[]
-  studentRequirementRecords StudentRequirementRecord[]
-  studentClearances         StudentClearance[]
-  inKindHandoverLogs        InKindHandoverLog[]
-  clearanceSequences        ClearanceSequence[]
-  inKindReceiptSequences    InKindReceiptSequence[]
-  transportRoutes           TransportRoute[]
-  transportVehicles         TransportVehicle[]
-  transportDrivers          TransportDriver[]
-  vehicleRouteAssignments   VehicleRouteAssignment[]
-  transportSubscriptions    StudentTransportSubscription[]
-  vehicleFuelLogs           VehicleFuelLog[]
-  vehicleMaintenanceLogs    VehicleMaintenanceLog[]
-  inventoryStores           InventoryStore[]
-  inventoryItems            InventoryItem[]
-  inventoryStoreStocks      InventoryStoreStock[]
-  inventorySuppliers        InventorySupplier[]
-  purchaseOrders            PurchaseOrder[]
-  goodsReceivedNotes        GoodsReceivedNote[]
-  storeRequisitions         StoreRequisition[]
-  studentStoreSales         StudentStoreSale[]
-  inventorySequences        InventorySequence[]
-  treasuryAccounts          TreasuryAccount[]
-  cashbookMovements         CashbookMovement[]
-  treasuryTransfers         TreasuryTransfer[]
-  cashierShiftSessions      CashierShiftSession[]
-  pettyCashImprests         PettyCashImprest[]
-  pettyCashVouchers         PettyCashVoucher[]
-  bankStatements            BankStatement[]
-  bankStatementLines        BankStatementLine[]
-  bankReconciliations       BankReconciliation[]
-  treasurySequences         TreasurySequence[]
-  StockMovement             StockMovement[]
-  glAccounts                GLAccount[]
-  fiscalYears               FiscalYear[]
-  fiscalPeriods             FiscalPeriod[]
-  journalEntries            JournalEntry[]
-  journalLines              JournalLine[]
-  glAccountMappings         GLAccountMapping[]
-  glSequences               GLSequence[]
-  assetCategories           AssetCategory[]
-  assetLocations            AssetLocation[]
-  assetItems                AssetItem[]
-  assetDepreciationRuns     AssetDepreciationRun[]
-  assetDisposals            AssetDisposal[]
-  assetVerificationLogs     AssetVerificationLog[]
-  assetMovementLogs         AssetMovementLog[]
-  assetSequences            AssetSequence[]
-  taxPolicies               TaxPolicy[]
-  supplierInvoices          SupplierInvoice[]
-  supplierInvoiceLines      SupplierInvoiceLine[]
-  supplierCreditNotes       SupplierCreditNote[]
-  supplierCreditNoteLines   SupplierCreditNoteLine[]
-  supplierPayments          SupplierPayment[]
+  users                      UserBranchAccess[]
+  students                   Student[]
+  classes                    Class[]
+  academicYears              AcademicYear[]
+  subjects                   Subject[]
+  subjectCombinations        SubjectCombination[]
+  gradeScales                GradeScale[]
+  settings                   BranchSettings?
+  departments                Department[]
+  employeeTypes              EmployeeType[]
+  employees                  Employee[]
+  feeTypes                   FeeType[]
+  feeStructures              FeeStructure[]
+  discounts                  StudentFeeDiscount[]
+  invoices                   Invoice[]
+  invoiceSequences           InvoiceSequence[]
+  ledgerEntries              StudentLedgerEntry[]
+  payments                   Payment[]
+  paymentAllocations         PaymentAllocation[]
+  receipts                   Receipt[]
+  paymentSequences           PaymentSequence[]
+  receiptSequences           ReceiptSequence[]
+  expenseCategories          ExpenseCategory[]
+  expenses                   Expense[]
+  expenseSequences           ExpenseSequence[]
+  schoolPayConfig            SchoolPayConfig?
+  schoolPayTransactions      SchoolPayTransaction[]
+  schoolPaySyncLogs          SchoolPaySyncLog[]
+  employeeCompensations      EmployeeCompensation[]
+  salaryComponents           SalaryComponent[]
+  payrollRuns                PayrollRun[]
+  payslips                   Payslip[]
+  payrollSequences           PayrollSequence[]
+  budgets                    Budget[]
+  budgetSequences            BudgetSequence[]
+  requirementCatalogs        RequirementCatalog[]
+  classRequirements          ClassRequirement[]
+  studentRequirementRecords  StudentRequirementRecord[]
+  studentClearances          StudentClearance[]
+  inKindHandoverLogs         InKindHandoverLog[]
+  clearanceSequences         ClearanceSequence[]
+  inKindReceiptSequences     InKindReceiptSequence[]
+  transportRoutes            TransportRoute[]
+  transportVehicles          TransportVehicle[]
+  transportDrivers           TransportDriver[]
+  vehicleRouteAssignments    VehicleRouteAssignment[]
+  transportSubscriptions     StudentTransportSubscription[]
+  vehicleFuelLogs            VehicleFuelLog[]
+  vehicleMaintenanceLogs     VehicleMaintenanceLog[]
+  inventoryStores            InventoryStore[]
+  inventoryItems             InventoryItem[]
+  inventoryStoreStocks       InventoryStoreStock[]
+  inventorySuppliers         InventorySupplier[]
+  purchaseOrders             PurchaseOrder[]
+  goodsReceivedNotes         GoodsReceivedNote[]
+  storeRequisitions          StoreRequisition[]
+  studentStoreSales          StudentStoreSale[]
+  inventorySequences         InventorySequence[]
+  treasuryAccounts           TreasuryAccount[]
+  cashbookMovements          CashbookMovement[]
+  treasuryTransfers          TreasuryTransfer[]
+  cashierShiftSessions       CashierShiftSession[]
+  pettyCashImprests          PettyCashImprest[]
+  pettyCashVouchers          PettyCashVoucher[]
+  bankStatements             BankStatement[]
+  bankStatementLines         BankStatementLine[]
+  bankReconciliations        BankReconciliation[]
+  treasurySequences          TreasurySequence[]
+  StockMovement              StockMovement[]
+  glAccounts                 GLAccount[]
+  fiscalYears                FiscalYear[]
+  fiscalPeriods              FiscalPeriod[]
+  journalEntries             JournalEntry[]
+  journalLines               JournalLine[]
+  glAccountMappings          GLAccountMapping[]
+  glSequences                GLSequence[]
+  assetCategories            AssetCategory[]
+  assetLocations             AssetLocation[]
+  assetItems                 AssetItem[]
+  assetDepreciationRuns      AssetDepreciationRun[]
+  assetDisposals             AssetDisposal[]
+  assetVerificationLogs      AssetVerificationLog[]
+  assetMovementLogs          AssetMovementLog[]
+  assetSequences             AssetSequence[]
+  taxPolicies                TaxPolicy[]
+  supplierInvoices           SupplierInvoice[]
+  supplierInvoiceLines       SupplierInvoiceLine[]
+  supplierCreditNotes        SupplierCreditNote[]
+  supplierCreditNoteLines    SupplierCreditNoteLine[]
+  supplierPayments           SupplierPayment[]
   supplierPaymentAllocations SupplierPaymentAllocation[]
-  supplierStatementImports  SupplierStatementImport[]
-  supplierStatementLines    SupplierStatementLine[]
-  supplierSequences         SupplierSequence[]
-  admissionSequences        AdmissionSequence[]
-  applicants                Applicant[]
-  guardians                 Guardian[]
-  studentGuardians          StudentGuardian[]
-  familyGroups              FamilyGroup[]
-  studentDocuments          StudentDocument[]
-  applicantDocuments        ApplicantDocument[]
-  studentLifecycleLogs      StudentLifecycleLog[]
-  enrollmentProvisionings   EnrollmentProvisioning[]
-  hostels                   Hostel[]
-  hostelRooms               HostelRoom[]
-  hostelBeds                HostelBed[]
-  bedAllocations            BedAllocation[]
-  hostelRollCalls           HostelRollCall[]
-  hostelClearanceRecords    HostelClearanceRecord[]
-  clinicEncounters          ClinicEncounter[]
-  sickbayAdmissions         SickbayAdmission[]
-  medicalReferrals          MedicalReferral[]
-  clinicDispensations       ClinicDispensingRecord[]
-  disciplinaryIncidents     DisciplinaryIncident[]
-  incidentStudents          IncidentStudent[]
-  disciplinaryHearings      DisciplinaryHearing[]
-  disciplinarySanctions     DisciplinarySanction[]
-  exeatPasses               ExeatPass[]
-  emergencyNotifications    EmergencyNotificationLog[]
-  welfareSequences          WelfareSequence[]
+  supplierStatementImports   SupplierStatementImport[]
+  supplierStatementLines     SupplierStatementLine[]
+  supplierSequences          SupplierSequence[]
+  admissionSequences         AdmissionSequence[]
+  applicants                 Applicant[]
+  guardians                  Guardian[]
+  studentGuardians           StudentGuardian[]
+  familyGroups               FamilyGroup[]
+  studentDocuments           StudentDocument[]
+  applicantDocuments         ApplicantDocument[]
+  studentLifecycleLogs       StudentLifecycleLog[]
+  enrollmentProvisionings    EnrollmentProvisioning[]
+  hostels                    Hostel[]
+  hostelRooms                HostelRoom[]
+  hostelBeds                 HostelBed[]
+  bedAllocations             BedAllocation[]
+  hostelRollCalls            HostelRollCall[]
+  hostelClearanceRecords     HostelClearanceRecord[]
+  clinicEncounters           ClinicEncounter[]
+  sickbayAdmissions          SickbayAdmission[]
+  medicalReferrals           MedicalReferral[]
+  clinicDispensations        ClinicDispensingRecord[]
+  disciplinaryIncidents      DisciplinaryIncident[]
+  incidentStudents           IncidentStudent[]
+  disciplinaryHearings       DisciplinaryHearing[]
+  disciplinarySanctions      DisciplinarySanction[]
+  exeatPasses                ExeatPass[]
+  emergencyNotifications     EmergencyNotificationLog[]
+  welfareSequences           WelfareSequence[]
+  notificationOutbox         NotificationOutbox[]
+  notificationPreferences    NotificationPreference[]
+  parentConsents             ParentConsentRecord[]
+  portalAccessPolicy         PortalAccessPolicy?
+  portalActivityLogs         PortalActivityLog[]
 }
 
 model BranchSettings {
@@ -200,78 +205,83 @@ model User {
   branchAccess UserBranchAccess[]
 
   // Relations for specific user types
-  employee Employee?
+  employee   Employee?
+  guardianId String?   @unique
+  studentId  String?   @unique
+  guardian   Guardian? @relation("GuardianUser", fields: [guardianId], references: [id], onDelete: SetNull)
+  student    Student?  @relation("StudentUser", fields: [studentId], references: [id], onDelete: SetNull)
 
-  auditLogs                 AuditLog[]
-  finalizedResults          TermResult[]             @relation("FinalizedResults")
-  createdPayrollRuns        PayrollRun[]             @relation("PayrollCreator")
-  submittedPayrollRuns      PayrollRun[]             @relation("PayrollSubmitter")
-  approvedPayrollRuns       PayrollRun[]             @relation("PayrollApprover")
-  disbursedPayrollRuns      PayrollRun[]             @relation("PayrollDisburser")
-  createdBudgets            Budget[]                 @relation("BudgetCreator")
-  submittedBudgets          Budget[]                 @relation("BudgetSubmitter")
-  approvedBudgets           Budget[]                 @relation("BudgetApprover")
-  preparedBudgetRevisions   BudgetRevision[]         @relation("RevisionPreparer")
-  authorizedBudgetRevisions BudgetRevision[]         @relation("RevisionAuthorizer")
-  classRequirementsCreated  ClassRequirement[]       @relation("ClassRequirementCreatedBy")
-  requirementsReceived      StudentRequirementItem[] @relation("RequirementReceivedBy")
-  handoversReceived         InKindHandoverLog[]      @relation("HandoverReceivedBy")
-  clearancesAuthorized      StudentClearance[]       @relation("ClearanceAuthorizedBy")
-  clearancesRevoked         StudentClearance[]       @relation("ClearanceRevokedBy")
-  createdPurchaseOrders     PurchaseOrder[]          @relation("POCreator")
-  approvedPurchaseOrders    PurchaseOrder[]          @relation("POApprover")
-  receivedGoodsNotes        GoodsReceivedNote[]      @relation("GRNReceiver")
-  approvedStoreRequisitions StoreRequisition[]       @relation("RequisitionApprover")
-  recordedStoreSales        StudentStoreSale[]       @relation("StoreSaleRecorder")
-  performedStockMovements   StockMovement[]          @relation("StockMovementPerformer")
-  custodianAccounts         TreasuryAccount[]        @relation("AccountCustodian")
-  cashbookMovements         CashbookMovement[]       @relation("CashbookMovementCreatedBy")
-  initiatedTransfers        TreasuryTransfer[]       @relation("TransferInitiator")
-  approvedTransfers         TreasuryTransfer[]       @relation("TransferApprover")
-  cashierShifts             CashierShiftSession[]    @relation("CashierShift")
-  supervisedShifts          CashierShiftSession[]    @relation("ShiftSupervisor")
-  custodianImprests         PettyCashImprest[]       @relation("PettyCustodian")
-  requestedPettyVouchers    PettyCashVoucher[]       @relation("VoucherRequester")
-  approvedPettyVouchers     PettyCashVoucher[]       @relation("VoucherApprover")
-  importedBankStatements    BankStatement[]          @relation("StatementImporter")
-  certifiedReconciliations  BankReconciliation[]     @relation("ReconcileCertifier")
-  postedJournals            JournalEntry[]           @relation("JournalPostedBy")
-  closedFiscalPeriods       FiscalPeriod[]           @relation("PeriodClosedBy")
-  createdDepreciationRuns   AssetDepreciationRun[]   @relation("DeprecCreatedBy")
-  approvedDepreciationRuns  AssetDepreciationRun[]   @relation("DeprecApprovedBy")
-  approvedDisposals         AssetDisposal[]          @relation("DisposalApprovedBy")
-  verifiedAssets            AssetVerificationLog[]   @relation("AssetVerifiedBy")
-  transferredAssets         AssetMovementLog[]       @relation("AssetTransferredBy")
-  createdSupplierInvoices     SupplierInvoice[]        @relation("SupplierInvoiceCreator")
-  approvedSupplierInvoices    SupplierInvoice[]        @relation("SupplierInvoiceApprover")
-  createdSupplierCreditNotes  SupplierCreditNote[]     @relation("SupplierCreditNoteCreator")
-  approvedSupplierCreditNotes SupplierCreditNote[]     @relation("SupplierCreditNoteApprover")
-  createdSupplierPayments     SupplierPayment[]        @relation("SupplierPaymentCreator")
-  importedSupplierStatements  SupplierStatementImport[] @relation("StatementImportedBy")
-  reviewedApplicants          Applicant[]               @relation("ApplicantReviewer")
-  assessedApplicants          Applicant[]               @relation("ApplicantAssessor")
-  decidedApplicants           Applicant[]               @relation("ApplicantDecider")
-  authorizedLifecycles        StudentLifecycleLog[]     @relation("LifecycleAuthorizer")
-  verifiedGuardians           Guardian[]                @relation("GuardianVerifier")
-  verifiedStudentDocuments    StudentDocument[]         @relation("StudentDocVerifier")
-  verifiedApplicantDocuments  ApplicantDocument[]       @relation("ApplicantDocVerifier")
-  wardenHostels               Hostel[]                  @relation("HostelWarden")
-  matronHostels               Hostel[]                  @relation("HostelMatron")
-  allocatedBeds               BedAllocation[]           @relation("BedAllocator")
-  releasedBeds                BedAllocation[]           @relation("BedReleaser")
-  takenRollCalls              HostelRollCall[]          @relation("RollCallTaker")
-  inspectedHostelClearances   HostelClearanceRecord[]   @relation("HostelInspector")
-  attendedClinicEncounters    ClinicEncounter[]         @relation("ClinicAttendant")
-  attendedSickbays            SickbayAdmission[]        @relation("SickbayNurse")
-  escortedReferrals           MedicalReferral[]         @relation("ReferralEscort")
-  dispensedMedicines          ClinicDispensingRecord[]  @relation("MedicineDispenser")
-  reportedIncidents           DisciplinaryIncident[]    @relation("IncidentReporter")
-  chairedHearings             DisciplinaryHearing[]     @relation("HearingChair")
-  approvedSanctions           DisciplinarySanction[]    @relation("SanctionApprover")
-  approvedExeatPasses         ExeatPass[]               @relation("ExeatApprover")
-  departedExeatPasses         ExeatPass[]               @relation("GateOfficerDepart")
-  returnedExeatPasses         ExeatPass[]               @relation("GateOfficerReturn")
+  auditLogs                    AuditLog[]
+  finalizedResults             TermResult[]               @relation("FinalizedResults")
+  createdPayrollRuns           PayrollRun[]               @relation("PayrollCreator")
+  submittedPayrollRuns         PayrollRun[]               @relation("PayrollSubmitter")
+  approvedPayrollRuns          PayrollRun[]               @relation("PayrollApprover")
+  disbursedPayrollRuns         PayrollRun[]               @relation("PayrollDisburser")
+  createdBudgets               Budget[]                   @relation("BudgetCreator")
+  submittedBudgets             Budget[]                   @relation("BudgetSubmitter")
+  approvedBudgets              Budget[]                   @relation("BudgetApprover")
+  preparedBudgetRevisions      BudgetRevision[]           @relation("RevisionPreparer")
+  authorizedBudgetRevisions    BudgetRevision[]           @relation("RevisionAuthorizer")
+  classRequirementsCreated     ClassRequirement[]         @relation("ClassRequirementCreatedBy")
+  requirementsReceived         StudentRequirementItem[]   @relation("RequirementReceivedBy")
+  handoversReceived            InKindHandoverLog[]        @relation("HandoverReceivedBy")
+  clearancesAuthorized         StudentClearance[]         @relation("ClearanceAuthorizedBy")
+  clearancesRevoked            StudentClearance[]         @relation("ClearanceRevokedBy")
+  createdPurchaseOrders        PurchaseOrder[]            @relation("POCreator")
+  approvedPurchaseOrders       PurchaseOrder[]            @relation("POApprover")
+  receivedGoodsNotes           GoodsReceivedNote[]        @relation("GRNReceiver")
+  approvedStoreRequisitions    StoreRequisition[]         @relation("RequisitionApprover")
+  recordedStoreSales           StudentStoreSale[]         @relation("StoreSaleRecorder")
+  performedStockMovements      StockMovement[]            @relation("StockMovementPerformer")
+  custodianAccounts            TreasuryAccount[]          @relation("AccountCustodian")
+  cashbookMovements            CashbookMovement[]         @relation("CashbookMovementCreatedBy")
+  initiatedTransfers           TreasuryTransfer[]         @relation("TransferInitiator")
+  approvedTransfers            TreasuryTransfer[]         @relation("TransferApprover")
+  cashierShifts                CashierShiftSession[]      @relation("CashierShift")
+  supervisedShifts             CashierShiftSession[]      @relation("ShiftSupervisor")
+  custodianImprests            PettyCashImprest[]         @relation("PettyCustodian")
+  requestedPettyVouchers       PettyCashVoucher[]         @relation("VoucherRequester")
+  approvedPettyVouchers        PettyCashVoucher[]         @relation("VoucherApprover")
+  importedBankStatements       BankStatement[]            @relation("StatementImporter")
+  certifiedReconciliations     BankReconciliation[]       @relation("ReconcileCertifier")
+  postedJournals               JournalEntry[]             @relation("JournalPostedBy")
+  closedFiscalPeriods          FiscalPeriod[]             @relation("PeriodClosedBy")
+  createdDepreciationRuns      AssetDepreciationRun[]     @relation("DeprecCreatedBy")
+  approvedDepreciationRuns     AssetDepreciationRun[]     @relation("DeprecApprovedBy")
+  approvedDisposals            AssetDisposal[]            @relation("DisposalApprovedBy")
+  verifiedAssets               AssetVerificationLog[]     @relation("AssetVerifiedBy")
+  transferredAssets            AssetMovementLog[]         @relation("AssetTransferredBy")
+  createdSupplierInvoices      SupplierInvoice[]          @relation("SupplierInvoiceCreator")
+  approvedSupplierInvoices     SupplierInvoice[]          @relation("SupplierInvoiceApprover")
+  createdSupplierCreditNotes   SupplierCreditNote[]       @relation("SupplierCreditNoteCreator")
+  approvedSupplierCreditNotes  SupplierCreditNote[]       @relation("SupplierCreditNoteApprover")
+  createdSupplierPayments      SupplierPayment[]          @relation("SupplierPaymentCreator")
+  importedSupplierStatements   SupplierStatementImport[]  @relation("StatementImportedBy")
+  reviewedApplicants           Applicant[]                @relation("ApplicantReviewer")
+  assessedApplicants           Applicant[]                @relation("ApplicantAssessor")
+  decidedApplicants            Applicant[]                @relation("ApplicantDecider")
+  authorizedLifecycles         StudentLifecycleLog[]      @relation("LifecycleAuthorizer")
+  verifiedGuardians            Guardian[]                 @relation("GuardianVerifier")
+  verifiedStudentDocuments     StudentDocument[]          @relation("StudentDocVerifier")
+  verifiedApplicantDocuments   ApplicantDocument[]        @relation("ApplicantDocVerifier")
+  wardenHostels                Hostel[]                   @relation("HostelWarden")
+  matronHostels                Hostel[]                   @relation("HostelMatron")
+  allocatedBeds                BedAllocation[]            @relation("BedAllocator")
+  releasedBeds                 BedAllocation[]            @relation("BedReleaser")
+  takenRollCalls               HostelRollCall[]           @relation("RollCallTaker")
+  inspectedHostelClearances    HostelClearanceRecord[]    @relation("HostelInspector")
+  attendedClinicEncounters     ClinicEncounter[]          @relation("ClinicAttendant")
+  attendedSickbays             SickbayAdmission[]         @relation("SickbayNurse")
+  escortedReferrals            MedicalReferral[]          @relation("ReferralEscort")
+  dispensedMedicines           ClinicDispensingRecord[]   @relation("MedicineDispenser")
+  reportedIncidents            DisciplinaryIncident[]     @relation("IncidentReporter")
+  chairedHearings              DisciplinaryHearing[]      @relation("HearingChair")
+  approvedSanctions            DisciplinarySanction[]     @relation("SanctionApprover")
+  approvedExeatPasses          ExeatPass[]                @relation("ExeatApprover")
+  departedExeatPasses          ExeatPass[]                @relation("GateOfficerDepart")
+  returnedExeatPasses          ExeatPass[]                @relation("GateOfficerReturn")
   dialedEmergencyNotifications EmergencyNotificationLog[] @relation("EmergencyCaller")
+  portalActivityLogs           PortalActivityLog[]
 }
 
 enum UserType {
@@ -398,6 +408,7 @@ model Class {
   capacity            Int?
   gradeScaleId        String?
   aggregationStrategy String? // e.g., "SUM_ALL", "BEST_8"
+  portalAccessEnabled Boolean @default(false)
 
   branch            Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
   gradeScale        GradeScale?        @relation(fields: [gradeScaleId], references: [id], onDelete: SetNull)
@@ -444,35 +455,35 @@ model Student {
   schoolPayCode String?
 
   // Phase 3.2A: Extended Demographics & Identity
-  nationality            String                 @default("Ugandan")
-  nin                    String?                // AES-256-GCM encrypted NIN
-  ninLookupHash          String?                // HMAC-SHA256 blind index
-  linEmisNo              String?                // Learner Identification Number
-  birthCertNo            String?
-  passportNo             String?                // AES-256-GCM encrypted passport
-  dayOrBoarding          BoardingStatus         @default(DAY)
-  residentialAddress     String?
-  villageLCI             String?
-  parish                 String?
-  subCounty              String?
-  district               String?
-  medicalEmergencyNotes  String?                // AES-256-GCM encrypted medical notes
-  allergies              String?
-  bloodGroup             String?
-  specialNeeds           String?
-  previousSchoolName     String?
-  previousClass          String?
-  pleIndexNo             String?
-  pleAggregate           Int?
-  pleDivision            String?
-  uceIndexNo             String?
-  uceAggregate           Int?
-  familyGroupId          String?
-  lifecycleStatus        StudentLifecycleStatus @default(ACTIVE)
-  admissionDate          DateTime               @default(now())
-  graduatedDate          DateTime?
-  withdrawnDate          DateTime?
-  applicantId            String?                @unique
+  nationality           String                 @default("Ugandan")
+  nin                   String? // AES-256-GCM encrypted NIN
+  ninLookupHash         String? // HMAC-SHA256 blind index
+  linEmisNo             String? // Learner Identification Number
+  birthCertNo           String?
+  passportNo            String? // AES-256-GCM encrypted passport
+  dayOrBoarding         BoardingStatus         @default(DAY)
+  residentialAddress    String?
+  villageLCI            String?
+  parish                String?
+  subCounty             String?
+  district              String?
+  medicalEmergencyNotes String? // AES-256-GCM encrypted medical notes
+  allergies             String?
+  bloodGroup            String?
+  specialNeeds          String?
+  previousSchoolName    String?
+  previousClass         String?
+  pleIndexNo            String?
+  pleAggregate          Int?
+  pleDivision           String?
+  uceIndexNo            String?
+  uceAggregate          Int?
+  familyGroupId         String?
+  lifecycleStatus       StudentLifecycleStatus @default(ACTIVE)
+  admissionDate         DateTime               @default(now())
+  graduatedDate         DateTime?
+  withdrawnDate         DateTime?
+  applicantId           String?                @unique
 
   branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
   classRef    Class?       @relation(fields: [classId], references: [id])
@@ -508,6 +519,9 @@ model Student {
   disciplinarySanctions  DisciplinarySanction[]
   exeatPasses            ExeatPass[]
   emergencyNotifications EmergencyNotificationLog[]
+  user                   User?                          @relation("StudentUser")
+  notificationPreference NotificationPreference?
+  parentConsents         ParentConsentRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -589,7 +603,7 @@ enum ProvisioningTaskStatus {
 model AdmissionSequence {
   id        String   @id @default(cuid())
   branchId  String
-  type      String   // "APP", "ADM", "GRD", "FAM"
+  type      String // "APP", "ADM", "GRD", "FAM"
   year      Int
   lastValue Int      @default(0)
   updatedAt DateTime @updatedAt
@@ -600,13 +614,13 @@ model AdmissionSequence {
 }
 
 model FamilyGroup {
-  id               String   @id @default(cuid())
-  branchId         String
-  familyCode       String
-  familyName       String
-  notes            String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id         String   @id @default(cuid())
+  branchId   String
+  familyCode String
+  familyName String
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   branch    Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
   students  Student[]
@@ -616,40 +630,43 @@ model FamilyGroup {
 }
 
 model Guardian {
-  id               String               @id @default(cuid())
-  branchId         String
-  guardianCode     String
-  firstName        String
-  lastName         String
-  middleName       String?
-  title            String?              // Mr., Mrs., Dr., etc.
-  relationshipType GuardianRelationship @default(LEGAL_GUARDIAN)
-  phonePrimary     String
-  phoneSecondary   String?
-  email            String?
-  nationalId       String?              // Encrypted NIN
-  ninLookupHash    String?              // HMAC blind index
-  passportNo       String?              // Encrypted passport
-  occupation       String?
-  employer         String?
-  workplaceAddress String?
+  id                 String               @id @default(cuid())
+  branchId           String
+  guardianCode       String
+  firstName          String
+  lastName           String
+  middleName         String?
+  title              String? // Mr., Mrs., Dr., etc.
+  relationshipType   GuardianRelationship @default(LEGAL_GUARDIAN)
+  phonePrimary       String
+  phoneSecondary     String?
+  email              String?
+  nationalId         String? // Encrypted NIN
+  ninLookupHash      String? // HMAC blind index
+  passportNo         String? // Encrypted passport
+  occupation         String?
+  employer           String?
+  workplaceAddress   String?
   residentialAddress String?
-  provenance       String               @default("MANUAL_INTAKE") // "MANUAL_INTAKE", "LEGACY_USER_MIGRATION"
-  isVerified       Boolean              @default(false)
-  verifiedById     String?
-  verifiedAt       DateTime?
-  familyGroupId    String?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  provenance         String               @default("MANUAL_INTAKE") // "MANUAL_INTAKE", "LEGACY_USER_MIGRATION"
+  isVerified         Boolean              @default(false)
+  verifiedById       String?
+  verifiedAt         DateTime?
+  familyGroupId      String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
-  branch      Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  familyGroup FamilyGroup?        @relation(fields: [familyGroupId], references: [id], onDelete: SetNull)
-  verifiedBy  User?               @relation("GuardianVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  branch                 Branch                     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  familyGroup            FamilyGroup?               @relation(fields: [familyGroupId], references: [id], onDelete: SetNull)
+  verifiedBy             User?                      @relation("GuardianVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
   students               StudentGuardian[]
   applicants             ApplicantGuardian[]
   hearingsAttended       DisciplinaryHearing[]
   exeatPasses            ExeatPass[]
   emergencyNotifications EmergencyNotificationLog[]
+  user                   User?                      @relation("GuardianUser")
+  notificationPreference NotificationPreference?
+  parentConsents         ParentConsentRecord[]
 
   @@unique([branchId, guardianCode])
   @@index([branchId, phonePrimary])
@@ -657,21 +674,21 @@ model Guardian {
 }
 
 model StudentGuardian {
-  id                     String               @id @default(cuid())
-  branchId               String
-  studentId              String
-  guardianId             String
-  relationship           GuardianRelationship
-  isPrimaryContact       Boolean              @default(false)
-  isFinancialSponsor     Boolean              @default(false)
-  isEmergencyContact     Boolean              @default(false)
-  hasPickupAuthorization Boolean              @default(false)
-  receivesAcademicReports Boolean             @default(true)
-  receivesSmsAlerts      Boolean              @default(true)
-  accessPriority         Int                  @default(1)
-  notes                  String?
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
+  id                      String               @id @default(cuid())
+  branchId                String
+  studentId               String
+  guardianId              String
+  relationship            GuardianRelationship
+  isPrimaryContact        Boolean              @default(false)
+  isFinancialSponsor      Boolean              @default(false)
+  isEmergencyContact      Boolean              @default(false)
+  hasPickupAuthorization  Boolean              @default(false)
+  receivesAcademicReports Boolean              @default(true)
+  receivesSmsAlerts       Boolean              @default(true)
+  accessPriority          Int                  @default(1)
+  notes                   String?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
 
   branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -683,58 +700,58 @@ model StudentGuardian {
 }
 
 model Applicant {
-  id                     String          @id @default(cuid())
-  branchId               String
-  applicationNumber      String
-  academicYearId         String
-  targetClassId          String
-  targetStreamId         String?
-  firstName              String
-  lastName               String
-  middleName             String?
-  gender                 String?
-  dateOfBirth            DateTime?
-  nationality            String          @default("Ugandan")
-  nin                    String?         // Encrypted NIN
-  ninLookupHash          String?         // Blind index
-  linEmisNo              String?
-  birthCertNo            String?
-  passportNo             String?
-  dayOrBoarding          BoardingStatus  @default(DAY)
-  residentialAddress     String?
-  villageLCI             String?
-  parish                 String?
-  subCounty              String?
-  district               String?
-  previousSchoolName     String?
-  previousClass          String?
-  pleIndexNo             String?
-  pleAggregate           Int?
-  pleDivision            String?
-  uceIndexNo             String?
-  uceAggregate           Int?
-  medicalEmergencyNotes  String?         // Encrypted
-  allergies              String?
-  bloodGroup             String?
-  specialNeeds           String?
+  id                       String          @id @default(cuid())
+  branchId                 String
+  applicationNumber        String
+  academicYearId           String
+  targetClassId            String
+  targetStreamId           String?
+  firstName                String
+  lastName                 String
+  middleName               String?
+  gender                   String?
+  dateOfBirth              DateTime?
+  nationality              String          @default("Ugandan")
+  nin                      String? // Encrypted NIN
+  ninLookupHash            String? // Blind index
+  linEmisNo                String?
+  birthCertNo              String?
+  passportNo               String?
+  dayOrBoarding            BoardingStatus  @default(DAY)
+  residentialAddress       String?
+  villageLCI               String?
+  parish                   String?
+  subCounty                String?
+  district                 String?
+  previousSchoolName       String?
+  previousClass            String?
+  pleIndexNo               String?
+  pleAggregate             Int?
+  pleDivision              String?
+  uceIndexNo               String?
+  uceAggregate             Int?
+  medicalEmergencyNotes    String? // Encrypted
+  allergies                String?
+  bloodGroup               String?
+  specialNeeds             String?
   intendedTransportRouteId String?
-  status                 ApplicantStatus @default(INQUIRY)
-  applicationFeePaid     Boolean         @default(false)
-  applicationPaymentId   String?
-  assessmentScore        Float?
-  assessmentNotes        String?
-  assessedById           String?
-  assessedAt             DateTime?
-  reviewedById           String?
-  reviewedAt             DateTime?
-  decisionReason         String?
-  decisionById           String?
-  decisionDate           DateTime?
-  offerValidUntil        DateTime?
-  enrolledStudentId      String?         @unique
-  createdById            String?
-  createdAt              DateTime        @default(now())
-  updatedAt              DateTime        @updatedAt
+  status                   ApplicantStatus @default(INQUIRY)
+  applicationFeePaid       Boolean         @default(false)
+  applicationPaymentId     String?
+  assessmentScore          Float?
+  assessmentNotes          String?
+  assessedById             String?
+  assessedAt               DateTime?
+  reviewedById             String?
+  reviewedAt               DateTime?
+  decisionReason           String?
+  decisionById             String?
+  decisionDate             DateTime?
+  offerValidUntil          DateTime?
+  enrolledStudentId        String?         @unique
+  createdById              String?
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
 
   branch          Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
   academicYear    AcademicYear        @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
@@ -834,44 +851,44 @@ model StudentLifecycleLog {
   clearanceId    String?
   createdAt      DateTime               @default(now())
 
-  branch       Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  authorizedBy User?    @relation("LifecycleAuthorizer", fields: [authorizedById], references: [id], onDelete: SetNull)
+  branch       Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  student      Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  authorizedBy User?   @relation("LifecycleAuthorizer", fields: [authorizedById], references: [id], onDelete: SetNull)
 
   @@index([branchId, studentId])
   @@index([branchId, effectiveDate])
 }
 
 model EnrollmentProvisioning {
-  id                 String                 @id @default(cuid())
-  branchId           String
-  studentId          String
-  enrollmentId       String                 @unique
-  overallStatus      ProvisioningTaskStatus @default(PENDING)
-  
-  billingStatus      ProvisioningTaskStatus @default(PENDING)
-  billingInvoiceId   String?
-  billingError       String?
-  
+  id            String                 @id @default(cuid())
+  branchId      String
+  studentId     String
+  enrollmentId  String                 @unique
+  overallStatus ProvisioningTaskStatus @default(PENDING)
+
+  billingStatus    ProvisioningTaskStatus @default(PENDING)
+  billingInvoiceId String?
+  billingError     String?
+
   requirementsStatus ProvisioningTaskStatus @default(PENDING)
   requirementsError  String?
-  
-  transportStatus    ProvisioningTaskStatus @default(PENDING)
-  transportError     String?
-  
-  storeOrderStatus   ProvisioningTaskStatus @default(PENDING)
-  storeOrderError    String?
-  
-  schoolPayStatus    ProvisioningTaskStatus @default(PENDING)
-  schoolPayError     String?
-  
-  retryCount         Int                    @default(0)
-  maxRetries         Int                    @default(5)
-  nextRetryAt        DateTime?
-  lastAttemptAt      DateTime?
-  
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
+
+  transportStatus ProvisioningTaskStatus @default(PENDING)
+  transportError  String?
+
+  storeOrderStatus ProvisioningTaskStatus @default(PENDING)
+  storeOrderError  String?
+
+  schoolPayStatus ProvisioningTaskStatus @default(PENDING)
+  schoolPayError  String?
+
+  retryCount    Int       @default(0)
+  maxRetries    Int       @default(5)
+  nextRetryAt   DateTime?
+  lastAttemptAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   branch     Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
   student    Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -1219,16 +1236,16 @@ model Employee {
   // Back-relation for Department HOD
   headedDepartments Department[] @relation("DepartmentHead")
 
-  classSubjects     ClassSubject[] // Replaces TeacherProfile
-  compensation      EmployeeCompensation?
-  payslips          Payslip[]
-  transportDrivers  TransportDriver[]
-  managedStores     InventoryStore[]
-  storeRequisitions StoreRequisition[]    @relation("RequisitionRequester")
-  custodianAssets   AssetItem[]           @relation("AssetCustodian")
+  classSubjects          ClassSubject[] // Replaces TeacherProfile
+  compensation           EmployeeCompensation?
+  payslips               Payslip[]
+  transportDrivers       TransportDriver[]
+  managedStores          InventoryStore[]
+  storeRequisitions      StoreRequisition[]     @relation("RequisitionRequester")
+  custodianAssets        AssetItem[]            @relation("AssetCustodian")
   custodianVerifications AssetVerificationLog[] @relation("VerificationCustodian")
-  fromMovementLogs  AssetMovementLog[]    @relation("MovementFromCustodian")
-  toMovementLogs    AssetMovementLog[]    @relation("MovementToCustodian")
+  fromMovementLogs       AssetMovementLog[]     @relation("MovementFromCustodian")
+  toMovementLogs         AssetMovementLog[]     @relation("MovementToCustodian")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1619,13 +1636,13 @@ model ExpenseCategory {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  branch            Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  expenses          Expense[]
-  budgetItems       BudgetItem[]
-  pettyCashVouchers PettyCashVoucher[]
+  branch               Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  expenses             Expense[]
+  budgetItems          BudgetItem[]
+  pettyCashVouchers    PettyCashVoucher[]
   supplierInvoiceLines SupplierInvoiceLine[]
-  glAccountId       String?
-  glAccount         GLAccount?         @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
+  glAccountId          String?
+  glAccount            GLAccount?            @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, name])
   @@unique([branchId, code])
@@ -2792,13 +2809,13 @@ model InventoryStore {
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
-  branch       Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  manager      Employee?             @relation(fields: [managerId], references: [id], onDelete: SetNull)
-  stocks       InventoryStoreStock[]
-  movements    StockMovement[]
-  grns         GoodsReceivedNote[]
-  requisitions StoreRequisition[]
-  sales        StudentStoreSale[]
+  branch              Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  manager             Employee?                @relation(fields: [managerId], references: [id], onDelete: SetNull)
+  stocks              InventoryStoreStock[]
+  movements           StockMovement[]
+  grns                GoodsReceivedNote[]
+  requisitions        StoreRequisition[]
+  sales               StudentStoreSale[]
   clinicDispensations ClinicDispensingRecord[]
 
   @@unique([branchId, code])
@@ -2820,16 +2837,16 @@ model InventoryItem {
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
 
-  branch           Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  stocks           InventoryStoreStock[]
-  movements        StockMovement[]
-  poItems          PurchaseOrderItem[]
-  grnItems         GoodsReceivedItem[]
-  requisitionItems RequisitionItem[]
-  saleItems        StudentStoreSaleItem[]
-  supplierInvoiceLines SupplierInvoiceLine[]
+  branch                  Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  stocks                  InventoryStoreStock[]
+  movements               StockMovement[]
+  poItems                 PurchaseOrderItem[]
+  grnItems                GoodsReceivedItem[]
+  requisitionItems        RequisitionItem[]
+  saleItems               StudentStoreSaleItem[]
+  supplierInvoiceLines    SupplierInvoiceLine[]
   supplierCreditNoteLines SupplierCreditNoteLine[]
-  clinicDispensations ClinicDispensingRecord[]
+  clinicDispensations     ClinicDispensingRecord[]
 
   @@unique([branchId, code])
   @@index([branchId, category, isActive])
@@ -2855,23 +2872,23 @@ model InventoryStoreStock {
 }
 
 model InventorySupplier {
-  id                     String    @id @default(cuid())
+  id                     String        @id @default(cuid())
   branchId               String
-  supplierCode           String    // e.g. "SUP-001"
-  name                   String    // e.g. "Mukwano Industries"
+  supplierCode           String // e.g. "SUP-001"
+  name                   String // e.g. "Mukwano Industries"
   tradeName              String?
   contactName            String?
   phone                  String
   email                  String?
   address                String?
-  taxIdNumber            String?   // URA TIN
-  paymentTerms           String?   // e.g. "Net 30"
-  paymentTermsDays       Int       @default(30)
-  creditLimitUGX         Decimal   @default(0) @db.Decimal(14, 2)
-  isCreditBlocked        Boolean   @default(false)
-  currentBalanceUGX      Decimal   @default(0) @db.Decimal(14, 2)
-  vatRegistered          Boolean   @default(false)
-  whtExempt              Boolean   @default(false)
+  taxIdNumber            String? // URA TIN
+  paymentTerms           String? // e.g. "Net 30"
+  paymentTermsDays       Int           @default(30)
+  creditLimitUGX         Decimal       @default(0) @db.Decimal(14, 2)
+  isCreditBlocked        Boolean       @default(false)
+  currentBalanceUGX      Decimal       @default(0) @db.Decimal(14, 2)
+  vatRegistered          Boolean       @default(false)
+  whtExempt              Boolean       @default(false)
   whtExemptionCertRef    String?
   whtExemptionExpiry     DateTime?
   bankName               String?
@@ -2879,19 +2896,19 @@ model InventorySupplier {
   bankBranch             String?
   mobileMoneyNumber      String?
   preferredPaymentMethod PaymentMethod @default(BANK_TRANSFER)
-  isActive               Boolean   @default(true)
+  isActive               Boolean       @default(true)
   notes                  String?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
 
-  branch                 Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  pos                    PurchaseOrder[]
-  grns                   GoodsReceivedNote[]
-  capitalizedAssets      AssetItem[]
-  invoices               SupplierInvoice[]
-  creditNotes            SupplierCreditNote[]
-  payments               SupplierPayment[]
-  statementImports       SupplierStatementImport[]
+  branch            Branch                    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  pos               PurchaseOrder[]
+  grns              GoodsReceivedNote[]
+  capitalizedAssets AssetItem[]
+  invoices          SupplierInvoice[]
+  creditNotes       SupplierCreditNote[]
+  payments          SupplierPayment[]
+  statementImports  SupplierStatementImport[]
 
   @@unique([branchId, supplierCode])
   @@index([branchId, isActive])
@@ -2969,17 +2986,17 @@ model GoodsReceivedNote {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
-  branch       Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  po           PurchaseOrder?      @relation(fields: [poId], references: [id], onDelete: SetNull)
-  supplier     InventorySupplier   @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  store        InventoryStore      @relation(fields: [storeId], references: [id], onDelete: Restrict)
-  expense      Expense?            @relation(fields: [expenseId], references: [id], onDelete: SetNull)
-  academicYear AcademicYear        @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
-  term         Term?               @relation(fields: [termId], references: [id], onDelete: Cascade)
-  receivedBy   User                @relation("GRNReceiver", fields: [receivedById], references: [id])
-  items        GoodsReceivedItem[]
+  branch            Branch              @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  po                PurchaseOrder?      @relation(fields: [poId], references: [id], onDelete: SetNull)
+  supplier          InventorySupplier   @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  store             InventoryStore      @relation(fields: [storeId], references: [id], onDelete: Restrict)
+  expense           Expense?            @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  academicYear      AcademicYear        @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  term              Term?               @relation(fields: [termId], references: [id], onDelete: Cascade)
+  receivedBy        User                @relation("GRNReceiver", fields: [receivedById], references: [id])
+  items             GoodsReceivedItem[]
   capitalizedAssets AssetItem[]
-  invoices     SupplierInvoice[]
+  invoices          SupplierInvoice[]
 
   @@unique([branchId, grnNumber])
   @@index([branchId, supplierId, deliveryDate])
@@ -2999,9 +3016,9 @@ model GoodsReceivedItem {
   expiryDate         DateTime?
   notes              String?
 
-  grn                GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
-  item               InventoryItem     @relation(fields: [itemId], references: [id], onDelete: Restrict)
-  capitalizedAssets  AssetItem[]
+  grn                  GoodsReceivedNote     @relation(fields: [grnId], references: [id], onDelete: Cascade)
+  item                 InventoryItem         @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  capitalizedAssets    AssetItem[]
   supplierInvoiceLines SupplierInvoiceLine[]
 
   @@index([grnId])
@@ -3604,8 +3621,8 @@ enum PeriodStatus {
 model GLAccount {
   id            String            @id @default(cuid())
   branchId      String
-  code          String            // e.g. "1120"
-  name          String            // e.g. "Stanbic Collection Bank"
+  code          String // e.g. "1120"
+  name          String // e.g. "Stanbic Collection Bank"
   accountType   GLAccountType
   normalBalance NormalBalance
   controlRole   SystemControlRole @default(NONE)
@@ -3616,18 +3633,18 @@ model GLAccount {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
-  branch              Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  parent              GLAccount?         @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
-  children            GLAccount[]        @relation("AccountHierarchy")
-  journalLines        JournalLine[]
-  accountMappings     GLAccountMapping[]
-  treasuryAccounts    TreasuryAccount[]
-  feeTypes            FeeType[]
-  expenseCategories   ExpenseCategory[]
-  assetCategoryAssets AssetCategory[] @relation("CategoryAssetAccount")
-  assetCategoryDeprec AssetCategory[] @relation("CategoryDeprecAccount")
-  assetCategoryAccum  AssetCategory[] @relation("CategoryAccumDeprecAccount")
-  supplierInvoiceLines SupplierInvoiceLine[]
+  branch                  Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  parent                  GLAccount?               @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children                GLAccount[]              @relation("AccountHierarchy")
+  journalLines            JournalLine[]
+  accountMappings         GLAccountMapping[]
+  treasuryAccounts        TreasuryAccount[]
+  feeTypes                FeeType[]
+  expenseCategories       ExpenseCategory[]
+  assetCategoryAssets     AssetCategory[]          @relation("CategoryAssetAccount")
+  assetCategoryDeprec     AssetCategory[]          @relation("CategoryDeprecAccount")
+  assetCategoryAccum      AssetCategory[]          @relation("CategoryAccumDeprecAccount")
+  supplierInvoiceLines    SupplierInvoiceLine[]
   supplierCreditNoteLines SupplierCreditNoteLine[]
 
   @@unique([branchId, code])
@@ -3636,42 +3653,42 @@ model GLAccount {
 }
 
 model FiscalYear {
-  id        String         @id @default(cuid())
+  id        String       @id @default(cuid())
   branchId  String
-  name      String         // e.g. "FY 2026"
+  name      String // e.g. "FY 2026"
   startDate DateTime
   endDate   DateTime
-  status    PeriodStatus   @default(OPEN)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  status    PeriodStatus @default(OPEN)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
-  branch    Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  periods   FiscalPeriod[]
+  branch  Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  periods FiscalPeriod[]
 
   @@unique([branchId, name])
   @@index([branchId, status])
 }
 
 model FiscalPeriod {
-  id           String         @id @default(cuid())
+  id           String       @id @default(cuid())
   branchId     String
   fiscalYearId String
-  periodNumber Int            // 1 to 12
-  name         String         // e.g. "January 2026"
+  periodNumber Int // 1 to 12
+  name         String // e.g. "January 2026"
   startDate    DateTime
   endDate      DateTime
-  status       PeriodStatus   @default(OPEN)
+  status       PeriodStatus @default(OPEN)
   closedAt     DateTime?
   closedById   String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  branch         Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  fiscalYear     FiscalYear     @relation(fields: [fiscalYearId], references: [id], onDelete: Cascade)
-  closedBy       User?          @relation("PeriodClosedBy", fields: [closedById], references: [id])
-  journalEntries JournalEntry[]
-  depreciationRuns AssetDepreciationRun[]
-  supplierInvoices SupplierInvoice[]
+  branch              Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  fiscalYear          FiscalYear             @relation(fields: [fiscalYearId], references: [id], onDelete: Cascade)
+  closedBy            User?                  @relation("PeriodClosedBy", fields: [closedById], references: [id])
+  journalEntries      JournalEntry[]
+  depreciationRuns    AssetDepreciationRun[]
+  supplierInvoices    SupplierInvoice[]
   supplierCreditNotes SupplierCreditNote[]
 
   @@unique([fiscalYearId, periodNumber])
@@ -3682,14 +3699,14 @@ model FiscalPeriod {
 model JournalEntry {
   id             String        @id @default(cuid())
   branchId       String
-  journalNumber  String        // JNL-2026-00001
+  journalNumber  String // JNL-2026-00001
   fiscalPeriodId String
   journalType    JournalType
   status         JournalStatus @default(POSTED)
   entryDate      DateTime
   postingDate    DateTime      @default(now())
   description    String
-  referenceType  String?       // "INVOICE", "PAYMENT", "EXPENSE", "PAYROLL_RUN", "GRN", "SALE", "TRANSFER", "CASHBOOK_MOVEMENT", "MANUAL", "BOOTSTRAP"
+  referenceType  String? // "INVOICE", "PAYMENT", "EXPENSE", "PAYROLL_RUN", "GRN", "SALE", "TRANSFER", "CASHBOOK_MOVEMENT", "MANUAL", "BOOTSTRAP"
   referenceId    String?
   idempotencyKey String?
   isReversal     Boolean       @default(false)
@@ -3699,18 +3716,18 @@ model JournalEntry {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  fiscalPeriod   FiscalPeriod  @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
-  reversalOf     JournalEntry? @relation("JournalReversal", fields: [reversalOfId], references: [id])
-  reversedBy     JournalEntry? @relation("JournalReversal")
-  postedBy       User          @relation("JournalPostedBy", fields: [postedById], references: [id])
-  lines          JournalLine[]
-  capitalizedAssets AssetItem[] @relation("AssetCapitalizationJournal")
-  depreciationRun   AssetDepreciationRun?
-  assetDisposal     AssetDisposal?
-  supplierInvoice   SupplierInvoice?
+  branch             Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  fiscalPeriod       FiscalPeriod          @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
+  reversalOf         JournalEntry?         @relation("JournalReversal", fields: [reversalOfId], references: [id])
+  reversedBy         JournalEntry?         @relation("JournalReversal")
+  postedBy           User                  @relation("JournalPostedBy", fields: [postedById], references: [id])
+  lines              JournalLine[]
+  capitalizedAssets  AssetItem[]           @relation("AssetCapitalizationJournal")
+  depreciationRun    AssetDepreciationRun?
+  assetDisposal      AssetDisposal?
+  supplierInvoice    SupplierInvoice?
   supplierCreditNote SupplierCreditNote?
-  supplierPayment   SupplierPayment?
+  supplierPayment    SupplierPayment?
 
   @@unique([branchId, journalNumber])
   @@unique([branchId, idempotencyKey])
@@ -3720,39 +3737,39 @@ model JournalEntry {
 }
 
 model JournalLine {
-  id             String        @id @default(cuid())
+  id             String  @id @default(cuid())
   journalEntryId String
   branchId       String
   accountId      String
   lineNumber     Int
   description    String?
-  debit          Decimal       @default(0.00) @db.Decimal(12, 2)
-  credit         Decimal       @default(0.00) @db.Decimal(12, 2)
+  debit          Decimal @default(0.00) @db.Decimal(12, 2)
+  credit         Decimal @default(0.00) @db.Decimal(12, 2)
   departmentId   String?
   academicYearId String?
   termId         String?
 
-  journalEntry   JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
-  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  account        GLAccount     @relation(fields: [accountId], references: [id], onDelete: Restrict)
-  department     Department?   @relation(fields: [departmentId], references: [id], onDelete: SetNull)
-  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
-  term           Term?         @relation(fields: [termId], references: [id], onDelete: SetNull)
+  journalEntry JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account      GLAccount     @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  department   Department?   @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  academicYear AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  term         Term?         @relation(fields: [termId], references: [id], onDelete: SetNull)
 
   @@unique([journalEntryId, lineNumber])
   @@index([branchId, accountId])
 }
 
 model GLAccountMapping {
-  id          String            @id @default(cuid())
-  branchId    String
-  mappingKey  SystemControlRole // Target system role
-  accountId   String
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id         String            @id @default(cuid())
+  branchId   String
+  mappingKey SystemControlRole // Target system role
+  accountId  String
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
 
-  branch      Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  account     GLAccount         @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  branch  Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  account GLAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
 
   @@unique([branchId, mappingKey])
 }
@@ -3764,7 +3781,7 @@ model GLSequence {
   lastValue Int      @default(0)
   updatedAt DateTime @updatedAt
 
-  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, year])
 }
@@ -3841,51 +3858,51 @@ enum AssetDisposalType {
 }
 
 model AssetCategory {
-  id                      String             @id @default(cuid())
-  branchId                String
-  code                    String
-  name                    String
-  categoryType            AssetCategoryType  @default(OTHER_FIXED_ASSETS)
-  description             String?
-  depreciationMethod      DepreciationMethod @default(STRAIGHT_LINE)
-  usefulLifeMonths        Int                @default(36)
-  annualDepreciationRate  Decimal            @default(0) @db.Decimal(5, 2)
-  defaultSalvagePercent   Decimal            @default(0) @db.Decimal(5, 2)
+  id                     String             @id @default(cuid())
+  branchId               String
+  code                   String
+  name                   String
+  categoryType           AssetCategoryType  @default(OTHER_FIXED_ASSETS)
+  description            String?
+  depreciationMethod     DepreciationMethod @default(STRAIGHT_LINE)
+  usefulLifeMonths       Int                @default(36)
+  annualDepreciationRate Decimal            @default(0) @db.Decimal(5, 2)
+  defaultSalvagePercent  Decimal            @default(0) @db.Decimal(5, 2)
 
   glAssetAccountId        String?
   glDepreciationAccountId String?
   glAccumDeprecAccountId  String?
 
-  isActive                Boolean            @default(true)
-  createdAt               DateTime           @default(now())
-  updatedAt               DateTime           @updatedAt
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  branch                  Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  glAssetAccount          GLAccount?         @relation("CategoryAssetAccount", fields: [glAssetAccountId], references: [id])
-  glDepreciationAccount   GLAccount?         @relation("CategoryDeprecAccount", fields: [glDepreciationAccountId], references: [id])
-  glAccumDeprecAccount    GLAccount?         @relation("CategoryAccumDeprecAccount", fields: [glAccumDeprecAccountId], references: [id])
-  assets                  AssetItem[]
+  branch                Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  glAssetAccount        GLAccount?  @relation("CategoryAssetAccount", fields: [glAssetAccountId], references: [id])
+  glDepreciationAccount GLAccount?  @relation("CategoryDeprecAccount", fields: [glDepreciationAccountId], references: [id])
+  glAccumDeprecAccount  GLAccount?  @relation("CategoryAccumDeprecAccount", fields: [glAccumDeprecAccountId], references: [id])
+  assets                AssetItem[]
 
   @@unique([branchId, code])
   @@index([branchId, categoryType])
 }
 
 model AssetLocation {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   branchId    String
   code        String
   name        String
   building    String?
   roomNumber  String?
   description String?
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  branch      Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  assets      AssetItem[]
-  fromMovements AssetMovementLog[] @relation("MovementFromLocation")
-  toMovements   AssetMovementLog[] @relation("MovementToLocation")
+  branch        Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  assets        AssetItem[]
+  fromMovements AssetMovementLog[]     @relation("MovementFromLocation")
+  toMovements   AssetMovementLog[]     @relation("MovementToLocation")
   verifications AssetVerificationLog[]
 
   @@unique([branchId, code])
@@ -3893,62 +3910,62 @@ model AssetLocation {
 }
 
 model AssetItem {
-  id                      String               @id @default(cuid())
-  branchId                String
-  assetTag                String
-  name                    String
-  description             String?
-  categoryId              String
-  locationId              String?
-  custodianId             String?
-  serialNumber            String?
-  modelNumber             String?
-  manufacturer            String?
-  barcode                 String?
+  id           String  @id @default(cuid())
+  branchId     String
+  assetTag     String
+  name         String
+  description  String?
+  categoryId   String
+  locationId   String?
+  custodianId  String?
+  serialNumber String?
+  modelNumber  String?
+  manufacturer String?
+  barcode      String?
 
-  purchaseDate            DateTime
-  capitalizationDate      DateTime
-  warrantyExpiry          DateTime?
-  status                  AssetStatus          @default(ACTIVE)
-  condition               AssetCondition       @default(GOOD)
-  capitalizationSource    CapitalizationSource @default(DIRECT_PURCHASE)
+  purchaseDate         DateTime
+  capitalizationDate   DateTime
+  warrantyExpiry       DateTime?
+  status               AssetStatus          @default(ACTIVE)
+  condition            AssetCondition       @default(GOOD)
+  capitalizationSource CapitalizationSource @default(DIRECT_PURCHASE)
 
-  acquisitionCost         Decimal              @db.Decimal(12, 2)
-  salvageValue            Decimal              @default(0) @db.Decimal(12, 2)
-  depreciableBasis        Decimal              @db.Decimal(12, 2)
-  accumulatedDepreciation Decimal              @default(0) @db.Decimal(12, 2)
-  netBookValue            Decimal              @db.Decimal(12, 2)
+  acquisitionCost         Decimal   @db.Decimal(12, 2)
+  salvageValue            Decimal   @default(0) @db.Decimal(12, 2)
+  depreciableBasis        Decimal   @db.Decimal(12, 2)
+  accumulatedDepreciation Decimal   @default(0) @db.Decimal(12, 2)
+  netBookValue            Decimal   @db.Decimal(12, 2)
   lastDepreciationDate    DateTime?
 
-  depreciationMethod      DepreciationMethod?
-  usefulLifeMonths        Int?
-  annualDepreciationRate  Decimal?             @db.Decimal(5, 2)
+  depreciationMethod     DepreciationMethod?
+  usefulLifeMonths       Int?
+  annualDepreciationRate Decimal?            @db.Decimal(5, 2)
 
   supplierId              String?
   grnId                   String?
   grnItemId               String?
-  transportVehicleId      String?              @unique
+  transportVehicleId      String? @unique
   treasuryAccountId       String?
   capitalizationJournalId String?
 
-  createdAt               DateTime             @default(now())
-  updatedAt               DateTime             @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  branch                  Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  category                AssetCategory        @relation(fields: [categoryId], references: [id])
-  location                AssetLocation?       @relation(fields: [locationId], references: [id])
-  custodian               Employee?            @relation("AssetCustodian", fields: [custodianId], references: [id])
-  supplier                InventorySupplier?   @relation(fields: [supplierId], references: [id])
-  grn                     GoodsReceivedNote?   @relation(fields: [grnId], references: [id])
-  grnItem                 GoodsReceivedItem?   @relation(fields: [grnItemId], references: [id])
-  transportVehicle        TransportVehicle?    @relation(fields: [transportVehicleId], references: [id])
-  treasuryAccount         TreasuryAccount?     @relation(fields: [treasuryAccountId], references: [id])
-  capitalizationJournal   JournalEntry?        @relation("AssetCapitalizationJournal", fields: [capitalizationJournalId], references: [id])
+  branch                Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  category              AssetCategory      @relation(fields: [categoryId], references: [id])
+  location              AssetLocation?     @relation(fields: [locationId], references: [id])
+  custodian             Employee?          @relation("AssetCustodian", fields: [custodianId], references: [id])
+  supplier              InventorySupplier? @relation(fields: [supplierId], references: [id])
+  grn                   GoodsReceivedNote? @relation(fields: [grnId], references: [id])
+  grnItem               GoodsReceivedItem? @relation(fields: [grnItemId], references: [id])
+  transportVehicle      TransportVehicle?  @relation(fields: [transportVehicleId], references: [id])
+  treasuryAccount       TreasuryAccount?   @relation(fields: [treasuryAccountId], references: [id])
+  capitalizationJournal JournalEntry?      @relation("AssetCapitalizationJournal", fields: [capitalizationJournalId], references: [id])
 
-  depreciationLines       AssetDepreciationLine[]
-  disposalRecord          AssetDisposal?
-  verificationLogs        AssetVerificationLog[]
-  movementLogs            AssetMovementLog[]
+  depreciationLines AssetDepreciationLine[]
+  disposalRecord    AssetDisposal?
+  verificationLogs  AssetVerificationLog[]
+  movementLogs      AssetMovementLog[]
 
   @@unique([branchId, assetTag])
   @@index([branchId, status])
@@ -3968,21 +3985,21 @@ model AssetDepreciationRun {
   totalAssetsCount        Int                   @default(0)
   totalDepreciationAmount Decimal               @default(0) @db.Decimal(12, 2)
 
-  journalEntryId          String?               @unique
-  createdById             String
-  approvedById            String?
-  approvedAt              DateTime?
-  rejectionReason         String?
-  notes                   String?
-  createdAt               DateTime              @default(now())
-  updatedAt               DateTime              @updatedAt
+  journalEntryId  String?   @unique
+  createdById     String
+  approvedById    String?
+  approvedAt      DateTime?
+  rejectionReason String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  branch                  Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  fiscalPeriod            FiscalPeriod          @relation(fields: [periodId], references: [id])
-  journalEntry            JournalEntry?         @relation(fields: [journalEntryId], references: [id])
-  createdBy               User                  @relation("DeprecCreatedBy", fields: [createdById], references: [id])
-  approvedBy              User?                 @relation("DeprecApprovedBy", fields: [approvedById], references: [id])
-  lines                   AssetDepreciationLine[]
+  branch       Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  fiscalPeriod FiscalPeriod            @relation(fields: [periodId], references: [id])
+  journalEntry JournalEntry?           @relation(fields: [journalEntryId], references: [id])
+  createdBy    User                    @relation("DeprecCreatedBy", fields: [createdById], references: [id])
+  approvedBy   User?                   @relation("DeprecApprovedBy", fields: [approvedById], references: [id])
+  lines        AssetDepreciationLine[]
 
   @@unique([branchId, runNumber])
   @@unique([branchId, periodId])
@@ -3990,20 +4007,20 @@ model AssetDepreciationRun {
 }
 
 model AssetDepreciationLine {
-  id                 String               @id @default(cuid())
+  id                 String             @id @default(cuid())
   depreciationRunId  String
   assetId            String
-  openingBookValue   Decimal              @db.Decimal(12, 2)
-  depreciationAmount Decimal              @db.Decimal(12, 2)
-  closingBookValue   Decimal              @db.Decimal(12, 2)
+  openingBookValue   Decimal            @db.Decimal(12, 2)
+  depreciationAmount Decimal            @db.Decimal(12, 2)
+  closingBookValue   Decimal            @db.Decimal(12, 2)
   depreciationMethod DepreciationMethod
-  rateApplied        Decimal              @db.Decimal(5, 2)
-  activeDaysInPeriod Int                  @default(30)
-  totalDaysInPeriod  Int                  @default(30)
-  createdAt          DateTime             @default(now())
+  rateApplied        Decimal            @db.Decimal(5, 2)
+  activeDaysInPeriod Int                @default(30)
+  totalDaysInPeriod  Int                @default(30)
+  createdAt          DateTime           @default(now())
 
-  depreciationRun    AssetDepreciationRun @relation(fields: [depreciationRunId], references: [id], onDelete: Cascade)
-  asset              AssetItem            @relation(fields: [assetId], references: [id])
+  depreciationRun AssetDepreciationRun @relation(fields: [depreciationRunId], references: [id], onDelete: Cascade)
+  asset           AssetItem            @relation(fields: [assetId], references: [id])
 
   @@unique([depreciationRunId, assetId])
   @@index([depreciationRunId])
@@ -4011,79 +4028,79 @@ model AssetDepreciationLine {
 }
 
 model AssetDisposal {
-  id                     String            @id @default(cuid())
-  branchId               String
-  assetId                String            @unique
-  disposalDate           DateTime
-  disposalType           AssetDisposalType
-  disposalProceeds       Decimal           @default(0) @db.Decimal(12, 2)
+  id               String            @id @default(cuid())
+  branchId         String
+  assetId          String            @unique
+  disposalDate     DateTime
+  disposalType     AssetDisposalType
+  disposalProceeds Decimal           @default(0) @db.Decimal(12, 2)
 
-  costAtDisposal         Decimal           @db.Decimal(12, 2)
-  accumDeprecAtDisposal   Decimal           @db.Decimal(12, 2)
-  netBookValueAtDisposal Decimal           @db.Decimal(12, 2)
-  gainOrLossAmount       Decimal           @db.Decimal(12, 2)
+  costAtDisposal         Decimal @db.Decimal(12, 2)
+  accumDeprecAtDisposal  Decimal @db.Decimal(12, 2)
+  netBookValueAtDisposal Decimal @db.Decimal(12, 2)
+  gainOrLossAmount       Decimal @db.Decimal(12, 2)
 
-  reason                 String
-  buyerDetails           String?
-  treasuryAccountId      String?
-  cashbookMovementId     String?           @unique
-  journalEntryId         String?           @unique
-  approvedById           String
-  createdAt              DateTime          @default(now())
+  reason             String
+  buyerDetails       String?
+  treasuryAccountId  String?
+  cashbookMovementId String?  @unique
+  journalEntryId     String?  @unique
+  approvedById       String
+  createdAt          DateTime @default(now())
 
-  branch                 Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  asset                  AssetItem         @relation(fields: [assetId], references: [id])
-  treasuryAccount        TreasuryAccount?  @relation(fields: [treasuryAccountId], references: [id])
-  cashbookMovement       CashbookMovement? @relation(fields: [cashbookMovementId], references: [id])
-  journalEntry           JournalEntry?     @relation(fields: [journalEntryId], references: [id])
-  approvedBy             User              @relation("DisposalApprovedBy", fields: [approvedById], references: [id])
+  branch           Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  asset            AssetItem         @relation(fields: [assetId], references: [id])
+  treasuryAccount  TreasuryAccount?  @relation(fields: [treasuryAccountId], references: [id])
+  cashbookMovement CashbookMovement? @relation(fields: [cashbookMovementId], references: [id])
+  journalEntry     JournalEntry?     @relation(fields: [journalEntryId], references: [id])
+  approvedBy       User              @relation("DisposalApprovedBy", fields: [approvedById], references: [id])
 
   @@index([branchId])
 }
 
 model AssetVerificationLog {
-  id              String         @id @default(cuid())
-  branchId        String
-  assetId         String
-  verifiedAt      DateTime       @default(now())
-  verifiedById    String
-  condition       AssetCondition
-  locationId      String?
-  custodianId     String?
-  isMissing       Boolean        @default(false)
-  notes           String?
-  createdAt       DateTime       @default(now())
+  id           String         @id @default(cuid())
+  branchId     String
+  assetId      String
+  verifiedAt   DateTime       @default(now())
+  verifiedById String
+  condition    AssetCondition
+  locationId   String?
+  custodianId  String?
+  isMissing    Boolean        @default(false)
+  notes        String?
+  createdAt    DateTime       @default(now())
 
-  branch          Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  asset           AssetItem      @relation(fields: [assetId], references: [id])
-  verifiedBy      User           @relation("AssetVerifiedBy", fields: [verifiedById], references: [id])
-  location        AssetLocation? @relation(fields: [locationId], references: [id])
-  custodian       Employee?      @relation("VerificationCustodian", fields: [custodianId], references: [id])
+  branch     Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  asset      AssetItem      @relation(fields: [assetId], references: [id])
+  verifiedBy User           @relation("AssetVerifiedBy", fields: [verifiedById], references: [id])
+  location   AssetLocation? @relation(fields: [locationId], references: [id])
+  custodian  Employee?      @relation("VerificationCustodian", fields: [custodianId], references: [id])
 
   @@index([branchId, assetId])
   @@index([branchId, verifiedAt])
 }
 
 model AssetMovementLog {
-  id              String         @id @default(cuid())
+  id              String   @id @default(cuid())
   branchId        String
   assetId         String
   fromLocationId  String?
   toLocationId    String?
   fromCustodianId String?
   toCustodianId   String?
-  transferDate    DateTime       @default(now())
+  transferDate    DateTime @default(now())
   reason          String?
   transferredById String
-  createdAt       DateTime       @default(now())
+  createdAt       DateTime @default(now())
 
-  branch          Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  asset           AssetItem      @relation(fields: [assetId], references: [id])
-  fromLocation    AssetLocation? @relation("MovementFromLocation", fields: [fromLocationId], references: [id])
-  toLocation      AssetLocation? @relation("MovementToLocation", fields: [toLocationId], references: [id])
-  fromCustodian   Employee?      @relation("MovementFromCustodian", fields: [fromCustodianId], references: [id])
-  toCustodian     Employee?      @relation("MovementToCustodian", fields: [toCustodianId], references: [id])
-  transferredBy   User           @relation("AssetTransferredBy", fields: [transferredById], references: [id])
+  branch        Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  asset         AssetItem      @relation(fields: [assetId], references: [id])
+  fromLocation  AssetLocation? @relation("MovementFromLocation", fields: [fromLocationId], references: [id])
+  toLocation    AssetLocation? @relation("MovementToLocation", fields: [toLocationId], references: [id])
+  fromCustodian Employee?      @relation("MovementFromCustodian", fields: [fromCustodianId], references: [id])
+  toCustodian   Employee?      @relation("MovementToCustodian", fields: [toCustodianId], references: [id])
+  transferredBy User           @relation("AssetTransferredBy", fields: [transferredById], references: [id])
 
   @@index([branchId, assetId])
 }
@@ -4097,7 +4114,7 @@ model AssetSequence {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, type, year])
   @@index([branchId])
@@ -4181,57 +4198,57 @@ model TaxPolicy {
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
 
-  branch                Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@index([branchId, supplyCategory, effectiveFrom, effectiveTo])
   @@index([branchId, isActive])
 }
 
 model SupplierInvoice {
-  id                     String                @id @default(cuid())
-  branchId               String
-  invoiceNumber          String                // Sequence: PINV-2026-00001
-  vendorInvoiceNumber    String                // Vendor's legal invoice ref
-  supplierId             String
-  poId                   String?
-  grnId                  String?
-  fiscalPeriodId         String
-  invoiceDate            DateTime
-  dueDate                DateTime
-  supplyCategory         SupplyCategory        @default(GOODS)
-  grossAmount            Decimal               @db.Decimal(14, 2)
-  taxAmount              Decimal               @default(0) @db.Decimal(14, 2)
-  discountAmount         Decimal               @default(0) @db.Decimal(14, 2)
-  netPayableAmount       Decimal               @db.Decimal(14, 2)
-  amountPaid             Decimal               @default(0) @db.Decimal(14, 2)
-  amountOutstanding      Decimal               @db.Decimal(14, 2)
-  ppvAmount              Decimal               @default(0) @db.Decimal(14, 2)
-  status                 SupplierInvoiceStatus @default(DRAFT)
-  matchStatus            ThreeWayMatchStatus?
-  disputeReason          String?
-  holdReason             String?
-  efrisFiscalDocNumber   String?
-  efrisVerificationCode  String?
-  isOpeningBalance       Boolean               @default(false)
-  notes                  String?
-  createdById            String
-  approvedById           String?
-  approvedAt             DateTime?
-  journalEntryId         String?               @unique
-  createdAt              DateTime              @default(now())
-  updatedAt              DateTime              @updatedAt
+  id                    String                @id @default(cuid())
+  branchId              String
+  invoiceNumber         String // Sequence: PINV-2026-00001
+  vendorInvoiceNumber   String // Vendor's legal invoice ref
+  supplierId            String
+  poId                  String?
+  grnId                 String?
+  fiscalPeriodId        String
+  invoiceDate           DateTime
+  dueDate               DateTime
+  supplyCategory        SupplyCategory        @default(GOODS)
+  grossAmount           Decimal               @db.Decimal(14, 2)
+  taxAmount             Decimal               @default(0) @db.Decimal(14, 2)
+  discountAmount        Decimal               @default(0) @db.Decimal(14, 2)
+  netPayableAmount      Decimal               @db.Decimal(14, 2)
+  amountPaid            Decimal               @default(0) @db.Decimal(14, 2)
+  amountOutstanding     Decimal               @db.Decimal(14, 2)
+  ppvAmount             Decimal               @default(0) @db.Decimal(14, 2)
+  status                SupplierInvoiceStatus @default(DRAFT)
+  matchStatus           ThreeWayMatchStatus?
+  disputeReason         String?
+  holdReason            String?
+  efrisFiscalDocNumber  String?
+  efrisVerificationCode String?
+  isOpeningBalance      Boolean               @default(false)
+  notes                 String?
+  createdById           String
+  approvedById          String?
+  approvedAt            DateTime?
+  journalEntryId        String?               @unique
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
 
-  branch                 Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  supplier               InventorySupplier     @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  po                     PurchaseOrder?        @relation(fields: [poId], references: [id], onDelete: SetNull)
-  grn                    GoodsReceivedNote?    @relation(fields: [grnId], references: [id], onDelete: SetNull)
-  fiscalPeriod           FiscalPeriod          @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
-  createdBy              User                  @relation("SupplierInvoiceCreator", fields: [createdById], references: [id])
-  approvedBy             User?                 @relation("SupplierInvoiceApprover", fields: [approvedById], references: [id])
-  journalEntry           JournalEntry?         @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
-  lines                  SupplierInvoiceLine[]
-  allocations            SupplierPaymentAllocation[]
-  creditNotes            SupplierCreditNote[]
+  branch       Branch                      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier     InventorySupplier           @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  po           PurchaseOrder?              @relation(fields: [poId], references: [id], onDelete: SetNull)
+  grn          GoodsReceivedNote?          @relation(fields: [grnId], references: [id], onDelete: SetNull)
+  fiscalPeriod FiscalPeriod                @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
+  createdBy    User                        @relation("SupplierInvoiceCreator", fields: [createdById], references: [id])
+  approvedBy   User?                       @relation("SupplierInvoiceApprover", fields: [approvedById], references: [id])
+  journalEntry JournalEntry?               @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  lines        SupplierInvoiceLine[]
+  allocations  SupplierPaymentAllocation[]
+  creditNotes  SupplierCreditNote[]
 
   @@unique([branchId, invoiceNumber])
   @@unique([branchId, supplierId, vendorInvoiceNumber])
@@ -4240,65 +4257,65 @@ model SupplierInvoice {
 }
 
 model SupplierInvoiceLine {
-  id                 String          @id @default(cuid())
-  invoiceId          String
-  branchId           String
-  poItemId           String?
-  grnItemId          String?
-  itemId             String?
-  expenseCategoryId  String?
-  description        String
-  quantityInvoiced   Decimal         @db.Decimal(12, 2)
-  unitPriceInvoiced  Decimal         @db.Decimal(12, 2)
-  unitCostSnapshot   Decimal         @default(0) @db.Decimal(12, 2)
-  lineTotalCost      Decimal         @db.Decimal(14, 2)
-  ppvAmount          Decimal         @default(0) @db.Decimal(14, 2)
-  taxRate            Decimal         @default(0) @db.Decimal(5, 2)
-  taxAmount          Decimal         @default(0) @db.Decimal(14, 2)
-  glAccountId        String?
-  createdAt          DateTime        @default(now())
+  id                String   @id @default(cuid())
+  invoiceId         String
+  branchId          String
+  poItemId          String?
+  grnItemId         String?
+  itemId            String?
+  expenseCategoryId String?
+  description       String
+  quantityInvoiced  Decimal  @db.Decimal(12, 2)
+  unitPriceInvoiced Decimal  @db.Decimal(12, 2)
+  unitCostSnapshot  Decimal  @default(0) @db.Decimal(12, 2)
+  lineTotalCost     Decimal  @db.Decimal(14, 2)
+  ppvAmount         Decimal  @default(0) @db.Decimal(14, 2)
+  taxRate           Decimal  @default(0) @db.Decimal(5, 2)
+  taxAmount         Decimal  @default(0) @db.Decimal(14, 2)
+  glAccountId       String?
+  createdAt         DateTime @default(now())
 
-  invoice            SupplierInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  branch             Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  grnItem            GoodsReceivedItem? @relation(fields: [grnItemId], references: [id], onDelete: SetNull)
-  item               InventoryItem?  @relation(fields: [itemId], references: [id], onDelete: SetNull)
-  expenseCategory    ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id], onDelete: SetNull)
-  glAccount          GLAccount?      @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
+  invoice         SupplierInvoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  branch          Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  grnItem         GoodsReceivedItem? @relation(fields: [grnItemId], references: [id], onDelete: SetNull)
+  item            InventoryItem?     @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  expenseCategory ExpenseCategory?   @relation(fields: [expenseCategoryId], references: [id], onDelete: SetNull)
+  glAccount       GLAccount?         @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
   @@index([invoiceId])
   @@index([branchId, grnItemId])
 }
 
 model SupplierCreditNote {
-  id                 String                   @id @default(cuid())
-  branchId           String
-  creditNoteNumber   String                   // Sequence: SCRN-2026-00001
+  id                  String                   @id @default(cuid())
+  branchId            String
+  creditNoteNumber    String // Sequence: SCRN-2026-00001
   vendorCreditNoteRef String?
-  supplierId         String
-  originalInvoiceId  String?
-  fiscalPeriodId     String
-  creditNoteDate     DateTime
-  grossAmount        Decimal                  @db.Decimal(14, 2)
-  taxAmount          Decimal                  @default(0) @db.Decimal(14, 2)
-  netCreditAmount    Decimal                  @db.Decimal(14, 2)
-  unallocatedAmount  Decimal                  @db.Decimal(14, 2)
-  reason             String
-  status             SupplierCreditNoteStatus @default(DRAFT)
-  journalEntryId     String?                  @unique
-  createdById        String
-  approvedById       String?
-  approvedAt         DateTime?
-  createdAt          DateTime                 @default(now())
-  updatedAt          DateTime                 @updatedAt
+  supplierId          String
+  originalInvoiceId   String?
+  fiscalPeriodId      String
+  creditNoteDate      DateTime
+  grossAmount         Decimal                  @db.Decimal(14, 2)
+  taxAmount           Decimal                  @default(0) @db.Decimal(14, 2)
+  netCreditAmount     Decimal                  @db.Decimal(14, 2)
+  unallocatedAmount   Decimal                  @db.Decimal(14, 2)
+  reason              String
+  status              SupplierCreditNoteStatus @default(DRAFT)
+  journalEntryId      String?                  @unique
+  createdById         String
+  approvedById        String?
+  approvedAt          DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
 
-  branch             Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  supplier           InventorySupplier        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  originalInvoice    SupplierInvoice?         @relation(fields: [originalInvoiceId], references: [id], onDelete: SetNull)
-  fiscalPeriod       FiscalPeriod             @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
-  createdBy          User                     @relation("SupplierCreditNoteCreator", fields: [createdById], references: [id])
-  approvedBy         User?                    @relation("SupplierCreditNoteApprover", fields: [approvedById], references: [id])
-  journalEntry       JournalEntry?            @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
-  lines              SupplierCreditNoteLine[]
+  branch          Branch                   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier        InventorySupplier        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  originalInvoice SupplierInvoice?         @relation(fields: [originalInvoiceId], references: [id], onDelete: SetNull)
+  fiscalPeriod    FiscalPeriod             @relation(fields: [fiscalPeriodId], references: [id], onDelete: Restrict)
+  createdBy       User                     @relation("SupplierCreditNoteCreator", fields: [createdById], references: [id])
+  approvedBy      User?                    @relation("SupplierCreditNoteApprover", fields: [approvedById], references: [id])
+  journalEntry    JournalEntry?            @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  lines           SupplierCreditNoteLine[]
 
   @@unique([branchId, creditNoteNumber])
   @@index([branchId, supplierId])
@@ -4306,53 +4323,53 @@ model SupplierCreditNote {
 }
 
 model SupplierCreditNoteLine {
-  id                 String             @id @default(cuid())
-  creditNoteId       String
-  branchId           String
-  itemId             String?
-  description        String
-  quantityReturned   Decimal            @default(0) @db.Decimal(12, 2)
-  unitPrice          Decimal            @db.Decimal(12, 2)
-  lineTotal          Decimal            @db.Decimal(14, 2)
-  glAccountId        String?
-  createdAt          DateTime           @default(now())
+  id               String   @id @default(cuid())
+  creditNoteId     String
+  branchId         String
+  itemId           String?
+  description      String
+  quantityReturned Decimal  @default(0) @db.Decimal(12, 2)
+  unitPrice        Decimal  @db.Decimal(12, 2)
+  lineTotal        Decimal  @db.Decimal(14, 2)
+  glAccountId      String?
+  createdAt        DateTime @default(now())
 
-  creditNote         SupplierCreditNote @relation(fields: [creditNoteId], references: [id], onDelete: Cascade)
-  branch             Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  item               InventoryItem?     @relation(fields: [itemId], references: [id], onDelete: SetNull)
-  glAccount          GLAccount?         @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
+  creditNote SupplierCreditNote @relation(fields: [creditNoteId], references: [id], onDelete: Cascade)
+  branch     Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  item       InventoryItem?     @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  glAccount  GLAccount?         @relation(fields: [glAccountId], references: [id], onDelete: SetNull)
 
   @@index([creditNoteId])
 }
 
 model SupplierPayment {
-  id                  String                     @id @default(cuid())
+  id                  String                @id @default(cuid())
   branchId            String
-  paymentNumber       String                     // Sequence: SPAY-2026-00001
+  paymentNumber       String // Sequence: SPAY-2026-00001
   supplierId          String
   treasuryAccountId   String
   paymentDate         DateTime
-  totalAmountPaid     Decimal                    @db.Decimal(14, 2)
-  whtDeductedAmount   Decimal                    @default(0) @db.Decimal(14, 2)
-  discountTakenAmount Decimal                    @default(0) @db.Decimal(14, 2)
-  unallocatedAmount   Decimal                    @default(0) @db.Decimal(14, 2)
+  totalAmountPaid     Decimal               @db.Decimal(14, 2)
+  whtDeductedAmount   Decimal               @default(0) @db.Decimal(14, 2)
+  discountTakenAmount Decimal               @default(0) @db.Decimal(14, 2)
+  unallocatedAmount   Decimal               @default(0) @db.Decimal(14, 2)
   paymentMethod       PaymentMethod
-  referenceNumber     String?                    // Bank Cheque / EFT Ref
+  referenceNumber     String? // Bank Cheque / EFT Ref
   notes               String?
-  status              SupplierPaymentStatus      @default(COMPLETED)
-  journalEntryId      String?                    @unique
-  cashbookMovementId  String?                    @unique
+  status              SupplierPaymentStatus @default(COMPLETED)
+  journalEntryId      String?               @unique
+  cashbookMovementId  String?               @unique
   createdById         String
-  createdAt           DateTime                   @default(now())
-  updatedAt           DateTime                   @updatedAt
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
 
-  branch              Branch                     @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  supplier            InventorySupplier          @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  treasuryAccount     TreasuryAccount            @relation(fields: [treasuryAccountId], references: [id], onDelete: Restrict)
-  createdBy           User                       @relation("SupplierPaymentCreator", fields: [createdById], references: [id])
-  journalEntry        JournalEntry?              @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
-  cashbookMovement    CashbookMovement?
-  allocations         SupplierPaymentAllocation[]
+  branch           Branch                      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier         InventorySupplier           @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  treasuryAccount  TreasuryAccount             @relation(fields: [treasuryAccountId], references: [id], onDelete: Restrict)
+  createdBy        User                        @relation("SupplierPaymentCreator", fields: [createdById], references: [id])
+  journalEntry     JournalEntry?               @relation(fields: [journalEntryId], references: [id], onDelete: SetNull)
+  cashbookMovement CashbookMovement?
+  allocations      SupplierPaymentAllocation[]
 
   @@unique([branchId, paymentNumber])
   @@index([branchId, supplierId, paymentDate])
@@ -4360,63 +4377,63 @@ model SupplierPayment {
 }
 
 model SupplierPaymentAllocation {
-  id                 String          @id @default(cuid())
-  branchId           String
-  paymentId          String
-  invoiceId          String
-  allocatedAmount    Decimal         @db.Decimal(14, 2)
-  discountAmount     Decimal         @default(0) @db.Decimal(14, 2)
-  createdAt          DateTime        @default(now())
+  id              String   @id @default(cuid())
+  branchId        String
+  paymentId       String
+  invoiceId       String
+  allocatedAmount Decimal  @db.Decimal(14, 2)
+  discountAmount  Decimal  @default(0) @db.Decimal(14, 2)
+  createdAt       DateTime @default(now())
 
-  payment            SupplierPayment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  invoice            SupplierInvoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
-  branch             Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  payment SupplierPayment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice SupplierInvoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  branch  Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@index([paymentId])
   @@index([invoiceId])
 }
 
 model SupplierStatementImport {
-  id                 String                  @id @default(cuid())
-  branchId           String
-  supplierId         String
-  statementDate      DateTime
-  statementRef       String?
-  openingBalance     Decimal                 @db.Decimal(14, 2)
-  closingBalance     Decimal                 @db.Decimal(14, 2)
-  totalDebits        Decimal                 @default(0) @db.Decimal(14, 2)
-  totalCredits       Decimal                 @default(0) @db.Decimal(14, 2)
-  importedById       String
-  notes              String?
-  createdAt          DateTime                @default(now())
+  id             String   @id @default(cuid())
+  branchId       String
+  supplierId     String
+  statementDate  DateTime
+  statementRef   String?
+  openingBalance Decimal  @db.Decimal(14, 2)
+  closingBalance Decimal  @db.Decimal(14, 2)
+  totalDebits    Decimal  @default(0) @db.Decimal(14, 2)
+  totalCredits   Decimal  @default(0) @db.Decimal(14, 2)
+  importedById   String
+  notes          String?
+  createdAt      DateTime @default(now())
 
-  branch             Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  supplier           InventorySupplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  importedBy         User                    @relation("StatementImportedBy", fields: [importedById], references: [id])
-  lines              SupplierStatementLine[]
+  branch     Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  supplier   InventorySupplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  importedBy User                    @relation("StatementImportedBy", fields: [importedById], references: [id])
+  lines      SupplierStatementLine[]
 
   @@index([branchId, supplierId, statementDate])
 }
 
 model SupplierStatementLine {
-  id                 String                  @id @default(cuid())
-  statementImportId  String
-  branchId           String
-  transactionDate    DateTime
-  referenceNumber    String
-  description        String?
-  debitAmount        Decimal                 @default(0) @db.Decimal(14, 2)
-  creditAmount       Decimal                 @default(0) @db.Decimal(14, 2)
-  balance            Decimal                 @db.Decimal(14, 2)
-  matchStatus        StatementMatchStatus    @default(UNMATCHED)
-  matchedInvoiceId   String?
-  matchedPaymentId   String?
+  id                  String               @id @default(cuid())
+  statementImportId   String
+  branchId            String
+  transactionDate     DateTime
+  referenceNumber     String
+  description         String?
+  debitAmount         Decimal              @default(0) @db.Decimal(14, 2)
+  creditAmount        Decimal              @default(0) @db.Decimal(14, 2)
+  balance             Decimal              @db.Decimal(14, 2)
+  matchStatus         StatementMatchStatus @default(UNMATCHED)
+  matchedInvoiceId    String?
+  matchedPaymentId    String?
   matchedCreditNoteId String?
-  notes              String?
-  createdAt          DateTime                @default(now())
+  notes               String?
+  createdAt           DateTime             @default(now())
 
-  statementImport    SupplierStatementImport @relation(fields: [statementImportId], references: [id], onDelete: Cascade)
-  branch             Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  statementImport SupplierStatementImport @relation(fields: [statementImportId], references: [id], onDelete: Cascade)
+  branch          Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@index([statementImportId])
   @@index([branchId, matchStatus])
@@ -4425,13 +4442,13 @@ model SupplierStatementLine {
 model SupplierSequence {
   id        String   @id @default(cuid())
   branchId  String
-  type      String   // PINV, SCRN, SPAY
+  type      String // PINV, SCRN, SPAY
   year      Int
   nextVal   Int      @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, type, year])
   @@index([branchId])
@@ -4578,47 +4595,47 @@ model Hostel {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  warden      User?        @relation("HostelWarden", fields: [wardenId], references: [id], onDelete: SetNull)
-  matron      User?        @relation("HostelMatron", fields: [matronId], references: [id], onDelete: SetNull)
-  rooms       HostelRoom[]
-  rollCalls   HostelRollCall[]
+  branch    Branch           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  warden    User?            @relation("HostelWarden", fields: [wardenId], references: [id], onDelete: SetNull)
+  matron    User?            @relation("HostelMatron", fields: [matronId], references: [id], onDelete: SetNull)
+  rooms     HostelRoom[]
+  rollCalls HostelRollCall[]
 
   @@unique([branchId, code])
   @@index([branchId, gender, isActive])
 }
 
 model HostelRoom {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   branchId    String
   hostelId    String
   roomNumber  String
-  floorNumber Int        @default(0)
+  floorNumber Int      @default(0)
   wing        String?
-  roomType    RoomType   @default(STANDARD_DORM)
-  capacity    Int        @default(0)
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  roomType    RoomType @default(STANDARD_DORM)
+  capacity    Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  branch      Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  hostel      Hostel     @relation(fields: [hostelId], references: [id], onDelete: Cascade)
-  beds        HostelBed[]
+  branch Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  hostel Hostel      @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  beds   HostelBed[]
 
   @@unique([hostelId, roomNumber])
   @@index([branchId, hostelId])
 }
 
 model HostelBed {
-  id          String          @id @default(cuid())
-  branchId    String
-  roomId      String
-  bedNumber   String
-  bedCode     String
-  bedType     BedType         @default(BUNK_LOWER)
-  status      BedStatus       @default(AVAILABLE)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id        String    @id @default(cuid())
+  branchId  String
+  roomId    String
+  bedNumber String
+  bedCode   String
+  bedType   BedType   @default(BUNK_LOWER)
+  status    BedStatus @default(AVAILABLE)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   room        HostelRoom      @relation(fields: [roomId], references: [id], onDelete: Cascade)
@@ -4630,20 +4647,20 @@ model HostelBed {
 }
 
 model BedAllocation {
-  id             String           @id @default(cuid())
+  id             String              @id @default(cuid())
   branchId       String
   studentId      String
   bedId          String
   academicYearId String
   termId         String?
-  allocatedAt    DateTime         @default(now())
+  allocatedAt    DateTime            @default(now())
   releasedAt     DateTime?
   status         BedAllocationStatus @default(ACTIVE)
   allocatedById  String?
   releasedById   String?
   notes          String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 
   branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
   student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -4658,20 +4675,20 @@ model BedAllocation {
 }
 
 model HostelRollCall {
-  id          String         @id @default(cuid())
-  branchId    String
-  hostelId    String
-  studentId   String
-  date        DateTime       @default(now())
-  status      RollCallStatus @default(PRESENT)
-  remarks     String?
-  takenById   String
-  createdAt   DateTime       @default(now())
+  id        String         @id @default(cuid())
+  branchId  String
+  hostelId  String
+  studentId String
+  date      DateTime       @default(now())
+  status    RollCallStatus @default(PRESENT)
+  remarks   String?
+  takenById String
+  createdAt DateTime       @default(now())
 
-  branch      Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  hostel      Hostel         @relation(fields: [hostelId], references: [id], onDelete: Cascade)
-  student     Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  takenBy     User           @relation("RollCallTaker", fields: [takenById], references: [id], onDelete: Cascade)
+  branch  Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  hostel  Hostel  @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  takenBy User    @relation("RollCallTaker", fields: [takenById], references: [id], onDelete: Cascade)
 
   @@unique([hostelId, studentId, date])
   @@index([branchId, date])
@@ -4768,19 +4785,19 @@ model SickbayAdmission {
 }
 
 model MedicalReferral {
-  id                         String    @id @default(cuid())
-  branchId                   String
-  encounterId                String    @unique
-  studentId                  String
-  externalFacilityName       String
-  referralReason             String
-  ambulanceDispatched        Boolean   @default(false)
-  escortStaffId              String?
-  guardianNotifiedAt         DateTime?
-  guardianNotificationNotes  String?
-  dispatchedAt               DateTime  @default(now())
-  createdAt                  DateTime  @default(now())
-  updatedAt                  DateTime  @updatedAt
+  id                        String    @id @default(cuid())
+  branchId                  String
+  encounterId               String    @unique
+  studentId                 String
+  externalFacilityName      String
+  referralReason            String
+  ambulanceDispatched       Boolean   @default(false)
+  escortStaffId             String?
+  guardianNotifiedAt        DateTime?
+  guardianNotificationNotes String?
+  dispatchedAt              DateTime  @default(now())
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 
   branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   encounter   ClinicEncounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
@@ -4791,18 +4808,18 @@ model MedicalReferral {
 }
 
 model ClinicDispensingRecord {
-  id                  String   @id @default(cuid())
-  branchId            String
-  encounterId         String
-  studentId           String
-  itemId              String
-  storeId             String
-  quantity            Int      @default(1)
-  dosageInstructions  String
-  dispensedById       String
-  dispensedAt         DateTime @default(now())
-  stockMovementId     String?
-  createdAt           DateTime @default(now())
+  id                 String   @id @default(cuid())
+  branchId           String
+  encounterId        String
+  studentId          String
+  itemId             String
+  storeId            String
+  quantity           Int      @default(1)
+  dosageInstructions String
+  dispensedById      String
+  dispensedAt        DateTime @default(now())
+  stockMovementId    String?
+  createdAt          DateTime @default(now())
 
   branch      Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   encounter   ClinicEncounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
@@ -4831,8 +4848,8 @@ model DisciplinaryIncident {
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
-  branch     Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  reportedBy User               @relation("IncidentReporter", fields: [reportedById], references: [id], onDelete: Cascade)
+  branch     Branch                @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  reportedBy User                  @relation("IncidentReporter", fields: [reportedById], references: [id], onDelete: Cascade)
   students   IncidentStudent[]
   hearings   DisciplinaryHearing[]
 
@@ -4875,10 +4892,10 @@ model DisciplinaryHearing {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
-  branch     Branch               @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  incident   DisciplinaryIncident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
-  panelChair User                 @relation("HearingChair", fields: [panelChairId], references: [id], onDelete: Cascade)
-  guardian   Guardian?            @relation(fields: [guardianId], references: [id], onDelete: SetNull)
+  branch     Branch                 @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  incident   DisciplinaryIncident   @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  panelChair User                   @relation("HearingChair", fields: [panelChairId], references: [id], onDelete: Cascade)
+  guardian   Guardian?              @relation(fields: [guardianId], references: [id], onDelete: SetNull)
   sanctions  DisciplinarySanction[]
 
   @@index([branchId, incidentId])
@@ -4951,16 +4968,16 @@ model ExeatPass {
 }
 
 model EmergencyNotificationLog {
-  id                     String   @id @default(cuid())
-  branchId               String
-  studentId              String
-  guardianId             String
-  notificationReason     String
-  phoneDialed            String
-  status                 String   @default("COMPLETED")
-  callerStaffId          String
-  guardianResponseNotes  String?
-  timestamp              DateTime @default(now())
+  id                    String   @id @default(cuid())
+  branchId              String
+  studentId             String
+  guardianId            String
+  notificationReason    String
+  phoneDialed           String
+  status                String   @default("COMPLETED")
+  callerStaffId         String
+  guardianResponseNotes String?
+  timestamp             DateTime @default(now())
 
   branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -4973,15 +4990,150 @@ model EmergencyNotificationLog {
 model WelfareSequence {
   id        String   @id @default(cuid())
   branchId  String
-  type      String   // CLN, DISC, EXT, BED
+  type      String // CLN, DISC, EXT, BED
   year      Int
   nextVal   Int      @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, type, year])
   @@index([branchId])
 }
 
+// ==========================================
+// PHASE 3.3: PARENT & STUDENT PORTALS ENGINE
+// ==========================================
+
+enum ParentConsentType {
+  EXEAT_PASS
+  MEDICAL_TREATMENT
+  ACTIVITY_FIELD_TRIP
+  FEE_COMMUNICATION
+  DATA_PRIVACY_RELEASE
+}
+
+enum NotificationChannel {
+  PORTAL
+  SMS
+  EMAIL
+  WHATSAPP
+}
+
+enum ReportCardAccessStatus {
+  UNRESTRICTED
+  DEBTOR_BLOCKED
+  FEE_THRESHOLD_MET
+}
+
+model ParentConsentRecord {
+  id               String            @id @default(cuid())
+  branchId         String
+  guardianId       String
+  studentId        String
+  consentType      ParentConsentType
+  referenceType    String?
+  referenceId      String?
+  granted          Boolean
+  decisionDate     DateTime          @default(now())
+  digitalSignature String?
+  recordedIp       String?
+  userAgent        String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, guardianId])
+  @@index([branchId, studentId])
+  @@index([referenceType, referenceId])
+}
+
+model NotificationPreference {
+  id               String              @id @default(cuid())
+  branchId         String
+  guardianId       String?             @unique
+  studentId        String?             @unique
+  smsEnabled       Boolean             @default(true)
+  emailEnabled     Boolean             @default(true)
+  whatsappEnabled  Boolean             @default(false)
+  portalEnabled    Boolean             @default(true)
+  preferredChannel NotificationChannel @default(PORTAL)
+  feeAlerts        Boolean             @default(true)
+  academicAlerts   Boolean             @default(true)
+  attendanceAlerts Boolean             @default(true)
+  disciplineAlerts Boolean             @default(true)
+  welfareAlerts    Boolean             @default(true)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  branch   Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  guardian Guardian? @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+  student  Student?  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([branchId])
+}
+
+model PortalAccessPolicy {
+  id                       String   @id @default(cuid())
+  branchId                 String   @unique
+  allowStudentAccess       Boolean  @default(true)
+  allowParentAccess        Boolean  @default(true)
+  enforceFeeBlockOnReports Boolean  @default(true)
+  outstandingFeeThreshold  Decimal  @default(0) @db.Decimal(12, 2)
+  blockMessage             String?  @default("Your account has an outstanding fee balance. Please contact the accounts office to clear payments and access your academic reports.")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+}
+
+model PortalActivityLog {
+  id        String   @id @default(cuid())
+  branchId  String
+  userId    String
+  action    String
+  details   String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, userId])
+  @@index([branchId, action])
+}
+
+enum NotificationDeliveryStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
+
+model NotificationOutbox {
+  id           String                     @id @default(cuid())
+  branchId     String
+  recipientId  String?
+  channel      NotificationChannel
+  recipient    String
+  subject      String?
+  message      String
+  status       NotificationDeliveryStatus @default(PENDING)
+  attemptCount Int                        @default(0)
+  lastAttempt  DateTime?
+  sentAt       DateTime?
+  errorMessage String?
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, status])
+  @@index([channel, status])
+}
