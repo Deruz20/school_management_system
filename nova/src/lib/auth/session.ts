@@ -78,6 +78,11 @@ export async function validateSession() {
   }
 
   const { user, ...session } = result;
+
+  if (user.status !== "ACTIVE") {
+    await db.session.delete({ where: { id: sessionId } });
+    return { session: null, user: null };
+  }
   
   if (Date.now() >= session.expiresAt.getTime()) {
     await db.session.delete({ where: { id: sessionId } });

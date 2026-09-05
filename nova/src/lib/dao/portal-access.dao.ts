@@ -1,3 +1,4 @@
+import { LedgerDAO } from "./ledger.dao";
 import { db } from "../db";
 import { Prisma, PortalAccessPolicy } from "@prisma/client";
 import { TenantContext, UnauthorizedError } from "./tenant-context";
@@ -123,24 +124,21 @@ export class PortalAccessDAO {
       };
     }
 
-    // Compute balance from authoritative ledger
-    const entries = await db.studentLedgerEntry.findMany({
-      where: { branchId, studentId },
-      select: { direction: true, amount: true }
+    // Compute balance from authoritative ledger delegated to LedgerDAO
+    const branch = await db.branch.findUnique({
+      where: { id: branchId },
+      include: { school: true }
     });
-
-    let debits = new Prisma.Decimal(0);
-    let credits = new Prisma.Decimal(0);
-
-    for (const entry of entries) {
-      if (entry.direction === 'DEBIT') {
-        debits = debits.add(entry.amount);
-      } else {
-        credits = credits.add(entry.amount);
-      }
-    }
-
-    const currentBalance = debits.minus(credits);
+    const ctx: TenantContext = {
+      branchId,
+      userId: "system:portal",
+      organizationId: branch?.school.organizationId || "",
+      schoolId: branch?.schoolId || "",
+      role: "SYSTEM",
+      permissions: ["fees:read", "fees:ledger:read"]
+    };
+    const balanceRes = await LedgerDAO.getBalance(ctx, studentId);
+    const currentBalance = balanceRes.balance;
     const threshold = policy.outstandingFeeThreshold;
 
     if (currentBalance.greaterThan(threshold)) {

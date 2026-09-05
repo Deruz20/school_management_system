@@ -30,8 +30,14 @@ export class StudentPortalDAO {
       where: { id: studentId },
       include: {
         branch: { select: { id: true, name: true } },
-        classRef: { select: { id: true, name: true } },
-        streamRef: { select: { id: true, name: true } }
+        classRef: true,
+        streamRef: { select: { id: true, name: true } },
+        enrollments: {
+          where: { status: "ACTIVE" },
+          include: { classRef: true },
+          orderBy: { createdAt: "desc" },
+          take: 1
+        }
       }
     });
 
@@ -39,11 +45,28 @@ export class StudentPortalDAO {
       throw new UnauthorizedError("Student record not found.");
     }
 
+    // Gate 1: Active Student status and non-suspended lifecycle
     if (
       student.lifecycleStatus === StudentLifecycleStatus.SUSPENDED ||
       student.lifecycleStatus === StudentLifecycleStatus.EXPELLED
     ) {
       throw new UnauthorizedError(`Portal access denied: Student lifecycle status is ${student.lifecycleStatus}.`);
+    }
+
+    if (student.status !== "ACTIVE") {
+      throw new UnauthorizedError(`Portal access denied: Student status is ${student.status}.`);
+    }
+
+    // Gate 2: Active Enrollment
+    const activeEnrollment = student.enrollments[0];
+    if (!activeEnrollment || activeEnrollment.status !== "ACTIVE") {
+      throw new UnauthorizedError("Portal access denied: Student does not have an active academic enrollment.");
+    }
+
+    // Gate 3: Class portalAccessEnabled
+    const targetClass = activeEnrollment.classRef || student.classRef;
+    if (!targetClass || !targetClass.portalAccessEnabled) {
+      throw new UnauthorizedError("Portal access denied: Portal access is not enabled for student's class.");
     }
 
     return student;

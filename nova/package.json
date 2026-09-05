@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "notifications:worker": "tsx src/lib/services/notification/worker.ts",
+    "notifications:run-once": "tsx src/lib/services/notification/worker.ts --once"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

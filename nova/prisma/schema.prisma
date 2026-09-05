@@ -167,6 +167,7 @@ model Branch {
   parentConsents             ParentConsentRecord[]
   portalAccessPolicy         PortalAccessPolicy?
   portalActivityLogs         PortalActivityLog[]
+  portalAuthOtps             PortalAuthOtp[]
 }
 
 model BranchSettings {
@@ -5114,26 +5115,58 @@ enum NotificationDeliveryStatus {
   PROCESSING
   SENT
   FAILED
+  CANCELLED
 }
 
 model NotificationOutbox {
-  id           String                     @id @default(cuid())
-  branchId     String
-  recipientId  String?
-  channel      NotificationChannel
-  recipient    String
-  subject      String?
-  message      String
-  status       NotificationDeliveryStatus @default(PENDING)
-  attemptCount Int                        @default(0)
-  lastAttempt  DateTime?
-  sentAt       DateTime?
-  errorMessage String?
-  createdAt    DateTime                   @default(now())
-  updatedAt    DateTime                   @updatedAt
+  id             String                     @id @default(cuid())
+  branchId       String
+  recipientId    String?
+  channel        NotificationChannel
+  recipient      String
+  subject        String?
+  message        String
+  status         NotificationDeliveryStatus @default(PENDING)
+  attemptCount   Int                        @default(0)
+  lastAttempt    DateTime?
+  sentAt         DateTime?
+  errorMessage   String?
+  idempotencyKey String?                    @unique
+  nextRetryAt    DateTime?                  @default(now())
+  isEmergency    Boolean                    @default(false)
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
 
   branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@index([branchId, status])
   @@index([channel, status])
+  @@index([status, nextRetryAt])
+}
+
+model PortalAuthOtp {
+  id         String   @id @default(cuid())
+  branchId   String
+  phone      String
+  otpHash    String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  isConsumed Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, phone])
+  @@index([phone, isConsumed])
+}
+
+model PortalPhoneLockout {
+  phone        String    @id
+  failedCount  Int       @default(0)
+  lockedUntil  DateTime?
+  lastFailedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([lockedUntil])
 }

@@ -1,10 +1,10 @@
+import { LedgerDAO } from "./ledger.dao";
 import { db } from "../db";
 import {
-  Prisma,
   ParentConsentType,
   ExeatStatus,
 } from "@prisma/client";
-import { UnauthorizedError } from "./tenant-context";
+import { TenantContext, UnauthorizedError } from "./tenant-context";
 import { PortalAccessDAO, ReportCardAccessStatus } from "./portal-access.dao";
 import { PortalActivityDAO } from "./portal-activity.dao";
 
@@ -91,19 +91,28 @@ export class ParentPortalDAO {
       relations.map(async (rel) => {
         const student = rel.student;
 
-        // Calculate current fee balance
-        const ledgerEntries = await db.studentLedgerEntry.findMany({
-          where: { studentId: student.id, branchId: student.branchId },
-          select: { direction: true, amount: true }
-        });
+        // Calculate current fee balance with guardian financial authorization check
+        const isFinancialAuthorized = rel.isFinancialSponsor || rel.isPrimaryContact;
+        let outstandingBalance: number | null = null;
+        let isDebtor: boolean | null = null;
 
-        let debits = new Prisma.Decimal(0);
-        let credits = new Prisma.Decimal(0);
-        for (const e of ledgerEntries) {
-          if (e.direction === 'DEBIT') debits = debits.add(e.amount);
-          else credits = credits.add(e.amount);
+        if (isFinancialAuthorized) {
+          const branch = await db.branch.findUnique({
+            where: { id: student.branchId },
+            include: { school: true }
+          });
+          const ctx: TenantContext = {
+            branchId: student.branchId,
+            userId: guardianId,
+            organizationId: branch?.school.organizationId || "",
+            schoolId: branch?.schoolId || "",
+            role: "PARENT",
+            permissions: ["fees:read", "fees:ledger:read"]
+          };
+          const ledgerRes = await LedgerDAO.getBalance(ctx, student.id);
+          outstandingBalance = ledgerRes.balance.toNumber();
+          isDebtor = ledgerRes.balance.greaterThan(0);
         }
-        const outstandingBalance = debits.minus(credits);
 
         // Check pending exeat requests requiring parent consent
         const pendingExeatCount = await db.exeatPass.count({
@@ -136,8 +145,9 @@ export class ParentPortalDAO {
           isPrimaryContact: rel.isPrimaryContact,
           isFinancialSponsor: rel.isFinancialSponsor,
           receivesAcademicReports: rel.receivesAcademicReports,
-          outstandingBalance: outstandingBalance.toNumber(),
-          isDebtor: outstandingBalance.greaterThan(0),
+          outstandingBalance,
+          isDebtor,
+          isFinancialAuthorized,
           pendingExeatCount,
           activeBed
         };
@@ -154,7 +164,8 @@ export class ParentPortalDAO {
     const relation = await this.validateGuardianAccess(guardianId, studentId);
     const student = relation.student;
 
-    if (!relation.receivesAcademicReports) {
+    const canViewAcademics = relation.receivesAcademicReports || relation.isPrimaryContact;
+    if (!canViewAcademics) {
       throw new UnauthorizedError("Guardian account is not configured to receive academic reports for this student.");
     }
 
@@ -237,20 +248,36 @@ export class ParentPortalDAO {
    */
   static async getChildFeeStatement(guardianId: string, studentId: string) {
     const relation = await this.validateGuardianAccess(guardianId, studentId);
+
+    // Enforce Financial Authorization Gate
+    if (!relation.isFinancialSponsor && !relation.isPrimaryContact) {
+      throw new UnauthorizedError("Guardian is not authorized to view financial information for this student.");
+    }
+
     const student = relation.student;
+
+    // Authoritative balance delegated to LedgerDAO
+    const branch = await db.branch.findUnique({
+      where: { id: student.branchId },
+      include: { school: true }
+    });
+    const ctx: TenantContext = {
+      branchId: student.branchId,
+      userId: guardianId,
+      organizationId: branch?.school.organizationId || "",
+      schoolId: branch?.schoolId || "",
+      role: "PARENT",
+      permissions: ["fees:read", "fees:ledger:read"]
+    };
+    const ledgerRes = await LedgerDAO.getBalance(ctx, studentId);
+    const currentBalance = ledgerRes.balance;
 
     const ledgerEntries = await db.studentLedgerEntry.findMany({
       where: { studentId, branchId: student.branchId },
       orderBy: [{ postedAt: 'asc' }, { id: 'asc' }]
     });
 
-    let debits = new Prisma.Decimal(0);
-    let credits = new Prisma.Decimal(0);
-
     const transactions = ledgerEntries.map((e) => {
-      if (e.direction === 'DEBIT') debits = debits.add(e.amount);
-      else credits = credits.add(e.amount);
-
       return {
         id: e.id,
         postedAt: e.postedAt,
@@ -262,8 +289,6 @@ export class ParentPortalDAO {
         balanceAfter: Number(e.balanceAfter)
       };
     });
-
-    const currentBalance = debits.minus(credits);
 
     // Invoices list
     const invoices = await db.invoice.findMany({
@@ -282,8 +307,8 @@ export class ParentPortalDAO {
         admissionNo: student.admissionNo
       },
       summary: {
-        totalDebits: debits.toNumber(),
-        totalCredits: credits.toNumber(),
+        totalDebits: ledgerRes.totalDebits.toNumber(),
+        totalCredits: ledgerRes.totalCredits.toNumber(),
         outstandingBalance: currentBalance.toNumber(),
         isDebtor: currentBalance.greaterThan(0)
       },
@@ -431,6 +456,13 @@ export class ParentPortalDAO {
       });
 
       // 2. If consent is for an ExeatPass, update the Exeat record directly
+      if (input.consentType === ParentConsentType.EXEAT_PASS) {
+        const canAuthorizeExeat = relation.hasPickupAuthorization || relation.isPrimaryContact;
+        if (!canAuthorizeExeat) {
+          throw new UnauthorizedError("Guardian is not authorized to grant exeat approvals for this student.");
+        }
+      }
+
       if (input.consentType === ParentConsentType.EXEAT_PASS && input.referenceId) {
         const exeat = await tx.exeatPass.findFirst({
           where: {

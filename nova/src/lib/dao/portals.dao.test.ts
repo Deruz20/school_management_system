@@ -82,7 +82,7 @@ describe("Phase 3.3: Self-Service Portals (Parent & Student) Engine (PORT-01..PO
     const cls = await db.class.create({
       data: {
         branchId,
-        name: "Senior Four"
+        name: "Senior Four", portalAccessEnabled: true
       }
     });
 
@@ -90,7 +90,7 @@ describe("Phase 3.3: Self-Service Portals (Parent & Student) Engine (PORT-01..PO
     const student = await db.student.create({
       data: {
         branchId,
-        admissionNo: `S4-${Date.now().toString().slice(-4)}`,
+        admissionNo: `S4-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         firstName: "Ivan",
         lastName: "Kato",
         gender: "MALE",
@@ -103,7 +103,7 @@ describe("Phase 3.3: Self-Service Portals (Parent & Student) Engine (PORT-01..PO
     const guardian = await db.guardian.create({
       data: {
         branchId,
-        guardianCode: `GRD-${Date.now().toString().slice(-4)}`,
+        guardianCode: `GRD-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         firstName: "Paul",
         lastName: "Kato",
         phonePrimary: "+256700112233",

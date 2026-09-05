@@ -26,6 +26,9 @@ export interface QueueOutboxInput {
   recipient: string;
   subject?: string;
   message: string;
+  idempotencyKey?: string;
+  isEmergency?: boolean;
+  nextRetryAt?: Date;
 }
 
 export class NotificationPreferenceDAO {
@@ -165,6 +168,15 @@ export class NotificationPreferenceDAO {
    * Queues an outbound notification into the delivery outbox.
    */
   static async queueOutboxNotification(input: QueueOutboxInput): Promise<NotificationOutbox> {
+    if (input.idempotencyKey) {
+      const existing = await db.notificationOutbox.findUnique({
+        where: { idempotencyKey: input.idempotencyKey }
+      });
+      if (existing) {
+        return existing;
+      }
+    }
+
     return db.notificationOutbox.create({
       data: {
         branchId: input.branchId,
@@ -173,7 +185,10 @@ export class NotificationPreferenceDAO {
         recipient: input.recipient,
         subject: input.subject,
         message: input.message,
-        status: NotificationDeliveryStatus.PENDING
+        status: NotificationDeliveryStatus.PENDING,
+        idempotencyKey: input.idempotencyKey,
+        isEmergency: input.isEmergency ?? false,
+        nextRetryAt: input.nextRetryAt ?? new Date()
       }
     });
   }

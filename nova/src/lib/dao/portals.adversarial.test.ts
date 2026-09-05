@@ -1,3 +1,4 @@
+import { LedgerDAO } from "./ledger.dao";
 import { describe, it, expect, beforeEach } from "vitest";
 import { db } from "@/lib/db";
 import { TenantContext } from "@/lib/dao/tenant-context";
@@ -17,6 +18,7 @@ describe("Phase 3.3: Self-Service Portals Adversarial & Security Invariant Tests
   let ctx: TenantContext;
   let branchId: string;
   let studentAId: string;
+  let guardianAId: string;
   let guardianBId: string;
   let termId: string;
 
@@ -77,7 +79,7 @@ describe("Phase 3.3: Self-Service Portals Adversarial & Security Invariant Tests
     const studentA = await db.student.create({
       data: {
         branchId,
-        admissionNo: `ST-A-${Date.now().toString().slice(-4)}`,
+        admissionNo: `ST-A-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         firstName: "Alice",
         lastName: "Nantongo",
         lifecycleStatus: StudentLifecycleStatus.ACTIVE
@@ -88,13 +90,14 @@ describe("Phase 3.3: Self-Service Portals Adversarial & Security Invariant Tests
     const guardianA = await db.guardian.create({
       data: {
         branchId,
-        guardianCode: `GRD-A-${Date.now().toString().slice(-4)}`,
+        guardianCode: `GRD-A-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         firstName: "Moses",
         lastName: "Nantongo",
         phonePrimary: "+256701000001",
         email: `moses_${Date.now()}@test.com`
       }
     });
+    guardianAId = guardianA.id;
 
     await db.studentGuardian.create({
       data: {
@@ -111,7 +114,7 @@ describe("Phase 3.3: Self-Service Portals Adversarial & Security Invariant Tests
     const studentB = await db.student.create({
       data: {
         branchId,
-        admissionNo: `ST-B-${Date.now().toString().slice(-4)}`,
+        admissionNo: `ST-B-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         firstName: "Bob",
         lastName: "Mugisha",
         lifecycleStatus: StudentLifecycleStatus.ACTIVE
@@ -121,7 +124,7 @@ describe("Phase 3.3: Self-Service Portals Adversarial & Security Invariant Tests
     const guardianB = await db.guardian.create({
       data: {
         branchId,
-        guardianCode: `GRD-B-${Date.now().toString().slice(-4)}`,
+        guardianCode: `GRD-B-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         firstName: "Grace",
         lastName: "Mugisha",
         phonePrimary: "+256702000002",
@@ -143,7 +146,7 @@ describe("Phase 3.3: Self-Service Portals Adversarial & Security Invariant Tests
     const cls = await db.class.create({
       data: {
         branchId,
-        name: "Senior Three"
+        name: "Senior Three", portalAccessEnabled: true
       }
     });
 
@@ -248,5 +251,143 @@ describe("Phase 3.3: Self-Service Portals Adversarial & Security Invariant Tests
         expectedReturn: "2026-09-14T17:00:00Z"
       })
     ).rejects.toThrow("Portal access denied: Student lifecycle status is SUSPENDED.");
+  });
+
+  // ATTACK 6: Unauthorized Financial Guardian Blocked
+  it("ATTACK 6: Guardian without financial sponsorship or primary contact blocked from financial ledger", async () => {
+    // Create an auxiliary guardian linked to Student A with no financial sponsorship
+    const nonFinancialGuardian = await db.guardian.create({
+      data: {
+        branchId,
+        guardianCode: `GRD-NONFIN-${Date.now().toString().slice(-4)}-${Math.random().toString(36).slice(2, 6)}`,
+        firstName: "Uncle",
+        lastName: "Ben",
+        phonePrimary: "+256701555444",
+        email: `ben_${Date.now()}@test.com`
+      }
+    });
+
+    await db.studentGuardian.create({
+      data: {
+        branchId,
+        studentId: studentAId,
+        guardianId: nonFinancialGuardian.id,
+        relationship: GuardianRelationship.OTHER,
+        isPrimaryContact: false,
+        isFinancialSponsor: false,
+        receivesAcademicReports: true
+      }
+    });
+
+    // Statement request must throw UnauthorizedError
+    await expect(
+      ParentPortalDAO.getChildFeeStatement(nonFinancialGuardian.id, studentAId)
+    ).rejects.toThrow("Guardian is not authorized to view financial information for this student.");
+
+    // Children list must redact balance
+    const children = await ParentPortalDAO.getGuardianChildren(nonFinancialGuardian.id, branchId);
+    const ward = children.find((c) => c.studentId === studentAId);
+    expect(ward?.outstandingBalance).toBeNull();
+    expect(ward?.isFinancialAuthorized).toBe(false);
+  });
+
+  // ATTACK 7: Inactive Student Status Blocked
+  it("ATTACK 7: Inactive student is strictly blocked from student portal", async () => {
+    await db.student.update({
+      where: { id: studentAId },
+      data: { status: "DROPPED_OUT" }
+    });
+
+    await expect(StudentPortalDAO.getStudentDashboard(studentAId)).rejects.toThrow(
+      "Portal access denied: Student status is DROPPED_OUT."
+    );
+  });
+
+  // ATTACK 8: Inactive Enrollment Blocked
+  it("ATTACK 8: Student without active enrollment is blocked from student portal", async () => {
+    // Restore active student status, but mark enrollment COMPLETED
+    await db.student.update({
+      where: { id: studentAId },
+      data: { status: "ACTIVE" }
+    });
+
+    await db.enrollment.updateMany({
+      where: { studentId: studentAId },
+      data: { status: "COMPLETED" }
+    });
+
+    await expect(StudentPortalDAO.getStudentDashboard(studentAId)).rejects.toThrow(
+      "Portal access denied: Student does not have an active academic enrollment."
+    );
+  });
+
+  // ATTACK 9: Class portalAccessEnabled=false Blocked
+  it("ATTACK 9: Student whose class has portalAccessEnabled=false is blocked", async () => {
+    // Restore active enrollment
+    await db.enrollment.updateMany({
+      where: { studentId: studentAId },
+      data: { status: "ACTIVE" }
+    });
+
+    // Disable portal access on class
+    const student = await db.student.findUnique({
+      where: { id: studentAId },
+      include: { enrollments: true }
+    });
+    const classId = student!.enrollments[0].classId;
+
+    await db.class.update({
+      where: { id: classId },
+      data: { portalAccessEnabled: false }
+    });
+
+    await expect(StudentPortalDAO.getStudentDashboard(studentAId)).rejects.toThrow(
+      "Portal access denied: Portal access is not enabled for student's class."
+    );
+  });
+
+  // VERIFICATION: Portal Balance Delegated to LedgerDAO.getBalance()
+  it("VERIFICATION: Portal balance calculations match LedgerDAO.getBalance() exactly", async () => {
+    // Post test debit and credit entries
+    await db.studentLedgerEntry.create({
+      data: {
+        branchId,
+        studentId: studentAId,
+        direction: "DEBIT",
+        entryType: LedgerEntryType.INVOICE_GROSS_CHARGE,
+        amount: 850000,
+        balanceAfter: 850000,
+        referenceType: "INVOICE",
+        referenceId: `inv-test-${Date.now()}`,
+        description: "Term Tuition Fees"
+      }
+    });
+
+    await db.studentLedgerEntry.create({
+      data: {
+        branchId,
+        studentId: studentAId,
+        direction: "CREDIT",
+        entryType: "PAYMENT",
+        amount: 350000,
+        balanceAfter: 500000,
+        referenceType: "PAYMENT",
+        referenceId: `pay-test-${Date.now()}`,
+        description: "Bank Slip Payment"
+      }
+    });
+
+    const ledgerRes = await LedgerDAO.getBalance(ctx, studentAId);
+    expect(ledgerRes.balance.toNumber()).toBe(500000);
+
+    // Verify PortalAccessDAO delegation
+    const portalAccess = await PortalAccessDAO.checkReportCardAccess(branchId, studentAId);
+    expect(portalAccess.balance.toNumber()).toBe(ledgerRes.balance.toNumber());
+
+    // Verify ParentPortalDAO delegation
+    const feeStatement = await ParentPortalDAO.getChildFeeStatement(guardianAId, studentAId);
+    expect(feeStatement.summary.outstandingBalance).toBe(ledgerRes.balance.toNumber());
+    expect(feeStatement.summary.totalDebits).toBe(ledgerRes.totalDebits.toNumber());
+    expect(feeStatement.summary.totalCredits).toBe(ledgerRes.totalCredits.toNumber());
   });
 });

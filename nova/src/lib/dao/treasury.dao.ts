@@ -450,6 +450,8 @@ export class TreasuryDAO {
       throw new Error("Opening float cannot be negative.");
     }
 
+    const shiftOpenedAt = new Date();
+
     return db.$transaction(async (tx) => {
       // Ensure till exists and belongs to branch
       const till = await tx.treasuryAccount.findFirst({
@@ -491,6 +493,7 @@ export class TreasuryDAO {
             balanceAfter: openingFloat,
             description: "Cashier Shift Opening Float",
             createdById: ctx.userId,
+            transactionDate: shiftOpenedAt,
           },
         });
       }
@@ -502,6 +505,7 @@ export class TreasuryDAO {
           tillAccountId: till.id,
           openingFloat,
           status: SessionStatus.OPEN,
+          openedAt: shiftOpenedAt,
         },
         include: {
           tillAccount: true,
